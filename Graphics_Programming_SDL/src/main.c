@@ -1,37 +1,67 @@
+#include <unistd.h>
 #include <SDL2/SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "header.h"
 
-char	initialize_window(void)
+static void	destroy(SDL_Window *window, SDL_Renderer *renderer, int *color_buffer, SDL_Texture *color_buffer_texture)
 {
-	SDL_Window* window = NULL;
-	SDL_Renderer* renderer = NULL;
+	SDL_DestroyTexture(color_buffer_texture);
+	SDL_DestroyRenderer(renderer);
+	SDL_DestroyWindow(window);
+	SDL_Quit();
+	free(color_buffer);
+}
 
-	if (SDL_Init(SDL_INIT_EVERYTHING) == 0)
+static char	initialize_window(SDL_Window **window, SDL_Renderer **renderer, int **color_buffer, SDL_Texture **color_buffer_texture)
+{
+
+	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
 		return (write(2, "Error init SDL\n", 15));
 //Create Window
-	window = SDL_CreateWindow(
+	*window = SDL_CreateWindow(
 				NULL, //borderless
 				SDL_WINDOWPOS_CENTERED, //posx
 				SDL_WINDOWPOS_CENTERED,//posy
 				WIDTH,
 				HEIGHT,
-				SDL_WINDOW_BORDERLESS,
+				SDL_WINDOW_BORDERLESS
 	);
-	if (window == NULL)	
+	if (*window == NULL)
 		return (write(2, "Error SDL Window\n", 17));
 //Create a renderer
-	renderer = SDL_CreateRenderer(window, -1, 0);
-	if (renderer == NULL)
-		return (write(2, "Error SDL Renderer\n", 19));
+	*renderer = SDL_CreateRenderer(*window, -1, 0);
+	if (*renderer == NULL)
+		return (SDL_DestroyWindow(*window), write(2, "Error SDL Renderer\n", 19));
+//Color_buffer allocation
+	*color_buffer = malloc(sizeof(int) * BUFF_SIZE);
+	if (*color_buffer == NULL)
+		return (SDL_DestroyWindow(*window), SDL_DestroyRenderer(*renderer), 1);
+//Create an SDL texture
+	*color_buffer_texture = SDL_CreateTexture(
+		*renderer,
+		SDL_PIXELFORMAT_ARGB8888,
+		SDL_TEXTUREACCESS_STREAMING,
+		WIDTH,
+		HEIGHT
+	);
 	return (0);
 }
 
-int	main (void)
+int			main(void)
 {
-	if (initialize_window() != 0)
+	static t_w	canvas = {.window = NULL, .renderer = NULL, .color_buffer = NULL, .color_buffer_texture = NULL};
+	char		(*fun[65537])(int *);
+	int			(*fun_event[128])(int);
+
+//Setup
+	if (initialize_window(&(canvas.window), &(canvas.renderer), &(canvas.color_buffer), &(canvas.color_buffer_texture)) != 0)
 		return (1);
-	
-	return (0);
+	initialize_fun_key_triggered(fun);
+	initialize_fun_event(fun_event);
+	clear_color_buffer((long long int *)canvas.color_buffer);
+//game_loop
+	while (display(&canvas, fun[process_input(fun_event)](canvas.color_buffer)))
+		;
+	return (destroy(canvas.window, canvas.renderer, canvas.color_buffer, canvas.color_buffer_texture), 0);
 }
