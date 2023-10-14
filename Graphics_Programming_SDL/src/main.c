@@ -4,8 +4,6 @@
 #include <stdlib.h>
 #include "header.h"
 
-#define ZOOM 30
-
 static void	destroy(SDL_Window *window, SDL_Renderer *renderer, int *color_buffer, SDL_Texture *color_buffer_texture)
 {
 	SDL_DestroyTexture(color_buffer_texture);
