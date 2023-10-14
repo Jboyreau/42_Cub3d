@@ -17,7 +17,7 @@ int	set_index(int key)
 {
 	return (
 		(key == SDLK_ESCAPE)
-		+ ((key == SDLK_c) << 1)
-		+ ((key == SDLK_s) << 2)
+		+ ((key == SDLK_o) << 1)
+		//+ ((key == SDLK_p) << 2)
 	);
 }

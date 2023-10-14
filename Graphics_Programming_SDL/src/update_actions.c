@@ -1,71 +1,57 @@
 #include <SDL2/SDL.h>
 #include "header.h"
+#define G 20
+#define MODEL_SIZE 729
+#define MIDLE_X 640
+#define MIDLE_Y 360
 
-char	nothing(int *color_buffer)
+char	nothing(t_scene *scene)
 {
-	(void)color_buffer;
+	(void)scene;
 	return (1);
 }
 
-char	quit(int *color_buffer)
-{	
-	(void)color_buffer;
+char	quit(t_scene *scene)
+{
+	(void)scene;
 	return (0);
 }
 
-void	clear_color_buffer(long long int *color_buffer)
+void	clear_color_buffer(int *color_buffer)
 {
-	int i = 0;
+	int i = 0, j = 1, line;
 
-	while (i < CLEAR_SIZE)
+	while (i < WIDTH)
 	{
-		*(color_buffer + i) = 0;
+		*(color_buffer + i) = 0x00FFFFFF;
 		++i;
 	}
-}
-
-char	circle(int *color_buffer)
-{
-	int i = 160, j, line, x, y, r = 200 * 200;
-
-	clear_color_buffer((long long int*)color_buffer);
-	while (i < 560)
-	{
-		j = 440;
-		line = i * WIDTH;
-		y = i - 360;
-		if (y < 0)
-			y *= -1;
-		while (j < 840)
-		{
-			x = j - 640;
-			if (x < 0)
-				x *= -1;
-			if ((x * x + y * y) <= r)
-				*(color_buffer + line + j) = 0xFFFF0000;
-			//else
-				//*(color_buffer + line + j) = 0xFFFF0000;	
-			++j;
-		}
-		++i;
-	}
-	return (1);
-}
-
-char	square(int *color_buffer)
-{
-	int i = 0, j, line;
-	
-	clear_color_buffer((long long int*)color_buffer);
+	i = 1;
 	while (i < HEIGHT)
 	{
-		j = 0;
-		line = i * WIDTH;
+		j = 1;
+		line = (i << 10) + (i << 8);
+		*(color_buffer + line) = 0x00FFFFFF;
 		while (j < WIDTH)
 		{
-			*(color_buffer + line + j) = 0xFFFF0000;
+			*(color_buffer + line + j) = (((i + 1) % G == 0) || ((j + 1) % G == 0)) * 0x00FFFFFF;
 			++j;
 		}
+		i++;
+	}
+}
+
+
+char ortho_project(t_scene *scene)
+{
+	int i = 0, line;
+
+	clear_color_buffer((*scene).color_buffer);
+	while (i < MODEL_SIZE)
+	{
+		line = ((*((*scene).cloud + i)).y * (*scene).zoom) + MIDLE_Y;
+		line = (line << 10) + (line << 8);
+		*((*scene).color_buffer + line + ((int)((*((*scene).cloud + i)).x * (*scene).zoom) + MIDLE_X)) = 0x0000FF00;
 		++i;
 	}
 	return (1);

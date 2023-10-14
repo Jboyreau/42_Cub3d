@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include "header.h"
 
+#define ZOOM 30
+
 static void	destroy(SDL_Window *window, SDL_Renderer *renderer, int *color_buffer, SDL_Texture *color_buffer_texture)
 {
 	SDL_DestroyTexture(color_buffer_texture);
@@ -51,17 +53,18 @@ static char	initialize_window(SDL_Window **window, SDL_Renderer **renderer, int 
 int			main(void)
 {
 	static t_w	canvas = {.window = NULL, .renderer = NULL, .color_buffer = NULL, .color_buffer_texture = NULL};
-	char		(*fun[65537])(int *);
-	int			(*fun_event[128])(int);
+	t_f			fun;
+	t_v3	cube[9*9*9];
+	t_scene	scene;
 
 //Setup
 	if (initialize_window(&(canvas.window), &(canvas.renderer), &(canvas.color_buffer), &(canvas.color_buffer_texture)) != 0)
 		return (1);
-	initialize_fun_key_triggered(fun);
-	initialize_fun_event(fun_event);
-	clear_color_buffer((long long int *)canvas.color_buffer);
+	initialize_fun(&fun);
+	initialize_scene(&scene, cube, canvas.color_buffer, ZOOM);
+	clear_color_buffer(canvas.color_buffer);
 //game_loop
-	while (display(&canvas, fun[process_input(fun_event)](canvas.color_buffer)))
+	while (display(&canvas, fun.fun_update[process_input(fun.fun_event)](&scene)))
 		;
 	return (destroy(canvas.window, canvas.renderer, canvas.color_buffer, canvas.color_buffer_texture), 0);
 }
