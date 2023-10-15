@@ -19,11 +19,11 @@ char	quit(t_scene *scene)
 
 void	clear_color_buffer(int *color_buffer)
 {
-	int i = 0, j = 1, line;
+	int i = 0, j = 1, line, test;
 
 	while (i < WIDTH)
 	{
-		*(color_buffer + i) = 0x00333333;
+		*(color_buffer + i) = 0x000F0F0F;
 		++i;
 	}
 	i = 1;
@@ -31,10 +31,11 @@ void	clear_color_buffer(int *color_buffer)
 	{
 		j = 1;
 		line = (i << 10) + (i << 8);
-		*(color_buffer + line) = 0x00333333;
+		*(color_buffer + line) = 0x000F0F0F;
 		while (j < WIDTH)
 		{
-			*(color_buffer + line + j) = (((i + 1) % G == 0) || ((j + 1) % G == 0)) * 0x00333333;
+			test = (((i + 1) % G == 0) || ((j + 1) % G == 0));
+			*(color_buffer + line + j) =  (test << 4) + (test << 11) + (test << 19);
 			++j;
 		}
 		i++;
