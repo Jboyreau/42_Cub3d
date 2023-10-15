@@ -1,6 +1,7 @@
 #ifndef HEADER_H
 #define HEADER_H
-#define ZOOM 10
+#define SCALE 50
+#define SCALE_INC 10
 # define HEIGHT 720
 # define WIDTH 1280
 # define BUFF_SIZE 921600 //HEIGHT * WIDTH
@@ -34,11 +35,14 @@ typedef struct s_camera
 	float	fov;
 } t_cam;
 
+typedef struct s_funarrays t_f;
+
 typedef struct s_scene //what I project
 {
-	float	zoom;
+	int		scale;
 	t_v3	*cloud;
 	int		*color_buffer;
+	t_f		*fun;
 } t_scene;
 
 typedef struct t_keys
@@ -48,18 +52,25 @@ typedef struct t_keys
 	int		mouse_wheel_event;
 } t_keys;
 
-typedef struct s_funarrays
+typedef struct s_pixel_info
 {
-	char		(*fun_update[65537])(t_scene *);
-	int			(*fun_event[128])(t_keys *);
-} t_f;
+	t_scene	*scene;
+	int 	cell;
+} t_pixel_info;
+
+struct s_funarrays
+{
+	char	(*fun_update[65537])(t_scene *);
+	int		(*fun_event[128])(t_keys *);
+	void	(*fun_draw_pixel[128])(t_pixel_info *);
+};
 
 //point cloud
 void	make_cube(t_v3 *cube);
 
 //init
 void 	initialize_fun(t_f *fun);
-void	initialize_scene(t_scene *scene, t_v3 *cloud, int *color_buffer, int zoom);
+t_scene	*initialize_scene(t_v3 *cloud, int *color_buffer, int zoom, t_f *fun);
 
 //process input
 int		process_input(int (*fun_event[])(t_keys *));
@@ -74,6 +85,8 @@ char	quit(t_scene *scene);
 char 	ortho_project(t_scene *scene);
 char 	ortho_project_zoom_plus(t_scene *scene);
 char 	ortho_project_zoom_minus(t_scene *scene);
+void	draw_pixel(t_pixel_info *pixel_info);
+void	do_not_draw_pixel(t_pixel_info *pixel_info);
 
 //renderer
 char	display(t_w *canvas, char status);

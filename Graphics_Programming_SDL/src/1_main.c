@@ -51,18 +51,18 @@ static char	initialize_window(SDL_Window **window, SDL_Renderer **renderer, int 
 int			main(void)
 {
 	static t_w	canvas = {.window = NULL, .renderer = NULL, .color_buffer = NULL, .color_buffer_texture = NULL};
+	t_scene		*scene;
 	t_f			fun;
-	t_v3	cube[9*9*9];
-	t_scene	scene;
+	t_v3		cube[9*9*9];
 
 //Setup
 	if (initialize_window(&(canvas.window), &(canvas.renderer), &(canvas.color_buffer), &(canvas.color_buffer_texture)) != 0)
 		return (1);
 	initialize_fun(&fun);
-	initialize_scene(&scene, cube, canvas.color_buffer, ZOOM);
+	scene = initialize_scene(cube, canvas.color_buffer, SCALE, &fun);
 	clear_color_buffer(canvas.color_buffer);
 //game_loop
-	while (display(&canvas, fun.fun_update[process_input(fun.fun_event)](&scene)))
+	while (display(&canvas, fun.fun_update[process_input(fun.fun_event)](scene)))
 		;
 	return (destroy(canvas.window, canvas.renderer, canvas.color_buffer, canvas.color_buffer_texture), 0);
 }
