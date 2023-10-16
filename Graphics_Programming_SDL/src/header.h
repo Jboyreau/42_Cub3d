@@ -6,6 +6,13 @@
 # define WIDTH 1280
 # define BUFF_SIZE 921600 //HEIGHT * WIDTH
 # define CLEAR_SIZE 460800 //(HEIGHT * WIDTH) / 2
+#define MODEL_SIZE 729
+#define MIDLE_X 640
+#define MIDLE_Y 360
+#define Z_VALUE 5
+#define DIST_INC 0.25
+#define ROTATION_INC_PLUS 0.1
+#define ROTATION_INC_MINUS -0.1
 
 typedef struct s_canvas
 {
@@ -17,8 +24,8 @@ typedef struct s_canvas
 
 typedef struct s_2dvector
 {
-	float		x;
-	float		y;
+	float		op;
+	float		adj;
 } t_v2;
 
 typedef struct s_3dvector
@@ -26,6 +33,7 @@ typedef struct s_3dvector
 	float		x;
 	float		y;
 	float		z;
+	float		inv_z;
 } t_v3;
 
 typedef struct s_camera
@@ -40,9 +48,12 @@ typedef struct s_funarrays t_f;
 typedef struct s_scene //what I project
 {
 	int		scale;
+	float	dist;
+	//t_v3	rotation;
 	t_v3	*cloud;
 	int		*color_buffer;
 	t_f		*fun;
+	
 } t_scene;
 
 typedef struct t_keys
@@ -85,6 +96,15 @@ char	quit(t_scene *scene);
 char 	ortho_project(t_scene *scene);
 char 	ortho_project_zoom_plus(t_scene *scene);
 char 	ortho_project_zoom_minus(t_scene *scene);
+char	perspective_project_zoom_plus(t_scene *scene);
+char	perspective_project_zoom_minus(t_scene *scene);
+char	perspective_project(t_scene *scene);
+char	perspective_project_close(t_scene *scene);
+char	perspective_project_far(t_scene *scene);
+char	rotation_x_minus(t_scene *scene);
+char	rotation_x_plus(t_scene *scene);
+char	rotation_y_minus(t_scene *scene);
+char	rotation_y_plus(t_scene *scene);
 void	draw_pixel(t_pixel_info *pixel_info);
 void	do_not_draw_pixel(t_pixel_info *pixel_info);
 

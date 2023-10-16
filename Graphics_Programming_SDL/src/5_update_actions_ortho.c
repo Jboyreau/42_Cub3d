@@ -1,8 +1,5 @@
 #include <SDL2/SDL.h>
 #include "header.h"
-#define MODEL_SIZE 729
-#define MIDLE_X 640
-#define MIDLE_Y 360
 
 char	ortho_project_zoom_plus(t_scene *scene)
 {

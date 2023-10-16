@@ -23,7 +23,7 @@ void	clear_color_buffer(int *color_buffer)
 
 	while (i < WIDTH)
 	{
-		*(color_buffer + i) = 0x000F0F0F;
+		*(color_buffer + i) = 0x00808080;
 		++i;
 	}
 	i = 1;
@@ -31,11 +31,11 @@ void	clear_color_buffer(int *color_buffer)
 	{
 		j = 1;
 		line = (i << 10) + (i << 8);
-		*(color_buffer + line) = 0x000F0F0F;
+		*(color_buffer + line) = 0x00808080;
 		while (j < WIDTH)
 		{
 			test = (((i + 1) % G == 0) || ((j + 1) % G == 0));
-			*(color_buffer + line + j) =  (test << 4) + (test << 11) + (test << 19);
+			*(color_buffer + line + j) =  (test << 7) + (test << 15) + (test << 23);
 			++j;
 		}
 		i++;

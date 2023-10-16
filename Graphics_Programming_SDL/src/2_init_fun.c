@@ -13,9 +13,15 @@ static void	initialize_fun_key_triggered(char (*fun_update[])(t_scene *))
 {
 	fun_update[0] = &nothing;
 	fun_update[1] = &quit;
-	fun_update[2] = ortho_project;
-	fun_update[4] = ortho_project_zoom_minus;
-	fun_update[8] = ortho_project_zoom_plus;
+	fun_update[2] = perspective_project;
+	fun_update[4] = perspective_project_zoom_minus;
+	fun_update[8] = perspective_project_zoom_plus;
+	fun_update[16] = perspective_project_far;
+	fun_update[32] = perspective_project_close;
+	fun_update[64] = rotation_x_minus;
+	fun_update[128] = rotation_x_plus;
+	fun_update[256] = rotation_y_minus;
+	fun_update[512] = rotation_y_plus;
 }
 
 //According to the value of the event (press key or not) a function is choosed.

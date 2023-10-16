@@ -23,16 +23,13 @@ void	make_cube(t_v3 *cube)
 				(*(cube + l + col)).x = vec.x;
 				(*(cube + l + col)).y = vec.y;
 				(*(cube + l + col)).z = vec.z;
-//printf("x = %.2f, y = %.2f, z = %.2f ", vec.x, vec.y, vec.z);
+				(*(cube + l + col)).inv_z = 1;
 				++col;
 				vec.x += 0.25;
 			}
-//putchar('\n');
 			++line;
 			vec.y += 0.25;
 		}
-//putchar('\n');
-//putchar('\n');
 		++page;
 		vec.z += 0.25;
 	}
