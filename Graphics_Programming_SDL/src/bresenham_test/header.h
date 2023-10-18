@@ -1,7 +1,5 @@
 #ifndef HEADER_H
 #define HEADER_H
-#define FPS 120
-#define FRAME_TARGET_TIME (1000 / FPS)
 #define SCALE 50
 #define SCALE_INC 10
 # define HEIGHT 720
@@ -49,14 +47,13 @@ typedef struct s_funarrays t_f;
 
 typedef struct s_scene //what I project
 {
-	int		time_to_wait;
-	int		previous_frame_time;
 	int		scale;
 	float	dist;
 	//t_v3	rotation;
 	t_v3	*cloud;
 	int		*color_buffer;
-	t_f		*fun;	
+	t_f		*fun;
+	
 } t_scene;
 
 typedef struct t_keys
@@ -77,7 +74,6 @@ struct s_funarrays
 	char	(*fun_update[65537])(t_scene *);
 	int		(*fun_event[128])(t_keys *);
 	void	(*fun_draw_pixel[128])(t_pixel_info *);
-	void	(*fun_delay[128])(int);
 };
 
 //point cloud
@@ -94,7 +90,6 @@ int		set_quit(t_keys *);
 int		set_index(t_keys *);
 
 //update / projection
-char update (t_scene *scene);
 //void	clear_color_buffer(int *color_buffer);
 void	clear_color_buffer(long long int *color_buffer);
 char	nothing(t_scene *scene);
@@ -118,9 +113,5 @@ void	do_not_draw_pixel(t_pixel_info *pixel_info);
 
 //renderer
 char	display(t_w *canvas, char status);
-
-//delay
-void	delay(int time_to_wait);
-void	do_not_delay(int time_to_wait);
 
 #endif

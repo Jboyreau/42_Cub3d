@@ -1,12 +1,6 @@
 #include <SDL2/SDL.h>
 #include "header.h"
 
-static void	initialize_delay(void (*fun_event[])(int))
-{
-	fun_event[0] = &do_not_delay;
-	fun_event[1] = &delay;
-}
-
 //According to the coordinate value the pixel is displayed or not.
 static void	initialize_fun_draw_pixel(void (*fun_draw_pixel[])(t_pixel_info *))
 {
@@ -40,10 +34,9 @@ static void	initialize_fun_event(int (*fun_event[])(t_keys *))
 	fun_event[2] = &set_index;
 }
 
-void	initialize_fun(t_f *fun)
+void initialize_fun(t_f *fun)
 {
 	initialize_fun_key_triggered((*fun).fun_update);
 	initialize_fun_event((*fun).fun_event);
 	initialize_fun_draw_pixel((*fun).fun_draw_pixel);
-	initialize_delay(((*fun).fun_delay));
 }

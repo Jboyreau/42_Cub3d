@@ -3,7 +3,7 @@
 
 char	display(t_w *canvas, char status)
 {
-	//clear_color_buffer();	
+	//clear_color_buffer();
 	SDL_UpdateTexture(
 		(*canvas).color_buffer_texture,
 		NULL,

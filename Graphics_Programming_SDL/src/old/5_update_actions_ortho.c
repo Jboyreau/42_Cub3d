@@ -7,7 +7,8 @@ char	ortho_project_zoom_plus(t_scene *scene)
 	int 			i = 0, line;
 
 	(*scene).scale += SCALE_INC;
-	clear_color_buffer((*scene).color_buffer);
+	//clear_color_buffer((*scene).color_buffer);
+	clear_color_buffer(((long long int *)((*scene).color_buffer)));
 	while (i < MODEL_SIZE)
 	{
 		line = (*((*scene).cloud + i)).y * (*scene).scale + MIDLE_Y;
@@ -27,7 +28,8 @@ char	ortho_project_zoom_minus(t_scene *scene)
 	int 			i = 0, line;
 
 	(*scene).scale -= SCALE_INC;
-	clear_color_buffer((*scene).color_buffer);
+	//clear_color_buffer((*scene).color_buffer);
+	clear_color_buffer(((long long int *)((*scene).color_buffer)));
 	while (i < MODEL_SIZE)
 	{
 		line = (*((*scene).cloud + i)).y * (*scene).scale + MIDLE_Y;
@@ -46,7 +48,8 @@ char	ortho_project(t_scene *scene)
 	t_pixel_info	pixel_info;
 	int				i = 0, line;
 
-	clear_color_buffer((*scene).color_buffer);
+	//clear_color_buffer((*scene).color_buffer);
+	clear_color_buffer(((long long int *)((*scene).color_buffer)));
 	while (i < MODEL_SIZE)
 	{
 		line = (*((*scene).cloud + i)).y * (*scene).scale + MIDLE_Y;

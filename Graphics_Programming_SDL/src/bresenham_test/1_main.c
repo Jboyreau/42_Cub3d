@@ -63,10 +63,7 @@ int			main(void)
 	//clear_color_buffer(canvas.color_buffer);
 	clear_color_buffer((long long int *)canvas.color_buffer);
 //game_loop
-	(*scene).previous_frame_time = SDL_GetTicks();
-	while (display(&canvas, update(scene)))
-	{
+	while (display(&canvas, fun.fun_update[process_input(fun.fun_event)](scene)))
 		;
-	}
 	return (destroy(canvas.window, canvas.renderer, canvas.color_buffer, canvas.color_buffer_texture), 0);
 }
