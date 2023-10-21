@@ -1,6 +1,6 @@
 #ifndef HEADER_H
 #define HEADER_H
-#define FPS 120
+#define FPS 30
 #define FRAME_TARGET_TIME (1000 / FPS)
 #define SCALE 500
 #define SCALE_INC 10
@@ -73,7 +73,7 @@ typedef struct s_scene //what I project
 	t_tri	*triangle_index;
 	t_ptri	*projected_triangle;
 	int		*color_buffer;
-	t_f		*fun;	
+	t_f		*fun;
 } t_scene;
 
 typedef struct t_keys
@@ -89,12 +89,23 @@ typedef struct s_pixel_info
 	int 	cell;
 } t_pixel_info;
 
+typedef struct s_dda
+{
+	int		delta_x;
+	int		delta_y;
+	int		abs_delta_x;
+	int		abs_delta_y;
+	t_v3	p1;
+	t_v3	p2;	
+} t_dda;
+
 struct s_funarrays
 {
 	char	(*fun_update[65537])(t_scene *);
 	int		(*fun_event[128])(t_keys *);
 	void	(*fun_draw_pixel[128])(t_pixel_info *);
 	void	(*fun_delay[128])(int);
+	void	(*dda[128])(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
 };
 
 //point cloud generation
@@ -124,12 +135,21 @@ char	perspective_project_zoom_minus(t_scene *scene);
 char	perspective_project(t_scene *scene);
 char	perspective_project_close(t_scene *scene);
 char	perspective_project_far(t_scene *scene);
+
+//linear transform
 char	rotation_x_minus(t_scene *scene);
 char	rotation_x_plus(t_scene *scene);
 char	rotation_y_minus(t_scene *scene);
 char	rotation_y_plus(t_scene *scene);
 char	rotation_z_plus(t_scene *scene);
 char	rotation_z_minus(t_scene *scene);
+
+//triangle drawing
+void	draw_triangle(t_scene *scene, t_pixel_info *pixel_info, int i);
+void	dda_x_minus(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
+void	dda_x_plus(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
+void	dda_y_minus(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
+void	dda_y_plus(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
 void	draw_pixel(t_pixel_info *pixel_info);
 void	do_not_draw_pixel(t_pixel_info *pixel_info);
 

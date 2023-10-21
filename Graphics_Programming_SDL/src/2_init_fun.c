@@ -1,6 +1,15 @@
 #include <SDL2/SDL.h>
 #include "header.h"
 
+
+static void	initialize_dda(void	(*dda[])(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda))
+{
+	dda[0] = &dda_y_minus;	
+	dda[1] = &dda_y_plus;
+	dda[2] = &dda_x_minus;
+	dda[4] = &dda_x_plus;
+}
+
 static void	initialize_delay(void (*fun_event[])(int))
 {
 	fun_event[0] = &do_not_delay;
@@ -46,4 +55,5 @@ void	initialize_fun(t_f *fun)
 	initialize_fun_event((*fun).fun_event);
 	initialize_fun_draw_pixel((*fun).fun_draw_pixel);
 	initialize_delay(((*fun).fun_delay));
+	initialize_dda(((*fun).dda));
 }
