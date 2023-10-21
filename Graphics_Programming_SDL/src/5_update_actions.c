@@ -1,9 +1,6 @@
 #include <SDL2/SDL.h>
 #include "header.h"
 #define G 20
-#define MODEL_SIZE 729
-#define MIDLE_X 640
-#define MIDLE_Y 360
 
 char	nothing(t_scene *scene)
 {
@@ -28,18 +25,6 @@ void	clear_color_buffer(long long int *color_buffer)
 	}
 }
 
-char update (t_scene *scene)
-{
-	int	index;
-
-	index = process_input((*(*scene).fun).fun_event);
-	(*scene).time_to_wait = FRAME_TARGET_TIME - (SDL_GetTicks() - (*scene).previous_frame_time);
-	(*(*scene).fun).fun_delay[
-		((*scene).time_to_wait > 0)
-	]((*scene).time_to_wait);
-	(*scene).previous_frame_time = SDL_GetTicks();
-	return ((*(*scene).fun).fun_update[index](scene));
-}
 /*
 void	clear_color_buffer(int *color_buffer)
 {

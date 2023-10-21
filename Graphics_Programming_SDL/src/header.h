@@ -2,13 +2,14 @@
 #define HEADER_H
 #define FPS 120
 #define FRAME_TARGET_TIME (1000 / FPS)
-#define SCALE 50
+#define SCALE 500
 #define SCALE_INC 10
 # define HEIGHT 720
 # define WIDTH 1280
 # define BUFF_SIZE 921600 //HEIGHT * WIDTH
 # define CLEAR_SIZE 460800 //(HEIGHT * WIDTH) / 2
-#define MODEL_SIZE 729
+#define MODEL_SIZE 8
+#define N_TRI 12
 #define MIDLE_X 640
 #define MIDLE_Y 360
 #define Z_VALUE 5
@@ -47,6 +48,20 @@ typedef struct s_camera
 
 typedef struct s_funarrays t_f;
 
+typedef struct s_tirangle
+{
+	int		a;
+	int		b;
+	int		c;
+} t_tri;
+
+typedef struct s_projected_tirangle
+{
+	t_v3	a;
+	t_v3	b;
+	t_v3	c;
+} t_ptri;
+
 typedef struct s_scene //what I project
 {
 	int		time_to_wait;
@@ -55,6 +70,8 @@ typedef struct s_scene //what I project
 	float	dist;
 	//t_v3	rotation;
 	t_v3	*cloud;
+	t_tri	*triangle_index;
+	t_ptri	*projected_triangle;
 	int		*color_buffer;
 	t_f		*fun;	
 } t_scene;
@@ -80,12 +97,12 @@ struct s_funarrays
 	void	(*fun_delay[128])(int);
 };
 
-//point cloud
-void	make_cube(t_v3 *cube);
+//point cloud generation
+void	populate_3d_space(t_v3 *cloud, t_tri *triangle_index);
 
 //init
 void 	initialize_fun(t_f *fun);
-t_scene	*initialize_scene(t_v3 *cloud, int *color_buffer, int zoom, t_f *fun);
+t_scene	*initialize_scene(int *color_buffer, t_f *fun);
 
 //process input
 int		process_input(int (*fun_event[])(t_keys *));
@@ -94,7 +111,6 @@ int		set_quit(t_keys *);
 int		set_index(t_keys *);
 
 //update / projection
-char update (t_scene *scene);
 //void	clear_color_buffer(int *color_buffer);
 void	clear_color_buffer(long long int *color_buffer);
 char	nothing(t_scene *scene);
@@ -102,6 +118,7 @@ char	quit(t_scene *scene);
 //char 	ortho_project(t_scene *scene);
 //char 	ortho_project_zoom_plus(t_scene *scene);
 //char 	ortho_project_zoom_minus(t_scene *scene);
+void	triangle_to_color_buffer(t_scene *scene, int i, t_pixel_info *pixel_info);
 char	perspective_project_zoom_plus(t_scene *scene);
 char	perspective_project_zoom_minus(t_scene *scene);
 char	perspective_project(t_scene *scene);

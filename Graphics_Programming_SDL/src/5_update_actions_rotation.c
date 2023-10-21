@@ -3,21 +3,6 @@
 #include "header.h"
 #include <stdio.h>
 
-static void	 project(t_scene *scene, t_v3 *cloud)
-{
-	int				line;
-	t_pixel_info	pixel_info;
-	float			inv_z;
-
-	inv_z = 1 / ((*cloud).z + (*scene).dist);
-	line = ((*cloud).y * (*scene).scale) * inv_z + MIDLE_Y;
-	line = (line << 10) + (line << 8);
-	pixel_info.scene = scene;
-	pixel_info.cell = line;
-	pixel_info.cell += ((*cloud).x * (*scene).scale) * inv_z + MIDLE_X;
-	(*(*scene).fun).fun_draw_pixel[(pixel_info.cell > 0 && pixel_info.cell < BUFF_SIZE)](&pixel_info);
-}
-
 char	rotation_x_minus(t_scene *scene)
 {
 	float	y, z;
@@ -31,9 +16,9 @@ char	rotation_x_minus(t_scene *scene)
 		z = (*((*scene).cloud + i)).z;
 		(*((*scene).cloud + i)).z = z * cos(ROTATION_INC_MINUS) - y * sin(ROTATION_INC_MINUS);
 		(*((*scene).cloud + i)).y = y * cos(ROTATION_INC_MINUS) + z * sin(ROTATION_INC_MINUS);
-		project(scene, (*scene).cloud + i);
 		++i;
 	}
+	perspective_project(scene);
 	return (1);
 }
 
@@ -50,9 +35,9 @@ char	rotation_x_plus(t_scene *scene)
 		z = (*((*scene).cloud + i)).z;
 		(*((*scene).cloud + i)).z = z * cos(ROTATION_INC_PLUS) - y * sin(ROTATION_INC_PLUS);
 		(*((*scene).cloud + i)).y = y * cos(ROTATION_INC_PLUS) + z * sin(ROTATION_INC_PLUS);
-		project(scene, (*scene).cloud + i);
 		++i;
-	}
+	}	
+	perspective_project(scene);
 	return (1);
 }
 
@@ -69,10 +54,9 @@ char	rotation_y_minus(t_scene *scene)
 		z = (*((*scene).cloud + i)).z;
 		(*((*scene).cloud + i)).z = z * cos(ROTATION_INC_MINUS) + x * sin(ROTATION_INC_MINUS);
 		(*((*scene).cloud + i)).x = x * cos(ROTATION_INC_MINUS) - z * sin(ROTATION_INC_MINUS);
-		project(scene, (*scene).cloud + i);
 		++i;
-	}
-	
+	}	
+	perspective_project(scene);
 	return (1);
 }
 
@@ -89,9 +73,9 @@ char	rotation_y_plus(t_scene *scene)
 		z = (*((*scene).cloud + i)).z;
 		(*((*scene).cloud + i)).z = z * cos(ROTATION_INC_PLUS) + x * sin(ROTATION_INC_PLUS);
 		(*((*scene).cloud + i)).x = x * cos(ROTATION_INC_PLUS) - z * sin(ROTATION_INC_PLUS);
-		project(scene, (*scene).cloud + i);
 		++i;
 	}
+	perspective_project(scene);
 	return (1);
 }
 
@@ -108,10 +92,9 @@ char	rotation_z_minus(t_scene *scene)
 		y = (*((*scene).cloud + i)).y;
 		(*((*scene).cloud + i)).x = x * cos(ROTATION_INC_MINUS) + y * sin(ROTATION_INC_MINUS);
 		(*((*scene).cloud + i)).y = y * cos(ROTATION_INC_MINUS) - x * sin(ROTATION_INC_MINUS);
-		project(scene, (*scene).cloud + i);
 		++i;
 	}
-	
+	perspective_project(scene);	
 	return (1);
 }
 
@@ -128,8 +111,8 @@ char	rotation_z_plus(t_scene *scene)
 		y = (*((*scene).cloud + i)).y;
 		(*((*scene).cloud + i)).x = x * cos(ROTATION_INC_PLUS) + y * sin(ROTATION_INC_PLUS);
 		(*((*scene).cloud + i)).y = y * cos(ROTATION_INC_PLUS) - x * sin(ROTATION_INC_PLUS);
-		project(scene, (*scene).cloud + i);
 		++i;
 	}
+	perspective_project(scene);
 	return (1);
 }

@@ -53,20 +53,22 @@ int			main(void)
 	static t_w	canvas = {.window = NULL, .renderer = NULL, .color_buffer = NULL, .color_buffer_texture = NULL};
 	t_scene		*scene;
 	t_f			fun;
-	t_v3		cube[9*9*9];
 
 //Setup
 	if (initialize_window(&(canvas.window), &(canvas.renderer), &(canvas.color_buffer), &(canvas.color_buffer_texture)) != 0)
 		return (1);
 	initialize_fun(&fun);
-	scene = initialize_scene(cube, canvas.color_buffer, SCALE, &fun);
+	scene = initialize_scene(canvas.color_buffer, &fun);
 	//clear_color_buffer(canvas.color_buffer);
 	clear_color_buffer((long long int *)canvas.color_buffer);
 //game_loop
 	(*scene).previous_frame_time = SDL_GetTicks();
-	while (display(&canvas, update(scene)))
+	(*scene).time_to_wait = -1;
+	while (display(&canvas, fun.fun_update[process_input(fun.fun_event)](scene)))
 	{
-		;
+		(*scene).time_to_wait = FRAME_TARGET_TIME - (SDL_GetTicks() - (*scene).previous_frame_time);
+		(*(*scene).fun).fun_delay[((*scene).time_to_wait > 0)]((*scene).time_to_wait);
+		(*scene).previous_frame_time = SDL_GetTicks();
 	}
 	return (destroy(canvas.window, canvas.renderer, canvas.color_buffer, canvas.color_buffer_texture), 0);
 }
