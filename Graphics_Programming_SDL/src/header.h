@@ -1,6 +1,6 @@
 #ifndef HEADER_H
 #define HEADER_H
-#define FPS 30
+#define FPS 65
 #define FRAME_TARGET_TIME (1000 / FPS)
 #define SCALE 500
 #define SCALE_INC 10
