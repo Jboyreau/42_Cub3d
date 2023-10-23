@@ -58,6 +58,8 @@ static char	*load_file(char *file, int *len)
 	static char	*buffer;
 
 	*len = file_len(file, &fd) + 1;
+	if (*len == 1)
+		return (NULL);
 	buffer = malloc(*len);
 	if (buffer == NULL)
 		return (NULL);

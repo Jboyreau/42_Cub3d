@@ -6,17 +6,20 @@ static void	destroy(SDL_Window *window, SDL_Renderer *renderer, t_scene *scene, 
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
-	free((*scene).color_buffer);
-	free((*scene).cloud);
-	free((*scene).triangle_index);
-	free((*scene).projected_triangle);
+	if (scene)
+	{
+		free((*scene).color_buffer);
+		free((*scene).cloud);
+		free((*scene).triangle_index);
+		free((*scene).projected_triangle);
+	}
 }
 
 static char	initialize_window(SDL_Window **window, SDL_Renderer **renderer, int **color_buffer, SDL_Texture **color_buffer_texture)
 {
 
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
-		return (write(2, "Error init SDL\n", 15));
+		return (SDL_Quit(), write(2, "Error init SDL\n", 15));
 //Create Window
 	*window = SDL_CreateWindow(
 				NULL, //borderless
@@ -31,11 +34,11 @@ static char	initialize_window(SDL_Window **window, SDL_Renderer **renderer, int 
 //Create a renderer
 	*renderer = SDL_CreateRenderer(*window, -1, 0);
 	if (*renderer == NULL)
-		return (SDL_DestroyWindow(*window), write(2, "Error SDL Renderer\n", 19));
+		return (SDL_DestroyWindow(*window), SDL_Quit(), write(2, "Error SDL Renderer\n", 19));
 //Color_buffer allocation
 	*color_buffer = malloc(sizeof(int) * BUFF_SIZE);
 	if (*color_buffer == NULL)
-		return (SDL_DestroyWindow(*window), SDL_DestroyRenderer(*renderer), 1);
+		return (SDL_DestroyWindow(*window), SDL_DestroyRenderer(*renderer), SDL_Quit(), 1);
 //Create an SDL texture
 	*color_buffer_texture = SDL_CreateTexture(
 		*renderer,
@@ -59,7 +62,7 @@ int			main(void)
 	initialize_fun(&fun);
 	scene = initialize_scene(canvas.color_buffer, &fun);
 	if (scene == NULL)
-		return (write(2, "scene failed\n", 13 ), 1);
+		return (write(2, "scene failed\n", 13 ), destroy(canvas.window, canvas.renderer, scene, canvas.color_buffer_texture), 1);
 	//clear_color_buffer(canvas.color_buffer);
 	clear_color_buffer((long long int *)canvas.color_buffer);
 //game_loop

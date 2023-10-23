@@ -6,7 +6,6 @@ t_scene	*initialize_scene(int *color_buffer, t_f *fun)
 	//static t_v3	cloud[CUBE_SIZE];
 	//static t_tri	triangle_index[CUBE_N_TRI];
 	//static t_ptri	projected_triangle[CUBE_N_TRI];
-
 	scene.color_buffer = color_buffer;
 	scene.scale = SCALE;
 	scene.fun = fun;
