@@ -10,7 +10,7 @@
 //# define OBJ "./obj/cow/cow.obj"
 //# define Z_VALUE 2000//cow
 
-# define OBJ "./obj/Skull/Skull_Loww_Poly.obj"
+# define OBJ "./obj/Skull/Skull_Low_Poly.obj"
 # define Z_VALUE 500//skull
 
 //# define OBJ "./obj/book/book2.obj"
