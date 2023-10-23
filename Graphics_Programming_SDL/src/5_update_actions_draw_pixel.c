@@ -1,4 +1,3 @@
-#include <SDL2/SDL.h>
 #include "header.h"
 
 void	draw_pixel(t_pixel_info *pixel_info)

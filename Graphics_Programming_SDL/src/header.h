@@ -1,21 +1,54 @@
 #ifndef HEADER_H
-#define HEADER_H
-#define FPS 65
-#define FRAME_TARGET_TIME (1000 / FPS)
-#define SCALE 500
-#define SCALE_INC 10
+# define HEADER_H
+# include <unistd.h>
+# include <SDL2/SDL.h>
+# include <math.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <fcntl.h>
+
+//# define OBJ "./obj/cow/cow.obj"
+//# define Z_VALUE 2000//cow
+
+# define OBJ "./obj/Skull/Skull_Low_Poly.obj"
+# define Z_VALUE 500//skull
+
+//# define OBJ "./obj/book/book2.obj"
+//# define Z_VALUE 5//book
+
+//# define OBJ "./obj/floor/floor.obj"
+//# define Z_VALUE 5//floor
+
+//# define OBJ "./obj/assault_rifle/AssaultRifle.obj"
+//# define Z_VALUE 5//AssaultRifle
+
+//# define OBJ "./obj/famas/famas.obj"
+//# define Z_VALUE 5//AssaultRifle
+
+//# define OBJ "./obj/gundam/gundam.obj"
+//# define Z_VALUE 5//AssaultRifle
+
+//# define OBJ "./obj/sword/Short_Sword.obj"
+//# define Z_VALUE 10//AssaultRifle
+
+//# define OBJ "./obj/cube/cube.obj"
+//# define Z_VALUE 5//AssaultRifle
+
+# define FPS 80
+# define FRAME_TARGET_TIME (1000 / FPS)
+# define SCALE 500
+# define SCALE_INC 10
 # define HEIGHT 720
 # define WIDTH 1280
 # define BUFF_SIZE 921600 //HEIGHT * WIDTH
 # define CLEAR_SIZE 460800 //(HEIGHT * WIDTH) / 2
-#define MODEL_SIZE 8
-#define N_TRI 12
-#define MIDLE_X 640
-#define MIDLE_Y 360
-#define Z_VALUE 5
-#define DIST_INC 0.25
-#define ROTATION_INC_PLUS 0.1
-#define ROTATION_INC_MINUS -0.1
+//# define CUBE_SIZE 8
+//# define CUBE_N_TRI 12
+# define MIDLE_X 640
+# define MIDLE_Y 360
+# define DIST_INC 0.5
+# define ROTATION_INC_PLUS 0.0872665
+# define ROTATION_INC_MINUS -0.0872665
 
 typedef struct s_canvas
 {
@@ -67,6 +100,8 @@ typedef struct s_scene //what I project
 	int		time_to_wait;
 	int		previous_frame_time;
 	int		scale;
+	int		cloud_size;
+	int		triangle_index_size;
 	float	dist;
 	//t_v3	rotation;
 	t_v3	*cloud;
@@ -109,7 +144,7 @@ struct s_funarrays
 };
 
 //point cloud generation
-void	populate_3d_space(t_v3 *cloud, t_tri *triangle_index);
+char	populate_3d_space(t_scene *scene);
 
 //init
 void 	initialize_fun(t_f *fun);

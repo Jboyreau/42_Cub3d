@@ -1,5 +1,3 @@
-#include <SDL2/SDL.h>
-#include <stdio.h>
 #include "header.h"
 
 int	process_input(int (*fun_event[])(t_keys *))

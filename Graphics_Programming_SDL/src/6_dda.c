@@ -1,5 +1,3 @@
-#include <SDL2/SDL.h>
-#include <math.h>
 #include "header.h"
 #define ONE_HALF 0.5
 

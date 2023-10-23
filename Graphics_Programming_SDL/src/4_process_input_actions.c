@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <SDL2/SDL.h>
 #include "header.h"
 
 int	set_nothing(t_keys *keys)

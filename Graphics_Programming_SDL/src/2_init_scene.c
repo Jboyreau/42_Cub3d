@@ -1,16 +1,12 @@
-#include <SDL2/SDL.h>
 #include "header.h"
 
 t_scene	*initialize_scene(int *color_buffer, t_f *fun)
 {
 	static t_scene	scene;
-	static t_v3		cloud[MODEL_SIZE];
-	static t_tri	triangle_index[N_TRI];
-	static t_ptri	projected_triangle[N_TRI];
+	//static t_v3	cloud[CUBE_SIZE];
+	//static t_tri	triangle_index[CUBE_N_TRI];
+	//static t_ptri	projected_triangle[CUBE_N_TRI];
 
-	scene.cloud = cloud;
-	scene.triangle_index = triangle_index;
-	scene.projected_triangle = projected_triangle;
 	scene.color_buffer = color_buffer;
 	scene.scale = SCALE;
 	scene.fun = fun;
@@ -18,6 +14,7 @@ t_scene	*initialize_scene(int *color_buffer, t_f *fun)
 	//scene.rotation.x = 0;
 	//scene.rotation.y = 0;
 	//scene.rotation.z = 0;
-	populate_3d_space(cloud, triangle_index);
+	if (populate_3d_space(&scene) == 0)
+		return (NULL);
 	return (&scene);
 }

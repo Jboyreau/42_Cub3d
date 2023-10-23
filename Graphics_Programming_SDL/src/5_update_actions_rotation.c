@@ -1,7 +1,4 @@
-#include <SDL2/SDL.h>
-#include <math.h>
 #include "header.h"
-#include <stdio.h>
 
 char	rotation_x_minus(t_scene *scene)
 {
@@ -10,7 +7,8 @@ char	rotation_x_minus(t_scene *scene)
 
 	//clear_color_buffer((*scene).color_buffer);
 	clear_color_buffer(((long long int *)((*scene).color_buffer)));
-	while (i < MODEL_SIZE)
+	//while (i < CUBE_SIZE)
+	while (i < (*scene).cloud_size)
 	{
 		y = (*((*scene).cloud + i)).y;
 		z = (*((*scene).cloud + i)).z;
@@ -29,7 +27,8 @@ char	rotation_x_plus(t_scene *scene)
 
 	//clear_color_buffer((*scene).color_buffer);
 	clear_color_buffer(((long long int *)((*scene).color_buffer)));
-	while (i < MODEL_SIZE)
+	//while (i < CUBE_SIZE)
+	while (i < (*scene).cloud_size)
 	{
 		y = (*((*scene).cloud + i)).y;
 		z = (*((*scene).cloud + i)).z;
@@ -48,7 +47,8 @@ char	rotation_y_minus(t_scene *scene)
 
 	//clear_color_buffer((*scene).color_buffer);
 	clear_color_buffer(((long long int *)((*scene).color_buffer)));
-	while (i < MODEL_SIZE)
+	//while (i < CUBE_SIZE)
+	while (i < (*scene).cloud_size)
 	{
 		x = (*((*scene).cloud + i)).x;
 		z = (*((*scene).cloud + i)).z;
@@ -67,7 +67,8 @@ char	rotation_y_plus(t_scene *scene)
 
 	//clear_color_buffer((*scene).color_buffer);
 	clear_color_buffer(((long long int *)((*scene).color_buffer)));
-	while (i < MODEL_SIZE)
+	//while (i < CUBE_SIZE)
+	while (i < (*scene).cloud_size)
 	{
 		x = (*((*scene).cloud + i)).x;
 		z = (*((*scene).cloud + i)).z;
@@ -86,7 +87,8 @@ char	rotation_z_minus(t_scene *scene)
 
 	//clear_color_buffer((*scene).color_buffer);
 	clear_color_buffer(((long long int *)((*scene).color_buffer)));
-	while (i < MODEL_SIZE)
+	//while (i < CUBE_SIZE)
+	while (i < (*scene).cloud_size)
 	{
 		x = (*((*scene).cloud + i)).x;
 		y = (*((*scene).cloud + i)).y;
@@ -105,7 +107,8 @@ char	rotation_z_plus(t_scene *scene)
 
 	//clear_color_buffer((*scene).color_buffer);
 	clear_color_buffer(((long long int *)((*scene).color_buffer)));
-	while (i < MODEL_SIZE)
+	//while (i < CUBE_SIZE)
+	while (i < (*scene).cloud_size)
 	{
 		x = (*((*scene).cloud + i)).x;
 		y = (*((*scene).cloud + i)).y;

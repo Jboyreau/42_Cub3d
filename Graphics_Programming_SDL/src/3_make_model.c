@@ -1,7 +1,7 @@
-#include <SDL2/SDL.h>
-#include <stdio.h>
 #include "header.h"
+#define START_BUFFER_SIZE 500
 
+/*
 static void make_triangle_index(t_tri *triangle_index)
 {
 	//front
@@ -35,9 +35,147 @@ static void make_cloud(t_v3 *cloud)
 	(*(cloud + 6)).x = -1; (*(cloud + 6)).y = 1; (*(cloud + 6)).z = 1; //7
 	(*(cloud + 7)).x = -1; (*(cloud + 7)).y = -1; (*(cloud + 7)).z = 1; //8
 }
+*/
 
-void	populate_3d_space(t_v3 *cloud, t_tri *triangle_index)
+static int	file_len(char *file, int *fd)
 {
-	make_cloud(cloud);
-	make_triangle_index(triangle_index);
+	int			len;
+	char		t[1];
+
+	*fd = open(file, O_RDWR);
+	if (*fd == -1)
+		return (0);
+	len = 0;
+	while (read(*fd, t, 1) > 0)
+		++len;
+	return (len);
+}
+
+static char	*load_file(char *file, int *len)
+{
+	int			i;
+	int			fd;
+	static char	*buffer;
+
+	*len = file_len(file, &fd) + 1;
+	buffer = malloc(*len);
+	if (buffer == NULL)
+		return (NULL);
+	lseek(fd, 0, SEEK_SET);
+	i = 0;
+	while (read(fd, buffer + i, 1) > 0)
+		++i;
+	*(buffer + i) = '\0';
+	close(fd);
+	return (buffer);
+}
+
+static int make_triangle_index(t_tri *triangle_index, char *obj)
+{
+	int i = 0;
+	int	j = 0;
+
+	while (*(obj + i))
+	{
+		if (*(obj + i) == 'f' && *(obj + i + 1) == ' ')
+			break ;
+		++i;
+	}
+	while (1)
+	{
+		if (*(obj + i) == '#')
+		{
+			while (*(obj + ++i) && *(obj + i) != '\n')
+				;
+			if (*(obj + i))
+				++i;
+			else
+				break ;
+		}
+		if (*(obj + i) == 'f' && *(obj + i + 1) == ' ')
+		{
+			i += 2;
+			(*(triangle_index + j)).a  = atoi(obj + i) - 1;
+			while (*(obj + i) != ' ')
+				++i;
+			(*(triangle_index + j)).b  = atoi(obj + (++i)) - 1;
+			while (*(obj + i) != ' ')
+				++i;
+			(*(triangle_index + j)).c  = atoi(obj + (++i)) - 1;
+			while ((*(obj + i) && *(obj + i) != '\n'))
+				++i;
+			++j;
+		}
+		if (*(obj + i) == 0)
+			break ;
+		++i;
+	}
+	return (j);
+}
+
+static int make_cloud(t_v3 *cloud, char *obj)
+{
+	int i = 0;
+	int j = 0;
+
+	while (*(obj + i))
+	{
+		if (*(obj + i) == '#')
+		{
+			while (*(obj + ++i) && *(obj + i) != '\n')
+				;
+			if (*(obj + i))
+				++i;
+			else
+				break ;
+		}
+		if (*(obj + i) == 'v' && *(obj + i + 1) == ' ')
+		{
+			i += 2;
+			(*(cloud + j)).x = strtof(obj + i, NULL);
+			while (*(obj + i) != ' ')
+				++i;
+			(*(cloud + j)).y = strtof(obj + (++i), NULL);
+			while (*(obj + i) != ' ')
+				++i;
+			(*(cloud + j)).z = strtof(obj + (++i), NULL);
+			while ((*(obj + i) && *(obj + i) != '\n'))
+				++i;
+			++j;
+		}
+		if (*(obj + i) == 0)
+			break ;
+		++i;
+	/*	if (*(obj + i) == 'v' && *(obj + i + 1) == 't')
+			break ;*/
+	}
+	return (j);
+}
+
+char	populate_3d_space(t_scene *scene)
+{
+	static char	*obj_file;
+	int			len;
+
+	obj_file = load_file(OBJ, &len);
+	if (obj_file == NULL)
+		return (0);
+	(*scene).cloud = malloc(len * sizeof(t_v3));
+	if ((*scene).cloud == NULL)
+		return (0);
+	(*scene).triangle_index = malloc(len * sizeof(t_tri));
+	if ((*scene).triangle_index == NULL)
+		return (0);
+	(*scene).cloud_size = make_cloud((*scene).cloud, obj_file);
+	(*scene).triangle_index_size = make_triangle_index((*scene).triangle_index, obj_file);
+/*	for (int i = 0; i < (*scene).cloud_size; ++i)
+		printf("v%d : x = %f, y = %f, z = %f\n", i, (*((*scene).cloud + i)).x, (*((*scene).cloud + i)).y, (*((*scene).cloud + i)).z);
+	for (int i = 0; i < (*scene).triangle_index_size; ++i)
+		printf("f%d : a = %d, b = %d, c = %d\n", i, (*((*scene).triangle_index + i)).a, (*((*scene).triangle_index + i)).b, (*((*scene).triangle_index + i)).c);*/
+	(*scene).projected_triangle = malloc((*scene).triangle_index_size * sizeof(t_ptri));
+	if ((*scene).triangle_index == NULL)
+		return (0);
+	if (obj_file)
+		free(obj_file);
+	return (1);
 }

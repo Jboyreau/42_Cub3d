@@ -1,4 +1,3 @@
-#include <SDL2/SDL.h>
 #include "header.h"
 
 char	display(t_w *canvas, char status)

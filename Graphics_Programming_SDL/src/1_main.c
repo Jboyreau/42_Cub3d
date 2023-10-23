@@ -1,16 +1,15 @@
-#include <unistd.h>
-#include <SDL2/SDL.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include "header.h"
 
-static void	destroy(SDL_Window *window, SDL_Renderer *renderer, int *color_buffer, SDL_Texture *color_buffer_texture)
+static void	destroy(SDL_Window *window, SDL_Renderer *renderer, t_scene *scene, SDL_Texture *color_buffer_texture)
 {
 	SDL_DestroyTexture(color_buffer_texture);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
-	free(color_buffer);
+	free((*scene).color_buffer);
+	free((*scene).cloud);
+	free((*scene).triangle_index);
+	free((*scene).projected_triangle);
 }
 
 static char	initialize_window(SDL_Window **window, SDL_Renderer **renderer, int **color_buffer, SDL_Texture **color_buffer_texture)
@@ -59,6 +58,8 @@ int			main(void)
 		return (1);
 	initialize_fun(&fun);
 	scene = initialize_scene(canvas.color_buffer, &fun);
+	if (scene == NULL)
+		return (write(2, "scene failed\n", 13 ), 1);
 	//clear_color_buffer(canvas.color_buffer);
 	clear_color_buffer((long long int *)canvas.color_buffer);
 //game_loop
@@ -70,5 +71,5 @@ int			main(void)
 		(*(*scene).fun).fun_delay[((*scene).time_to_wait > 0)]((*scene).time_to_wait);
 		(*scene).previous_frame_time = SDL_GetTicks();
 	}
-	return (destroy(canvas.window, canvas.renderer, canvas.color_buffer, canvas.color_buffer_texture), 0);
+	return (destroy(canvas.window, canvas.renderer, scene, canvas.color_buffer_texture), 0);
 }
