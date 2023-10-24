@@ -13,8 +13,8 @@
 //# define OBJ "./obj/Skull/Skull_Low_Poly.obj"
 //# define Z_VALUE 500//skull
 
-# define OBJ "./obj/f22/f22.obj"
-# define Z_VALUE 5//f22
+//# define OBJ "./obj/f22/f22.obj"
+//# define Z_VALUE 5//f22
 
 //# define OBJ "./obj/book/book2.obj"
 //# define Z_VALUE 5//book
@@ -22,8 +22,8 @@
 //# define OBJ "./obj/floor/floor.obj"
 //# define Z_VALUE 5//floor
 
-//# define OBJ "./obj/assault_rifle/AssaultRifle.obj"
-//# define Z_VALUE 5//AssaultRifle
+# define OBJ "./obj/assault_rifle/AssaultRifle.obj"
+# define Z_VALUE 5//AssaultRifle
 
 //# define OBJ "./obj/famas/famas.obj"
 //# define Z_VALUE 5//AssaultRifle
@@ -36,6 +36,9 @@
 
 //# define OBJ "./obj/cube/cube.obj"
 //# define Z_VALUE 5//AssaultRifle
+
+//# define OBJ "./obj/bear/bear.obj"
+//# define Z_VALUE 5//bear
 
 # define FPS 80
 # define FRAME_TARGET_TIME (1000 / FPS)
@@ -188,6 +191,10 @@ void	dda_x_minus(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
 void	dda_x_plus(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
 void	dda_y_minus(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
 void	dda_y_plus(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
+void	y_minus(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
+void	y_plus(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
+void	x_minus(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
+void	x_plus(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
 void	draw_pixel(t_pixel_info *pixel_info);
 void	do_not_draw_pixel(t_pixel_info *pixel_info);
 

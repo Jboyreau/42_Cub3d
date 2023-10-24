@@ -7,6 +7,10 @@ static void	initialize_dda(void	(*dda[])(t_scene *scene, t_pixel_info *pixel_inf
 	dda[1] = &dda_y_plus;
 	dda[2] = &dda_x_minus;
 	dda[4] = &dda_x_plus;
+	dda[8] = &y_minus;	
+	dda[16] = &y_plus;
+	dda[32] = &x_minus;
+	dda[64] = &x_plus;
 }
 
 static void	initialize_delay(void (*fun_event[])(int))
