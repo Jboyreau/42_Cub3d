@@ -66,8 +66,8 @@ typedef struct s_canvas
 
 typedef struct s_2dvector
 {
-	float		op;
-	float		adj;
+	float		x;
+	float		y;
 } t_v2;
 
 typedef struct s_3dvector
@@ -197,6 +197,18 @@ void	x_minus(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
 void	x_plus(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
 void	draw_pixel(t_pixel_info *pixel_info);
 void	do_not_draw_pixel(t_pixel_info *pixel_info);
+
+//vector
+float	vec2_length(t_v2 *vector);
+float	vec3_length(t_v3 *vector);
+t_v3	vec3_addition(t_v3 *v0, t_v3 *v1);
+t_v2	vec2_addition(t_v2 *v0, t_v2 *v1);
+t_v3	vec3_subtract(t_v3 *v0, t_v3 *v1);
+t_v2	vec2_subtract(t_v2 *v0, t_v2 *v1);
+t_v2	vec2_multiplication(t_v2 *v0, float factor);
+t_v3	vec3_multiplication(t_v3 *v0, float factor);
+t_v2	vec2_divizion(t_v2 *v0, float factor);
+t_v3	vec3_divizion(t_v3 *v0, float factor);
 
 //renderer
 char	display(t_w *canvas, char status);
