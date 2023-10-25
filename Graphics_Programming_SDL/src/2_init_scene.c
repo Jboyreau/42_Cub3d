@@ -10,6 +10,9 @@ t_scene	*initialize_scene(int *color_buffer, t_f *fun)
 	scene.scale = SCALE;
 	scene.fun = fun;
 	scene.dist = Z_VALUE;
+	scene.camera.position.x = 0;
+	scene.camera.position.y = 0;
+	scene.camera.position.z = 0;
 	//scene.rotation.x = 0;
 	//scene.rotation.y = 0;
 	//scene.rotation.z = 0;

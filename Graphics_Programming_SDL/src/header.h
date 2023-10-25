@@ -8,13 +8,13 @@
 # include <fcntl.h>
 
 //# define OBJ "./obj/cow/cow.obj"
-//# define Z_VALUE 2000//cow
+//# define Z_VALUE 2//cow
 
-//# define OBJ "./obj/Skull/Skull_Low_Poly.obj"
-//# define Z_VALUE 500//skull
+# define OBJ "./obj/Skull/Skull_Low_Poly.obj"
+# define Z_VALUE 500//skull
 
 //# define OBJ "./obj/f22/f22.obj"
-//# define Z_VALUE 5//f22
+//# define Z_VALUE 3//f22
 
 //# define OBJ "./obj/book/book2.obj"
 //# define Z_VALUE 5//book
@@ -22,23 +22,32 @@
 //# define OBJ "./obj/floor/floor.obj"
 //# define Z_VALUE 5//floor
 
-# define OBJ "./obj/assault_rifle/AssaultRifle.obj"
-# define Z_VALUE 5//AssaultRifle
+//# define OBJ "./obj/assault_rifle/AssaultRifle.obj"
+//# define Z_VALUE 5//AssaultRifle
 
 //# define OBJ "./obj/famas/famas.obj"
-//# define Z_VALUE 5//AssaultRifle
+//# define Z_VALUE 5//famas
 
-//# define OBJ "./obj/gundam/gundam.obj"
-//# define Z_VALUE 5//AssaultRifle
+//# define OBJ "./obj/egg_bot/egg_bot.obj"
+//# define Z_VALUE 3//egg_bot
 
-//# define OBJ "./obj/sword/Short_Sword.obj"
-//# define Z_VALUE 10//AssaultRifle
+//# define OBJ "./obj/naruto/naruto.obj"
+//# define Z_VALUE 3//naruto
+
+//# define OBJ "./obj/cyberman/cyberman.obj"
+//# define Z_VALUE 3//cyberman
+
+//# define OBJ "./obj/monument_alexender/monument_alexender.obj"
+//# define Z_VALUE 2//monument_alexender
+
+//# define OBJ "./obj/sword/sword.obj"
+//# define Z_VALUE 5//sword
 
 //# define OBJ "./obj/cube/cube.obj"
-//# define Z_VALUE 5//AssaultRifle
+//# define Z_VALUE 5//cube
 
 //# define OBJ "./obj/bear/bear.obj"
-//# define Z_VALUE 5//bear
+//# define Z_VALUE 2//bear
 
 # define FPS 80
 # define FRAME_TARGET_TIME (1000 / FPS)
@@ -110,6 +119,7 @@ typedef struct s_scene //what I project
 	int		triangle_index_size;
 	float	dist;
 	//t_v3	rotation;
+	t_cam	camera;
 	t_v3	*cloud;
 	t_tri	*triangle_index;
 	t_ptri	*projected_triangle;
@@ -147,6 +157,7 @@ struct s_funarrays
 	void	(*fun_draw_pixel[128])(t_pixel_info *);
 	void	(*fun_delay[128])(int);
 	void	(*dda[128])(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
+	void	(*culling[128])(t_scene *scene, int i, t_pixel_info *pixel_info);
 };
 
 //point cloud generation
@@ -171,6 +182,7 @@ char	quit(t_scene *scene);
 //char 	ortho_project_zoom_plus(t_scene *scene);
 //char 	ortho_project_zoom_minus(t_scene *scene);
 void	triangle_to_color_buffer(t_scene *scene, int i, t_pixel_info *pixel_info);
+void	triangle_to_nowhere(t_scene *scene, int i, t_pixel_info *pixel_info);
 char	perspective_project_zoom_plus(t_scene *scene);
 char	perspective_project_zoom_minus(t_scene *scene);
 char	perspective_project(t_scene *scene);
@@ -209,6 +221,12 @@ t_v2	vec2_multiplication(t_v2 *v0, float factor);
 t_v3	vec3_multiplication(t_v3 *v0, float factor);
 t_v2	vec2_divizion(t_v2 *v0, float factor);
 t_v3	vec3_divizion(t_v3 *v0, float factor);
+t_v3	vec3_cross(t_v3 *a, t_v3 *b);
+float	vec2_dot(t_v2 *a, t_v2 *b);
+float	vec3_dot(t_v3 *a, t_v3 *b);
+
+//back_face_culling
+float is_visible(t_scene *scene, int i);
 
 //renderer
 char	display(t_w *canvas, char status);

@@ -18,6 +18,13 @@ void	triangle_to_color_buffer(t_scene *scene, int i, t_pixel_info *pixel_info)
 	draw_triangle(scene, pixel_info, i);
 }
 
+void	triangle_to_nowhere(t_scene *scene, int i, t_pixel_info *pixel_info)
+{
+	(void)scene;
+	(void)i;
+	(void)pixel_info;
+}
+
 char	perspective_project(t_scene *scene)
 {
 	t_pixel_info	pixel_info;
@@ -28,7 +35,8 @@ char	perspective_project(t_scene *scene)
 	pixel_info.scene = scene;
 	//while (++i < CUBE_N_TRI)
 	while (++i < (*scene).triangle_index_size)
-		triangle_to_color_buffer(scene, i, &pixel_info);
+		(*(*scene).fun).culling[(is_visible(scene, i) > 0.0)](scene, i, &pixel_info);
+		//triangle_to_color_buffer(scene, i, &pixel_info);
 	return (1);
 }
 

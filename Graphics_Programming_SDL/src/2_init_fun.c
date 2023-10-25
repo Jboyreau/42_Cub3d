@@ -1,9 +1,14 @@
 #include "header.h"
 
+static void initialize_culling(void (*culling[])(t_scene *scene, int i, t_pixel_info *pixel_info))
+{
+	culling[0] = &triangle_to_nowhere;
+	culling[1] = &triangle_to_color_buffer;
+}
 
 static void	initialize_dda(void	(*dda[])(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda))
 {
-	dda[0] = &dda_y_minus;	
+	dda[0] = &dda_y_minus;
 	dda[1] = &dda_y_plus;
 	dda[2] = &dda_x_minus;
 	dda[4] = &dda_x_plus;
@@ -57,6 +62,7 @@ void	initialize_fun(t_f *fun)
 	initialize_fun_key_triggered((*fun).fun_update);
 	initialize_fun_event((*fun).fun_event);
 	initialize_fun_draw_pixel((*fun).fun_draw_pixel);
-	initialize_delay(((*fun).fun_delay));
-	initialize_dda(((*fun).dda));
+	initialize_delay((*fun).fun_delay);
+	initialize_dda((*fun).dda);
+	initialize_culling((*fun).culling);
 }
