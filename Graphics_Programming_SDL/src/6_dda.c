@@ -208,5 +208,4 @@ void	draw_triangle(t_scene *scene, t_pixel_info *pixel_info, int i)
 		+ ((dx_null_dy_not && ((int)(dda.p1.y) > (int)(dda.p2.y))) << 5)
 		+ ((dx_null_dy_not && ((int)(dda.p1.y) < (int)(dda.p2.y))) << 6)
 	](scene, pixel_info, &dda);
-
 }

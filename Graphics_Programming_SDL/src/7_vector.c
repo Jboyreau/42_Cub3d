@@ -105,3 +105,13 @@ float	vec3_dot(t_v3 *a, t_v3 *b)
 {
 	return (((*a).x * (*b).x) + ((*a).y * (*b).y) + ((*a).z * (*b).z));
 }
+
+void	vec3_normalize(t_v3 *vec)
+{
+	(*vec) = vec3_divizion(vec, vec3_length(vec));
+}
+
+void	vecr2_normalize(t_v2 *vec)
+{
+	(*vec) = vec2_divizion(vec, vec2_length(vec));
+}

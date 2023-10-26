@@ -7,11 +7,17 @@
 # include <stdlib.h>
 # include <fcntl.h>
 
+//# define OBJ "./obj/dragon/dragon.obj"
+//# define Z_VALUE 2//dragon
+
 //# define OBJ "./obj/cow/cow.obj"
 //# define Z_VALUE 2//cow
 
-# define OBJ "./obj/Skull/Skull_Low_Poly.obj"
-# define Z_VALUE 500//skull
+//# define OBJ "./obj/Skull/Skull_Low_Poly.obj"
+//# define Z_VALUE 500//skull
+
+//# define OBJ "./obj/big_cub/big_cub.obj"
+//# define Z_VALUE 3//skull
 
 //# define OBJ "./obj/f22/f22.obj"
 //# define Z_VALUE 3//f22
@@ -43,8 +49,8 @@
 //# define OBJ "./obj/sword/sword.obj"
 //# define Z_VALUE 5//sword
 
-//# define OBJ "./obj/cube/cube.obj"
-//# define Z_VALUE 5//cube
+# define OBJ "./obj/cube/cube.obj"
+# define Z_VALUE 5//cube
 
 //# define OBJ "./obj/bear/bear.obj"
 //# define Z_VALUE 2//bear
@@ -72,6 +78,13 @@ typedef struct s_canvas
 	int				*color_buffer;
 	SDL_Texture		*color_buffer_texture;
 } t_w;
+
+typedef struct s_color_buffer_point
+{
+	int			x;
+	int			y;
+	float		z;
+} t_point;
 
 typedef struct s_2dvector
 {
@@ -108,6 +121,9 @@ typedef struct s_projected_tirangle
 	t_v3	a;
 	t_v3	b;
 	t_v3	c;
+	t_point	p0;
+	t_point	p1;
+	t_point	p2;
 } t_ptri;
 
 typedef struct s_scene //what I project
@@ -224,6 +240,8 @@ t_v3	vec3_divizion(t_v3 *v0, float factor);
 t_v3	vec3_cross(t_v3 *a, t_v3 *b);
 float	vec2_dot(t_v2 *a, t_v2 *b);
 float	vec3_dot(t_v3 *a, t_v3 *b);
+void	vec3_normalize(t_v3 *vec);
+void	vecr2_normalize(t_v2 *vec);
 
 //back_face_culling
 float is_visible(t_scene *scene, int i);
