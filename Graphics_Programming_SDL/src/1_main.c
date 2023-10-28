@@ -8,6 +8,7 @@ static void	destroy(SDL_Window *window, SDL_Renderer *renderer, t_scene *scene, 
 	SDL_Quit();
 	if (scene)
 	{
+		free((*scene).z_buffer);
 		free((*scene).color_buffer);
 		free((*scene).cloud);
 		free((*scene).triangle_index);
@@ -64,7 +65,7 @@ int			main(void)
 	if (scene == NULL)
 		return (write(2, "scene failed\n", 13 ), destroy(canvas.window, canvas.renderer, scene, canvas.color_buffer_texture), 1);
 	//clear_color_buffer(canvas.color_buffer);
-	clear_color_buffer((long long int *)canvas.color_buffer);
+	clear_color_buffer((long long int *)canvas.color_buffer, (*scene).z_buffer);
 //game_loop
 	(*scene).previous_frame_time = SDL_GetTicks();
 	(*scene).time_to_wait = -1;

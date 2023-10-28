@@ -1,5 +1,13 @@
 #include "header.h"
 
+//Choose between flat top, flat bottom or both triangle/
+static void	initialize_flat_top_or_bottom(void (*flat_top_or_bottom[])(t_pixel_info *info, t_point *p0, t_point *p1, t_point *p2))
+{
+	flat_top_or_bottom[0] = &flat_bottom_top;
+	flat_top_or_bottom[1] = &flat_top;
+	flat_top_or_bottom[2] = &flat_bottom;
+}
+
 //Fill triangle
 static void	initialize_draw_ft(void (*draw_ft[])(t_pixel_info *t_pixel_info, int i))
 {
@@ -80,4 +88,5 @@ void	initialize_fun(t_f *fun)
 	initialize_dda((*fun).dda);
 	initialize_culling((*fun).culling);
 	initialize_draw_ft((*fun).draw_ft);
+	initialize_flat_top_or_bottom((*fun).flat_top_or_bottom);
 }

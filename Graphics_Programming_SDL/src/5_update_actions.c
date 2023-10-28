@@ -13,13 +13,19 @@ char	quit(t_scene *scene)
 	return (0);
 }
 
-void	clear_color_buffer(long long int *color_buffer)
+void	clear_color_buffer(long long int *color_buffer, float *z_buffer)
 {
 	int	i = 0;
 
 	while (i < CLEAR_SIZE)
 	{
+		*(z_buffer + i) = 4294967295;
 		*(color_buffer + i) = -1;
+		++i;
+	}
+	while (i < BUFF_SIZE)
+	{
+		*(z_buffer + i) = 4294967295;
 		++i;
 	}
 }

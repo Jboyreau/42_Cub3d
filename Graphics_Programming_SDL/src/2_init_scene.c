@@ -7,6 +7,9 @@ t_scene	*initialize_scene(int *color_buffer, t_f *fun)
 	//static t_tri	triangle_index[CUBE_N_TRI];
 	//static t_ptri	projected_triangle[CUBE_N_TRI];
 	scene.color_buffer = color_buffer;
+	scene.z_buffer = malloc(BUFF_SIZE * sizeof(float));
+	if (scene.z_buffer == NULL)
+		return (NULL);
 	scene.scale = SCALE;
 	scene.fun = fun;
 	scene.dist = Z_VALUE;

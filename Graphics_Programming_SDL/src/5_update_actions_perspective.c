@@ -53,7 +53,7 @@ char	perspective_project(t_scene *scene)
 	int				i = -1;
 
 	//clear_color_buffer((*scene).color_buffer);
-	clear_color_buffer(((long long int *)((*scene).color_buffer)));
+	clear_color_buffer(((long long int *)((*scene).color_buffer)), (*scene).z_buffer);
 	pixel_info.scene = scene;
 	while (++i < (*scene).triangle_index_size)
 		(*(*scene).fun).culling[(is_visible(scene, i) > 0.0)](scene, i, &pixel_info);

@@ -1,6 +1,6 @@
 #include "header.h"
 
-void	draw_line(int x_start, int x_end, int y, t_pixel_info *pixel_info)
+static void	draw_line(int x_start, int x_end, int y, t_pixel_info *pixel_info)
 {
 	int start = x_start;
 
@@ -9,14 +9,16 @@ void	draw_line(int x_start, int x_end, int y, t_pixel_info *pixel_info)
 		(*pixel_info).cell = x_start + y;
 		if (x_start == x_end || x_start == start)
 			(*pixel_info).color = 0xFF000000;
-		else	
+		else
 			(*pixel_info).color = 0xFF808080;
-		(*(*(*pixel_info).scene).fun).fun_draw_pixel[((*pixel_info).cell > 0 && (*pixel_info).cell < BUFF_SIZE)](pixel_info);
+		(*(*(*pixel_info).scene).fun).fun_draw_pixel[
+			((*pixel_info).cell > 0 && (*pixel_info).cell < BUFF_SIZE && *((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) > (*pixel_info).depth)
+		](pixel_info);
 		++x_start;
 	}
 }
 
-void	draw_line2(int x_start, int x_end, int y, t_pixel_info *pixel_info)
+static void	draw_line2(int x_start, int x_end, int y, t_pixel_info *pixel_info)
 {
 	int start = x_end;
 	
@@ -27,12 +29,14 @@ void	draw_line2(int x_start, int x_end, int y, t_pixel_info *pixel_info)
 		else	
 			(*pixel_info).color = 0xFF808080;
 		(*pixel_info).cell = x_end + y;
-		(*(*(*pixel_info).scene).fun).fun_draw_pixel[((*pixel_info).cell > 0 && (*pixel_info).cell < BUFF_SIZE)](pixel_info);
+		(*(*(*pixel_info).scene).fun).fun_draw_pixel[
+			((*pixel_info).cell > 0 && (*pixel_info).cell < BUFF_SIZE && *((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) > (*pixel_info).depth)
+		](pixel_info);
 		++x_end;
 	}
 }
 
-void	fill_flat_bottom(t_pixel_info *pixel_info, t_point *p0, t_point *p1, t_point *m)
+static void	fill_flat_bottom(t_pixel_info *pixel_info, t_point *p0, t_point *p1, t_point *m)
 {
 	float	inv_sloap_1;
 	float	inv_sloap_2;
@@ -60,7 +64,7 @@ void	fill_flat_bottom(t_pixel_info *pixel_info, t_point *p0, t_point *p1, t_poin
 	}
 }
 
-void	fill_flat_top(t_pixel_info *pixel_info, t_point *p2, t_point *p1, t_point *m)
+static void	fill_flat_top(t_pixel_info *pixel_info, t_point *p2, t_point *p1, t_point *m)
 {
 	float	inv_sloap_1;
 	float	inv_sloap_2;
@@ -87,28 +91,35 @@ void	fill_flat_top(t_pixel_info *pixel_info, t_point *p2, t_point *p1, t_point *
 	}
 }
 
-
-void	draw_filled_triangle(t_point *p0, t_point *p1, t_point *p2, t_pixel_info *pixel_info)
+void	flat_bottom_top(t_pixel_info *pixel_info, t_point *p0, t_point *p1, t_point *p2)
 {
 	t_point	m;
+	m.y = (*p1).y;
+	m.x = (((*p2).x - (*p0).x) * ((*p1).y - (*p0).y)) / ((*p2).y - (*p0).y) + (*p0).x;
+	fill_flat_bottom(pixel_info, p0, p1, &m);
+	fill_flat_top(pixel_info, p2, p1, &m);
+}
 
-//printf("\tp0 = (%d,%d), p1 = (%d,%d), p2 = (%d,%d)\n", (*p0).x, (*p0).y, (*p1).x, (*p1).y, (*p2).x, (*p2).y);
-	if ((*p1).y == (*p0).y)
-	{
+void	flat_top(t_pixel_info *pixel_info, t_point *p0, t_point *p1, t_point *p2)
+{
 		fill_flat_top(pixel_info, p2, p1, p0);
-	}
-	else if ((*p1).y == (*p2).y)
-	{
+}
+
+void	flat_bottom(t_pixel_info *pixel_info, t_point *p0, t_point *p1, t_point *p2)
+{
 		fill_flat_bottom(pixel_info, p0, p1, p2);
-	}
-	else
-	{
-		m.y = (*p1).y;
-		m.x = (((*p2).x - (*p0).x) * ((*p1).y - (*p0).y)) / ((*p2).y - (*p0).y) + (*p0).x;
-		fill_flat_bottom(pixel_info, p0, p1, &m);
-		fill_flat_top(pixel_info, p2, p1, &m);
-	}
-	//printf("\n----------------------------\n\n");
+}
+
+static void	draw_filled_triangle(t_point *p0, t_point *p1, t_point *p2, t_pixel_info *pixel_info)
+{
+//printf("\tp0 = (%d,%d), p1 = (%d,%d), p2 = (%d,%d)\n", (*p0).x, (*p0).y, (*p1).x, (*p1).y, (*p2).x, (*p2).y);
+	//TODO : calculate face depth
+	(*pixel_info).depth = (*p0).z + (*p1).z + (*p2).z;
+	(*(*(*pixel_info).scene).fun).flat_top_or_bottom[
+		((*p1).y == (*p0).y)
+		+ (((*p1).y == (*p2).y && ((*p1).y != (*p0).y)) << 1)
+	](pixel_info, p0, p1, p2);
+//printf("\n----------------------------\n\n");
 }
 
 void	draw_ft012(t_pixel_info *pixel_info, int i)

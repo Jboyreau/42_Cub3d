@@ -16,8 +16,8 @@
 //# define OBJ "./obj/Skull/Skull_Low_Poly.obj"
 //# define Z_VALUE 500//skull
 
-# define OBJ "./obj/big_cub/big_cub.obj"
-# define Z_VALUE 3//big_cube
+//# define OBJ "./obj/big_cub/big_cub.obj"
+//# define Z_VALUE 3//big_cube
 
 //# define OBJ "./obj/f22/f22.obj"
 //# define Z_VALUE 3//f22
@@ -31,8 +31,8 @@
 //# define OBJ "./obj/assault_rifle/AssaultRifle.obj"
 //# define Z_VALUE 5//AssaultRifle
 
-//# define OBJ "./obj/famas/famas.obj"
-//# define Z_VALUE 5//famas
+# define OBJ "./obj/famas/famas.obj"
+# define Z_VALUE 5//famas
 
 //# define OBJ "./obj/egg_bot/egg_bot.obj"
 //# define Z_VALUE 3//egg_bot
@@ -140,6 +140,7 @@ typedef struct s_scene //what I project
 	t_tri	*triangle_index;
 	t_ptri	*projected_triangle;
 	int		*color_buffer;
+	float	*z_buffer;
 	t_f		*fun;
 } t_scene;
 
@@ -155,6 +156,7 @@ typedef struct s_pixel_info
 	t_scene	*scene;
 	int 	cell;
 	int		color;
+	float	depth;
 } t_pixel_info;
 
 typedef struct s_dda
@@ -176,6 +178,7 @@ struct s_funarrays
 	void	(*dda[128])(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
 	void	(*culling[128])(t_scene *scene, int i, t_pixel_info *pixel_info);
 	void	(*draw_ft[128])(t_pixel_info *t_pixel_info, int i);
+	void	(*flat_top_or_bottom[128])(t_pixel_info *info, t_point *p0, t_point *p1, t_point *p2);
 };
 
 //point cloud generation
@@ -193,7 +196,7 @@ int		set_index(t_keys *);
 
 //update / projection
 //void	clear_color_buffer(int *color_buffer);
-void	clear_color_buffer(long long int *color_buffer);
+void	clear_color_buffer(long long int *color_buffer, float *z_buffer);
 char	nothing(t_scene *scene);
 char	quit(t_scene *scene);
 //char 	ortho_project(t_scene *scene);
@@ -229,13 +232,15 @@ void	draw_pixel(t_pixel_info *pixel_info);
 void	do_not_draw_pixel(t_pixel_info *pixel_info);
 
 //triangle filling
-
 void	draw_ft012(t_pixel_info *pixel_info, int i);
 void	draw_ft021(t_pixel_info *pixel_info, int i);
 void	draw_ft102(t_pixel_info *pixel_info, int i);
 void	draw_ft120(t_pixel_info *pixel_info, int i);
 void	draw_ft201(t_pixel_info *pixel_info, int i);
 void	draw_ft210(t_pixel_info *pixel_info, int i);
+void	flat_bottom_top(t_pixel_info *pixel_info, t_point *p0, t_point *p1, t_point *p2);
+void	flat_top(t_pixel_info *pixel_info, t_point *p0, t_point *p1, t_point *p2);
+void	flat_bottom(t_pixel_info *pixel_info, t_point *p0, t_point *p1, t_point *p2);
 
 //vector
 float	vec2_length(t_v2 *vector);

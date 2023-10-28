@@ -5,9 +5,6 @@ char	rotation_x_minus(t_scene *scene)
 	float	y, z;
 	int		i = 0;
 
-	//clear_color_buffer((*scene).color_buffer);
-	clear_color_buffer(((long long int *)((*scene).color_buffer)));
-	//while (i < CUBE_SIZE)
 	while (i < (*scene).cloud_size)
 	{
 		y = (*((*scene).cloud + i)).y;
@@ -25,9 +22,6 @@ char	rotation_x_plus(t_scene *scene)
 	float	y, z;
 	int		i = 0;
 
-	//clear_color_buffer((*scene).color_buffer);
-	clear_color_buffer(((long long int *)((*scene).color_buffer)));
-	//while (i < CUBE_SIZE)
 	while (i < (*scene).cloud_size)
 	{
 		y = (*((*scene).cloud + i)).y;
@@ -45,9 +39,6 @@ char	rotation_y_minus(t_scene *scene)
 	float	x, z;
 	int		i = 0;
 
-	//clear_color_buffer((*scene).color_buffer);
-	clear_color_buffer(((long long int *)((*scene).color_buffer)));
-	//while (i < CUBE_SIZE)
 	while (i < (*scene).cloud_size)
 	{
 		x = (*((*scene).cloud + i)).x;
@@ -65,9 +56,6 @@ char	rotation_y_plus(t_scene *scene)
 	float	x, z;
 	int		i = 0;
 
-	//clear_color_buffer((*scene).color_buffer);
-	clear_color_buffer(((long long int *)((*scene).color_buffer)));
-	//while (i < CUBE_SIZE)
 	while (i < (*scene).cloud_size)
 	{
 		x = (*((*scene).cloud + i)).x;
@@ -85,9 +73,6 @@ char	rotation_z_minus(t_scene *scene)
 	float	x, y;
 	int		i = 0;
 
-	//clear_color_buffer((*scene).color_buffer);
-	clear_color_buffer(((long long int *)((*scene).color_buffer)));
-	//while (i < CUBE_SIZE)
 	while (i < (*scene).cloud_size)
 	{
 		x = (*((*scene).cloud + i)).x;
@@ -105,9 +90,6 @@ char	rotation_z_plus(t_scene *scene)
 	float	x, y;
 	int		i = 0;
 
-	//clear_color_buffer((*scene).color_buffer);
-	clear_color_buffer(((long long int *)((*scene).color_buffer)));
-	//while (i < CUBE_SIZE)
 	while (i < (*scene).cloud_size)
 	{
 		x = (*((*scene).cloud + i)).x;
