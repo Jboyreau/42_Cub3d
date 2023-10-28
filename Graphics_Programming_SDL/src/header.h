@@ -16,8 +16,8 @@
 //# define OBJ "./obj/Skull/Skull_Low_Poly.obj"
 //# define Z_VALUE 500//skull
 
-//# define OBJ "./obj/big_cub/big_cub.obj"
-//# define Z_VALUE 3//skull
+# define OBJ "./obj/big_cub/big_cub.obj"
+# define Z_VALUE 3//big_cube
 
 //# define OBJ "./obj/f22/f22.obj"
 //# define Z_VALUE 3//f22
@@ -47,10 +47,10 @@
 //# define Z_VALUE 2//monument_alexender
 
 //# define OBJ "./obj/sword/sword.obj"
-//# define Z_VALUE 5//sword
+//# define Z_VALUE 3//sword
 
-# define OBJ "./obj/cube/cube.obj"
-# define Z_VALUE 5//cube
+//# define OBJ "./obj/cube/cube.obj"
+//# define Z_VALUE 5//cube
 
 //# define OBJ "./obj/bear/bear.obj"
 //# define Z_VALUE 2//bear
@@ -154,6 +154,7 @@ typedef struct s_pixel_info
 {
 	t_scene	*scene;
 	int 	cell;
+	int		color;
 } t_pixel_info;
 
 typedef struct s_dda
@@ -174,6 +175,7 @@ struct s_funarrays
 	void	(*fun_delay[128])(int);
 	void	(*dda[128])(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
 	void	(*culling[128])(t_scene *scene, int i, t_pixel_info *pixel_info);
+	void	(*draw_ft[128])(t_pixel_info *t_pixel_info, int i);
 };
 
 //point cloud generation
@@ -225,6 +227,15 @@ void	x_minus(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
 void	x_plus(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
 void	draw_pixel(t_pixel_info *pixel_info);
 void	do_not_draw_pixel(t_pixel_info *pixel_info);
+
+//triangle filling
+
+void	draw_ft012(t_pixel_info *pixel_info, int i);
+void	draw_ft021(t_pixel_info *pixel_info, int i);
+void	draw_ft102(t_pixel_info *pixel_info, int i);
+void	draw_ft120(t_pixel_info *pixel_info, int i);
+void	draw_ft201(t_pixel_info *pixel_info, int i);
+void	draw_ft210(t_pixel_info *pixel_info, int i);
 
 //vector
 float	vec2_length(t_v2 *vector);

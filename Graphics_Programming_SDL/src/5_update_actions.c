@@ -19,7 +19,7 @@ void	clear_color_buffer(long long int *color_buffer)
 
 	while (i < CLEAR_SIZE)
 	{
-		*(color_buffer + i) = 0;
+		*(color_buffer + i) = -1;
 		++i;
 	}
 }

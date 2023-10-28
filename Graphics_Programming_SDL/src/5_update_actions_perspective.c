@@ -13,24 +13,30 @@ static void	vertex_to_color_buffer(t_scene *scene, t_v3 *vertex, int i_cloud)
 void	triangle_to_color_buffer(t_scene *scene, int i, t_pixel_info *pixel_info)
 {
 	vertex_to_color_buffer(scene, &(*((*scene).projected_triangle + i)).a, (*((*scene).triangle_index + i)).a);
-	((*scene).projected_triangle + i).p0.x = ((*scene).projected_triangle + i).a.x;
-	((*scene).projected_triangle + i).p0.y = ((*scene).projected_triangle + i).a.y;
-	((*scene).projected_triangle + i).p0.z = ((*scene).projected_triangle + i).a.z;
+	(*((*scene).projected_triangle + i)).p0.x = (*((*scene).projected_triangle + i)).a.x;
+	(*((*scene).projected_triangle + i)).p0.y = (*((*scene).projected_triangle + i)).a.y;
+	(*((*scene).projected_triangle + i)).p0.z = (*((*scene).projected_triangle + i)).a.z;
 	vertex_to_color_buffer(scene, &(*((*scene).projected_triangle + i)).b, (*((*scene).triangle_index + i)).b);
-	((*scene).projected_triangle + i).p1.x = ((*scene).projected_triangle + i).b.x;
-	((*scene).projected_triangle + i).p1.y = ((*scene).projected_triangle + i).b.y;
-	((*scene).projected_triangle + i).p1.z = ((*scene).projected_triangle + i).b.z;
+	(*((*scene).projected_triangle + i)).p1.x = (*((*scene).projected_triangle + i)).b.x;
+	(*((*scene).projected_triangle + i)).p1.y = (*((*scene).projected_triangle + i)).b.y;
+	(*((*scene).projected_triangle + i)).p1.z = (*((*scene).projected_triangle + i)).b.z;
 	vertex_to_color_buffer(scene, &(*((*scene).projected_triangle + i)).c, (*((*scene).triangle_index + i)).c);
-	((*scene).projected_triangle + i).p2.x = ((*scene).projected_triangle + i).c.x;
-	((*scene).projected_triangle + i).p2.y = ((*scene).projected_triangle + i).c.y;
-	((*scene).projected_triangle + i).p2.z = ((*scene).projected_triangle + i).c.z;
-	(*(*scene).fun).draw_filled_triangle[
-		(((*scene).projected_triangle + i).p0.y < ((*scene).projected_triangle + i).p1.y < ((*scene).projected_triangle + i).p2.y)
-		+ ((((*scene).projected_triangle + i).p0.y < ((*scene).projected_triangle + i).p2.y < ((*scene).projected_triangle + i).p1.y) >> 1)
-		+ ((((*scene).projected_triangle + i).p1.y < ((*scene).projected_triangle + i).p0.y < ((*scene).projected_triangle + i).p2.y) >> 2)
-		+ ((((*scene).projected_triangle + i).p1.y < ((*scene).projected_triangle + i).p2.y < ((*scene).projected_triangle + i).p0.y) >> 3)
-		+ ((((*scene).projected_triangle + i).p2.y < ((*scene).projected_triangle + i).p0.y < ((*scene).projected_triangle + i).p1.y) >> 4)
-		+ ((((*scene).projected_triangle + i).p2.y < ((*scene).projected_triangle + i).p1.y < ((*scene).projected_triangle + i).p0.y) >> 5)
+	(*((*scene).projected_triangle + i)).p2.x = (*((*scene).projected_triangle + i)).c.x;
+	(*((*scene).projected_triangle + i)).p2.y = (*((*scene).projected_triangle + i)).c.y;
+	(*((*scene).projected_triangle + i)).p2.z = (*((*scene).projected_triangle + i)).c.z;
+	(*(*scene).fun).draw_ft[
+		(((*((*scene).projected_triangle + i)).p0.y < (*((*scene).projected_triangle + i)).p2.y) && ((*((*scene).projected_triangle + i)).p2.y < (*((*scene).projected_triangle + i)).p1.y))
+		+ ((((*((*scene).projected_triangle + i)).p1.y < (*((*scene).projected_triangle + i)).p0.y) && ((*((*scene).projected_triangle + i)).p0.y <= (*((*scene).projected_triangle + i)).p2.y)) << 1)
+		+ ((((*((*scene).projected_triangle + i)).p1.y < (*((*scene).projected_triangle + i)).p2.y) && ((*((*scene).projected_triangle + i)).p2.y < (*((*scene).projected_triangle + i)).p0.y)) << 2)
+		+ ((((*((*scene).projected_triangle + i)).p2.y < (*((*scene).projected_triangle + i)).p0.y) && ((*((*scene).projected_triangle + i)).p0.y < (*((*scene).projected_triangle + i)).p1.y)) << 3)
+		+ ((((*((*scene).projected_triangle + i)).p2.y < (*((*scene).projected_triangle + i)).p1.y) && ((*((*scene).projected_triangle + i)).p1.y < (*((*scene).projected_triangle + i)).p0.y)) << 4)
+
+		+ ((((*((*scene).projected_triangle + i)).p0.y < (*((*scene).projected_triangle + i)).p1.y) && ((*((*scene).projected_triangle + i)).p1.y == (*((*scene).projected_triangle + i)).p2.y)))
+		+ ((((*((*scene).projected_triangle + i)).p0.y > (*((*scene).projected_triangle + i)).p1.y) && ((*((*scene).projected_triangle + i)).p1.y == (*((*scene).projected_triangle + i)).p2.y)) << 2)
+		+ ((((*((*scene).projected_triangle + i)).p1.y < (*((*scene).projected_triangle + i)).p0.y) && ((*((*scene).projected_triangle + i)).p0.y == (*((*scene).projected_triangle + i)).p2.y)) << 1)
+		+ ((((*((*scene).projected_triangle + i)).p1.y > (*((*scene).projected_triangle + i)).p0.y) && ((*((*scene).projected_triangle + i)).p0.y == (*((*scene).projected_triangle + i)).p2.y)))
+		+ ((((*((*scene).projected_triangle + i)).p2.y < (*((*scene).projected_triangle + i)).p1.y) && ((*((*scene).projected_triangle + i)).p1.y == (*((*scene).projected_triangle + i)).p0.y)) << 3)
+		+ ((((*((*scene).projected_triangle + i)).p2.y > (*((*scene).projected_triangle + i)).p1.y) && ((*((*scene).projected_triangle + i)).p1.y == (*((*scene).projected_triangle + i)).p0.y)) << 1)
 	](pixel_info, i);
 }
 

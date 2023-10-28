@@ -1,11 +1,24 @@
 #include "header.h"
 
-static void initialize_culling(void (*culling[])(t_scene *scene, int i, t_pixel_info *pixel_info))
+//Fill triangle
+static void	initialize_draw_ft(void (*draw_ft[])(t_pixel_info *t_pixel_info, int i))
+{
+	draw_ft[0] = &draw_ft012;
+	draw_ft[1] = &draw_ft021;
+	draw_ft[2] = &draw_ft102;
+	draw_ft[4] = &draw_ft120;
+	draw_ft[8] = &draw_ft201;
+	draw_ft[16] = &draw_ft210;
+}
+
+//Back face culling or not
+static void	initialize_culling(void (*culling[])(t_scene *scene, int i, t_pixel_info *pixel_info))
 {
 	culling[0] = &triangle_to_nowhere;
 	culling[1] = &triangle_to_color_buffer;
 }
 
+//DDA functions
 static void	initialize_dda(void	(*dda[])(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda))
 {
 	dda[0] = &dda_y_minus;
@@ -18,6 +31,7 @@ static void	initialize_dda(void	(*dda[])(t_scene *scene, t_pixel_info *pixel_inf
 	dda[64] = &x_plus;
 }
 
+//Delay or not
 static void	initialize_delay(void (*fun_event[])(int))
 {
 	fun_event[0] = &do_not_delay;
@@ -65,4 +79,5 @@ void	initialize_fun(t_f *fun)
 	initialize_delay((*fun).fun_delay);
 	initialize_dda((*fun).dda);
 	initialize_culling((*fun).culling);
+	initialize_draw_ft((*fun).draw_ft);
 }
