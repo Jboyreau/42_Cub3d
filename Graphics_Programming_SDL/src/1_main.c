@@ -71,9 +71,9 @@ int			main(void)
 	(*scene).time_to_wait = -1;
 	while (display(&canvas, fun.fun_update[process_input(fun.fun_event)](scene)))
 	{
-		(*scene).time_to_wait = FRAME_TARGET_TIME - (SDL_GetTicks() - (*scene).previous_frame_time);
-		(*(*scene).fun).fun_delay[((*scene).time_to_wait > 0)]((*scene).time_to_wait);
-		(*scene).previous_frame_time = SDL_GetTicks();
+	//	(*scene).time_to_wait = FRAME_TARGET_TIME - (SDL_GetTicks() - (*scene).previous_frame_time);
+	//	(*(*scene).fun).fun_delay[((*scene).time_to_wait > 0)]((*scene).time_to_wait);
+	//	(*scene).previous_frame_time = SDL_GetTicks();
 	}
 	return (destroy(canvas.window, canvas.renderer, scene, canvas.color_buffer_texture), 0);
 }

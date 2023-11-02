@@ -37,37 +37,23 @@ static void make_cloud(t_v3 *cloud)
 }
 */
 
-static int	file_len(char *file, int *fd)
-{
-	int			len;
-	char		t[1];
-
-	*fd = open(file, O_RDWR);
-	if (*fd == -1)
-		return (0);
-	len = 0;
-	while (read(*fd, t, 1) > 0)
-		++len;
-	return (len);
-}
-
 static char	*load_file(char *file, int *len)
 {
-	int			i;
 	int			fd;
 	static char	*buffer;
 
-	*len = file_len(file, &fd) + 1;
+	fd = open(file, O_RDWR);
+	if (fd == -1)
+		return (NULL);
+	*len = lseek(fd, 0, SEEK_END) + 1;
 	if (*len == 1)
 		return (NULL);
 	buffer = malloc(*len);
 	if (buffer == NULL)
 		return (NULL);
 	lseek(fd, 0, SEEK_SET);
-	i = 0;
-	while (read(fd, buffer + i, 1) > 0)
-		++i;
-	*(buffer + i) = '\0';
+	read(fd, buffer, *len - 1);
+	*(buffer + *len) = '\0';
 	close(fd);
 	return (buffer);
 }
@@ -134,10 +120,10 @@ static int make_cloud(t_v3 *cloud, char *obj)
 		if (*(obj + i) == 'v' && *(obj + i + 1) == ' ')
 		{
 			i += 2;
-			(*(cloud + j)).x = strtof(obj + i, NULL);
+			(*(cloud + j)).x = -strtof(obj + i, NULL);
 			while (*(obj + i) != ' ')
 				++i;
-			(*(cloud + j)).y = strtof(obj + (++i), NULL);
+			(*(cloud + j)).y = -strtof(obj + (++i), NULL);
 			while (*(obj + i) != ' ')
 				++i;
 			(*(cloud + j)).z = strtof(obj + (++i), NULL);

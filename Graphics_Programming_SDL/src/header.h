@@ -10,6 +10,12 @@
 //# define OBJ "./obj/dragon/dragon.obj"
 //# define Z_VALUE 2//dragon
 
+//# define OBJ "./obj/terrain/terrain.obj"
+//# define Z_VALUE 1//terrain
+
+# define OBJ "./obj/level/level.obj"
+# define Z_VALUE 1//level
+
 //# define OBJ "./obj/cow/cow.obj"
 //# define Z_VALUE 2//cow
 
@@ -20,34 +26,34 @@
 //# define Z_VALUE 3//big_cube
 
 //# define OBJ "./obj/f22/f22.obj"
-//# define Z_VALUE 3//f22
+//# define Z_VALUE 2//f22
 
 //# define OBJ "./obj/book/book2.obj"
-//# define Z_VALUE 5//book
+//# define Z_VALUE 2//book
 
 //# define OBJ "./obj/floor/floor.obj"
-//# define Z_VALUE 5//floor
+//# define Z_VALUE 2//floor
 
 //# define OBJ "./obj/assault_rifle/AssaultRifle.obj"
-//# define Z_VALUE 5//AssaultRifle
+//# define Z_VALUE 2//AssaultRifle
 
-# define OBJ "./obj/famas/famas.obj"
-# define Z_VALUE 5//famas
+//# define OBJ "./obj/famas/famas.obj"
+//# define Z_VALUE 2//famas
 
 //# define OBJ "./obj/egg_bot/egg_bot.obj"
-//# define Z_VALUE 3//egg_bot
+//# define Z_VALUE 2//egg_bot
 
 //# define OBJ "./obj/naruto/naruto.obj"
-//# define Z_VALUE 3//naruto
+//# define Z_VALUE 2//naruto
 
 //# define OBJ "./obj/cyberman/cyberman.obj"
-//# define Z_VALUE 3//cyberman
+//# define Z_VALUE 2//cyberman
 
 //# define OBJ "./obj/monument_alexender/monument_alexender.obj"
 //# define Z_VALUE 2//monument_alexender
 
 //# define OBJ "./obj/sword/sword.obj"
-//# define Z_VALUE 3//sword
+//# define Z_VALUE 2//sword
 
 //# define OBJ "./obj/cube/cube.obj"
 //# define Z_VALUE 5//cube
@@ -55,9 +61,12 @@
 //# define OBJ "./obj/bear/bear.obj"
 //# define Z_VALUE 2//bear
 
+#define X_VALUE 0
+#define Y_VALUE 0.5
+#define Z_MAX 100
 # define FPS 80
 # define FRAME_TARGET_TIME (1000 / FPS)
-# define SCALE 500
+# define SCALE 1000
 # define SCALE_INC 10
 # define HEIGHT 720
 # define WIDTH 1280
@@ -67,9 +76,9 @@
 //# define CUBE_N_TRI 12
 # define MIDLE_X 640
 # define MIDLE_Y 360
-# define DIST_INC 0.5
-# define ROTATION_INC_PLUS 0.0872665
-# define ROTATION_INC_MINUS -0.0872665
+# define DIST_INC 0.1
+# define ROTATION_INC_PLUS 0.0872665 / 3//0.00872665
+# define ROTATION_INC_MINUS -0.0872665 / 3//-0.00872665
 
 typedef struct s_canvas
 {
@@ -133,8 +142,11 @@ typedef struct s_scene //what I project
 	int		scale;
 	int		cloud_size;
 	int		triangle_index_size;
-	float	dist;
-	//t_v3	rotation;
+	float	pos_incx;
+	float	pos_incy;
+	float	pos_incz;
+	float	dot;
+	t_v3	origin;
 	t_cam	camera;
 	t_v3	*cloud;
 	t_tri	*triangle_index;
@@ -156,6 +168,7 @@ typedef struct s_pixel_info
 	t_scene	*scene;
 	int 	cell;
 	int		color;
+	int		y;
 	float	depth;
 } t_pixel_info;
 
@@ -179,6 +192,7 @@ struct s_funarrays
 	void	(*culling[128])(t_scene *scene, int i, t_pixel_info *pixel_info);
 	void	(*draw_ft[128])(t_pixel_info *t_pixel_info, int i);
 	void	(*flat_top_or_bottom[128])(t_pixel_info *info, t_point *p0, t_point *p1, t_point *p2);
+	void	(*start_draw_ft[128])(t_scene *scene, t_pixel_info *pixel_info, int i);
 };
 
 //point cloud generation
@@ -207,10 +221,21 @@ void	triangle_to_nowhere(t_scene *scene, int i, t_pixel_info *pixel_info);
 char	perspective_project_zoom_plus(t_scene *scene);
 char	perspective_project_zoom_minus(t_scene *scene);
 char	perspective_project(t_scene *scene);
+char	camera_perspective_project(t_scene *scene);
 char	perspective_project_close(t_scene *scene);
 char	perspective_project_far(t_scene *scene);
+char	perspective_project_down(t_scene *scene);
+char	perspective_project_up(t_scene *scene);
+char	perspective_project_right(t_scene *scene);
+char	perspective_project_left(t_scene *scene);
+void	launch(t_scene *scene, t_pixel_info *pixel_info, int i);
+void	dont_launch(t_scene *scene, t_pixel_info *pixel_info, int i);
 
 //linear transform
+char	camera_rotation_x_minus(t_scene *scene);
+char	camera_rotation_x_plus(t_scene *scene);
+char	camera_rotation_y_minus(t_scene *scene);
+char	camera_rotation_y_plus(t_scene *scene);
 char	rotation_x_minus(t_scene *scene);
 char	rotation_x_plus(t_scene *scene);
 char	rotation_y_minus(t_scene *scene);
@@ -257,7 +282,9 @@ t_v3	vec3_cross(t_v3 *a, t_v3 *b);
 float	vec2_dot(t_v2 *a, t_v2 *b);
 float	vec3_dot(t_v3 *a, t_v3 *b);
 void	vec3_normalize(t_v3 *vec);
-void	vecr2_normalize(t_v2 *vec);
+void	vec2_normalize(t_v2 *vec);
+float	vec3_normalize_r(t_v3 *vec);
+void	vec3_denormalize(t_v3 *vec, float len);
 
 //back_face_culling
 float is_visible(t_scene *scene, int i);

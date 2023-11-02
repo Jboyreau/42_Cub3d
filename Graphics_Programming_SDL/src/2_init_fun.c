@@ -19,6 +19,12 @@ static void	initialize_draw_ft(void (*draw_ft[])(t_pixel_info *t_pixel_info, int
 	draw_ft[16] = &draw_ft210;
 }
 
+//launch draw_ft or not
+static void	initialize_start_draw_ft(void (*start_draw_ft[])(t_scene *scene, t_pixel_info *pixel_info, int i))
+{
+ 	start_draw_ft[0] = &launch;
+	start_draw_ft[1] = &dont_launch;
+}
 //Back face culling or not
 static void	initialize_culling(void (*culling[])(t_scene *scene, int i, t_pixel_info *pixel_info))
 {
@@ -58,17 +64,25 @@ static void	initialize_fun_key_triggered(char (*fun_update[])(t_scene *))
 {
 	fun_update[0] = &nothing;
 	fun_update[1] = &quit;
-	fun_update[2] = perspective_project;
-	fun_update[4] = perspective_project_zoom_minus;
-	fun_update[8] = perspective_project_zoom_plus;
-	fun_update[16] = perspective_project_far;
-	fun_update[32] = perspective_project_close;
-	fun_update[64] = rotation_x_minus;
-	fun_update[128] = rotation_x_plus;
-	fun_update[256] = rotation_y_minus;
-	fun_update[512] = rotation_y_plus;	
-	fun_update[1024] = rotation_z_minus;
-	fun_update[2048] = rotation_z_plus;
+	fun_update[2] = &perspective_project;
+	fun_update[4] = &perspective_project_zoom_minus;
+	fun_update[8] = &perspective_project_zoom_plus;
+	fun_update[16] = &perspective_project_far;
+	fun_update[32] = &perspective_project_close;
+	fun_update[64] = &rotation_x_minus;
+	fun_update[128] = &rotation_x_plus;
+	fun_update[256] = &rotation_y_minus;
+	fun_update[512] = &rotation_y_plus;	
+	fun_update[1024] = &rotation_z_minus;
+	fun_update[2048] = &rotation_z_plus;
+	fun_update[4096] = &perspective_project_left;
+	fun_update[8192] = &perspective_project_right;
+	fun_update[16384] = &perspective_project_up;
+	fun_update[32768] = &perspective_project_down;
+	fun_update[26] = &camera_rotation_x_minus;;
+	fun_update[27] = &camera_rotation_x_plus;;
+	fun_update[28] = &camera_rotation_y_minus;;
+	fun_update[29] = &camera_rotation_y_plus;;
 }
 
 //According to the value of the event (press key or not) a function is choosed.
@@ -89,4 +103,5 @@ void	initialize_fun(t_f *fun)
 	initialize_culling((*fun).culling);
 	initialize_draw_ft((*fun).draw_ft);
 	initialize_flat_top_or_bottom((*fun).flat_top_or_bottom);
+	initialize_start_draw_ft((*fun).start_draw_ft);
 }

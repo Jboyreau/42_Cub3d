@@ -80,9 +80,10 @@ t_v3	vec3_divizion(t_v3 *v0, float factor)
 {
 	t_v3 new;
 
-	new.x = (*v0).x / factor;
-	new.y = (*v0).y / factor;
-	new.z = (*v0).z / factor;
+	factor = 1 / factor;
+	new.x = (*v0).x * factor;
+	new.y = (*v0).y * factor;
+	new.z = (*v0).z * factor;
 	return (new);
 }
 
@@ -106,12 +107,24 @@ float	vec3_dot(t_v3 *a, t_v3 *b)
 	return (((*a).x * (*b).x) + ((*a).y * (*b).y) + ((*a).z * (*b).z));
 }
 
+float	vec3_normalize_r(t_v3 *vec)
+{
+	float len = vec3_length(vec);
+	(*vec) = vec3_divizion(vec, len);
+	return (len);
+}
+
+void	vec3_denormalize(t_v3 *vec, float len)
+{
+	(*vec) = vec3_multiplication(vec, len);
+}
+
 void	vec3_normalize(t_v3 *vec)
 {
 	(*vec) = vec3_divizion(vec, vec3_length(vec));
 }
 
-void	vecr2_normalize(t_v2 *vec)
+void	vec2_normalize(t_v2 *vec)
 {
 	(*vec) = vec2_divizion(vec, vec2_length(vec));
 }

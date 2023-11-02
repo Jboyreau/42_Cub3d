@@ -12,13 +12,18 @@ t_scene	*initialize_scene(int *color_buffer, t_f *fun)
 		return (NULL);
 	scene.scale = SCALE;
 	scene.fun = fun;
-	scene.dist = Z_VALUE;
-	scene.camera.position.x = 0;
-	scene.camera.position.y = 0;
-	scene.camera.position.z = 0;
-	//scene.rotation.x = 0;
-	//scene.rotation.y = 0;
-	//scene.rotation.z = 0;
+	scene.origin.x = 0;
+	scene.origin.y = 0;
+	scene.origin.z = 0;
+	scene.camera.position.x = X_VALUE;
+	scene.camera.position.y = Y_VALUE;
+	scene.camera.position.z = Z_VALUE;
+	scene.camera.rotation.x = 0;
+	scene.camera.rotation.y = 0;
+	scene.camera.rotation.z = 0;
+	scene.pos_incx = X_VALUE;
+	scene.pos_incy = Y_VALUE;
+	scene.pos_incz = Z_VALUE;
 	if (populate_3d_space(&scene) == 0)
 		return (NULL);
 	return (&scene);

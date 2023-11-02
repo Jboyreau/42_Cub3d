@@ -1,18 +1,26 @@
 #include "header.h"
 
+#define LIMIT 50
+#define FOVY HEIGHT - LIMIT
+#define FOVX WIDTH - LIMIT
+
 static void	draw_line(int x_start, int x_end, int y, t_pixel_info *pixel_info)
 {
-	int start = x_start;
+	//int start = x_start;
 
 	while (x_start <= x_end)
 	{
 		(*pixel_info).cell = x_start + y;
-		if (x_start == x_end || x_start == start)
-			(*pixel_info).color = 0xFF000000;
-		else
+		//if (x_start == x_end || x_start == start)
+			//(*pixel_info).color = 0xFF000000;
+		//else
 			(*pixel_info).color = 0xFF808080;
 		(*(*(*pixel_info).scene).fun).fun_draw_pixel[
-			((*pixel_info).cell > 0 && (*pixel_info).cell < BUFF_SIZE && *((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) > (*pixel_info).depth)
+			(x_start > LIMIT
+			&& (*pixel_info).y > LIMIT
+			&& (*pixel_info).y < FOVY
+			&& x_start < FOVX 
+			&& *((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) > (*pixel_info).depth)
 		](pixel_info);
 		++x_start;
 	}
@@ -20,17 +28,21 @@ static void	draw_line(int x_start, int x_end, int y, t_pixel_info *pixel_info)
 
 static void	draw_line2(int x_start, int x_end, int y, t_pixel_info *pixel_info)
 {
-	int start = x_end;
+	//int start = x_end;
 	
 	while (x_end <= x_start)
 	{
-		if (x_start == x_end || x_end == start)
-			(*pixel_info).color = 0xFF000000;
-		else	
+		//if (x_start == x_end || x_end == start)
+			//(*pixel_info).color = 0xFF000000;
+		//else	
 			(*pixel_info).color = 0xFF808080;
 		(*pixel_info).cell = x_end + y;
 		(*(*(*pixel_info).scene).fun).fun_draw_pixel[
-			((*pixel_info).cell > 0 && (*pixel_info).cell < BUFF_SIZE && *((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) > (*pixel_info).depth)
+			(x_end > LIMIT
+			&& (*pixel_info).y > LIMIT
+			&& (*pixel_info).y < FOVY
+			&& x_end < FOVX 
+			&& *((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) > (*pixel_info).depth)
 		](pixel_info);
 		++x_end;
 	}
@@ -54,6 +66,7 @@ static void	fill_flat_bottom(t_pixel_info *pixel_info, t_point *p0, t_point *p1,
 	{
 		
 		//printf("x_start = %f, x_end = %f\n", x_start, x_end);
+		(*pixel_info).y = y;
 		if (x_start < x_end)
 			draw_line(round(x_start), round(x_end), ((y << 10) + (y << 8)), pixel_info);
 		else
@@ -81,6 +94,7 @@ static void	fill_flat_top(t_pixel_info *pixel_info, t_point *p2, t_point *p1, t_
 	while (y > (*m).y)
 	{
 		//printf("x_start = %f, x_end = %f\n", x_start, x_end);
+		(*pixel_info).y = y;
 		if (x_start < x_end)
 			draw_line(round(x_start), round(x_end), ((y << 10) + (y << 8)), pixel_info);
 		else
