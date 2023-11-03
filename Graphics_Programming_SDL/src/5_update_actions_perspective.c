@@ -104,7 +104,7 @@ char	perspective_project(t_scene *scene)
 		(*((*scene).cloud + i)).y += (*scene).pos_incy;
 		(*((*scene).cloud + i)).z += (*scene).pos_incz;
 	}
-	i = 0;
+	i = -1;
 	while (++i < (*scene).triangle_index_size)
 		(*(*scene).fun).culling[(
 			(*((*scene).cloud + (*((*scene).triangle_index + i)).a)).z > 0
