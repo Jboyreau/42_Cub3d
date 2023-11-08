@@ -2,7 +2,7 @@
 
 static void	vertex_to_color_buffer(t_scene *scene, t_v3 *vertex, int i_cloud)
 {
-	(*vertex).inv_z = 1 / ((*((*scene).cloud + i_cloud)).z + (*scene).radius);
+	(*vertex).inv_z = 1 / ((*((*scene).cloud + i_cloud)).z);
 	(*vertex).x = ((*((*scene).cloud + i_cloud)).x * (*scene).scale) * (*vertex).inv_z + MIDLE_X;
 	(*vertex).y = ((*((*scene).cloud + i_cloud)).y * (*scene).scale) * (*vertex).inv_z + MIDLE_Y;
 	(*vertex).z = (*((*scene).cloud + i_cloud)).z;
@@ -82,9 +82,12 @@ char	camera_perspective_project(t_scene *scene)
 	pixel_info.scene = scene;
 	while (++i < (*scene).triangle_index_size)
 		(*(*scene).fun).culling[(
-			(*((*scene).cloud + (*((*scene).triangle_index + i)).a)).z > 0 - (*scene).radius
-			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z > 0 - (*scene).radius
-			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).c)).z > 0 - (*scene).radius
+			(*((*scene).cloud + (*((*scene).triangle_index + i)).a)).z > 0
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z > 0
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).c)).z > 0
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).a)).z < 10
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z < 10
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).c)).z < 10
 			&& is_visible(scene, i) >= 0)
 		](scene, i, &pixel_info);
 	return (1);
@@ -110,6 +113,9 @@ char	perspective_project(t_scene *scene)
 			(*((*scene).cloud + (*((*scene).triangle_index + i)).a)).z > 0
 			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z > 0
 			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).c)).z > 0
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).a)).z < 10
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z < 10
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).c)).z < 10
 			&& is_visible(scene, i) >= 0)
 		](scene, i, &pixel_info);	
 	(*scene).pos_incx = 0;

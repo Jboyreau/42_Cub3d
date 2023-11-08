@@ -10,14 +10,14 @@
 //# define OBJ "./obj/dragon/dragon.obj"
 //# define Z_VALUE 2//dragon
 
-//# define OBJ "./obj/terrain/terrain.obj"
-//# define Z_VALUE 1//terrain
+# define OBJ "./obj/terrain/terrain.obj"
+# define Z_VALUE 1//terrain
 
 //# define OBJ "./obj/level/level.obj"
 //# define Z_VALUE 1//level
 
-# define OBJ "./obj/cow/cow.obj"
-# define Z_VALUE 2//cow
+//# define OBJ "./obj/cow/cow.obj"
+//# define Z_VALUE 2//cow
 
 //# define OBJ "./obj/Skull/Skull_Low_Poly.obj"
 //# define Z_VALUE 500//skull
