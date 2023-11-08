@@ -23,20 +23,7 @@ void	triangle_to_color_buffer(t_scene *scene, int i, t_pixel_info *pixel_info)
 	(*((*scene).projected_triangle + i)).p2.y = (*((*scene).projected_triangle + i)).c.y;
 	(*((*scene).projected_triangle + i)).p2.z = (*((*scene).projected_triangle + i)).c.z;
 	
-	(*(*scene).fun).start_draw_ft[(
-		(*((*scene).projected_triangle + i)).p0.x > WIDTH
-		|| (*((*scene).projected_triangle + i)).p0.y > HEIGHT
-		|| (*((*scene).projected_triangle + i)).p1.x > WIDTH
-		|| (*((*scene).projected_triangle + i)).p1.y > HEIGHT
-		|| (*((*scene).projected_triangle + i)).p2.x > WIDTH
-		|| (*((*scene).projected_triangle + i)).p2.y > HEIGHT
-		|| (*((*scene).projected_triangle + i)).p0.x < 0
-		|| (*((*scene).projected_triangle + i)).p0.y < 0
-		|| (*((*scene).projected_triangle + i)).p1.x < 0
-		|| (*((*scene).projected_triangle + i)).p1.y < 0
-		|| (*((*scene).projected_triangle + i)).p2.x < 0
-		|| (*((*scene).projected_triangle + i)).p2.y < 0)
-	](scene, pixel_info, i);
+	(*(*scene).fun).start_draw_ft[0](scene, pixel_info, i);
 }
 
 void	triangle_to_nowhere(t_scene *scene, int i, t_pixel_info *pixel_info)
@@ -75,19 +62,37 @@ void	dont_launch(t_scene *scene, t_pixel_info *pixel_info, int i)
 char	camera_perspective_project(t_scene *scene)
 {
 	t_pixel_info	pixel_info;
+	t_v2			m;
+	t_v2			p;
 	int				i = -1;
 
 	//clear_color_buffer((*scene).color_buffer);
 	clear_color_buffer(((long long int *)((*scene).color_buffer)), (*scene).z_buffer);
 	pixel_info.scene = scene;
+	m.x = (-MIDLE_X)/(*scene).scale;
+	m.y = (-MIDLE_Y)/(*scene).scale;
+	p.x = (WIDTH - MIDLE_X)/(*scene).scale;
+	p.y = (HEIGHT - MIDLE_Y)/(*scene).scale;
 	while (++i < (*scene).triangle_index_size)
 		(*(*scene).fun).culling[(
-			(*((*scene).cloud + (*((*scene).triangle_index + i)).a)).z > 0
+			(*((*scene).cloud + (*((*scene).triangle_index + i)).a)).x > m.x * (*((*scene).cloud + (*((*scene).triangle_index + i)).a)).z
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).a)).y > m.y * (*((*scene).cloud + (*((*scene).triangle_index + i)).a)).z
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).a)).z > 0
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).x > m.x * (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).y > m.y * (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
 			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z > 0
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).c)).x > m.x * (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).c)).y > m.y * (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
 			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).c)).z > 0
-			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).a)).z < 10
-			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z < 10
-			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).c)).z < 10
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).a)).x < p.x * (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).a)).y < p.y * (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).a)).z < Z_MAX
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).x < p.x * (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).y < p.y * (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z < Z_MAX
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).c)).x < p.x * (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).c)).y < p.y * (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).c)).z < Z_MAX
 			&& is_visible(scene, i) >= 0)
 		](scene, i, &pixel_info);
 	return (1);
@@ -96,11 +101,17 @@ char	camera_perspective_project(t_scene *scene)
 char	perspective_project(t_scene *scene)
 {
 	t_pixel_info	pixel_info;
+	t_v2			m;
+	t_v2			p;
 	int				i = -1;
 
 	//clear_color_buffer((*scene).color_buffer);
 	clear_color_buffer(((long long int *)((*scene).color_buffer)), (*scene).z_buffer);
 	pixel_info.scene = scene;
+	m.x = (-MIDLE_X)/(*scene).scale;
+	m.y = (-MIDLE_Y)/(*scene).scale;
+	p.x = (WIDTH - MIDLE_X)/(*scene).scale;
+	p.y = (HEIGHT - MIDLE_Y)/(*scene).scale;
 	while(++i < (*scene).cloud_size)
 	{
 		(*((*scene).cloud + i)).x += (*scene).pos_incx;
@@ -110,12 +121,24 @@ char	perspective_project(t_scene *scene)
 	i = -1;
 	while (++i < (*scene).triangle_index_size)
 		(*(*scene).fun).culling[(
-			(*((*scene).cloud + (*((*scene).triangle_index + i)).a)).z > 0
+			(*((*scene).cloud + (*((*scene).triangle_index + i)).a)).x > m.x * (*((*scene).cloud + (*((*scene).triangle_index + i)).a)).z
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).a)).y > m.y * (*((*scene).cloud + (*((*scene).triangle_index + i)).a)).z
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).a)).z > 0
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).x > m.x * (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).y > m.y * (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
 			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z > 0
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).c)).x > m.x * (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).c)).y > m.y * (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
 			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).c)).z > 0
-			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).a)).z < 10
-			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z < 10
-			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).c)).z < 10
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).a)).x < p.x * (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).a)).y < p.y * (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).a)).z < 50
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).x < p.x * (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).y < p.y * (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z < 50
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).c)).x < p.x * (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).c)).y < p.y * (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).c)).z < 50
 			&& is_visible(scene, i) >= 0)
 		](scene, i, &pixel_info);	
 	(*scene).pos_incx = 0;

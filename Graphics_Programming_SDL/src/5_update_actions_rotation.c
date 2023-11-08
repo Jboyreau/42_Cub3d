@@ -4,7 +4,8 @@ char	camera_rotation_x_minus(t_scene *scene)
 {
 	float	y, z;
 	int		i = 0;
-
+ 
+	(*scene).camera.rotation.x += ROTATION_INC_MINUS; 
 	y = (*scene).camera.position.y;
 	z = (*scene).camera.position.z;
 	(*scene).camera.position.z = (z * cos(ROTATION_INC_MINUS) - y * sin(ROTATION_INC_MINUS));
@@ -26,6 +27,7 @@ char	camera_rotation_x_plus(t_scene *scene)
 	float	y, z;
 	int		i = 0;
 
+	(*scene).camera.rotation.x += ROTATION_INC_PLUS;
 	y = (*scene).camera.position.y;
 	z = (*scene).camera.position.z;
 	(*scene).camera.position.z = (z * cos(ROTATION_INC_PLUS) - y * sin(ROTATION_INC_PLUS));
@@ -47,6 +49,7 @@ char	camera_rotation_y_minus(t_scene *scene)
 	float	x, z;
 	int		i = 0;
 
+	(*scene).camera.rotation.y += ROTATION_INC_MINUS;
 	x = (*scene).camera.position.x;
 	z = (*scene).camera.position.z;
 	(*scene).camera.position.z = (z * cos(ROTATION_INC_MINUS) + x * sin(ROTATION_INC_MINUS));
@@ -68,6 +71,7 @@ char	camera_rotation_y_plus(t_scene *scene)
 	float	x, z;
 	int		i = 0;
 
+	(*scene).camera.rotation.y += ROTATION_INC_PLUS;
 	x = (*scene).camera.position.x;
 	z = (*scene).camera.position.z;
 	(*scene).camera.position.z = (z * cos(ROTATION_INC_PLUS) + x * sin(ROTATION_INC_PLUS));

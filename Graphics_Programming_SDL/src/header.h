@@ -10,11 +10,11 @@
 //# define OBJ "./obj/dragon/dragon.obj"
 //# define Z_VALUE 2//dragon
 
-# define OBJ "./obj/terrain/terrain.obj"
-# define Z_VALUE 1//terrain
+//# define OBJ "./obj/terrain/terrain.obj"
+//# define Z_VALUE 1//terrain
 
-//# define OBJ "./obj/level/level.obj"
-//# define Z_VALUE 1//level
+# define OBJ "./obj/level/level.obj"
+# define Z_VALUE 1//level
 
 //# define OBJ "./obj/cow/cow.obj"
 //# define Z_VALUE 2//cow
@@ -64,6 +64,7 @@
 #define X_VALUE 0
 #define Y_VALUE 0.5
 #define Z_MAX 100
+#define	Z_MIN 0.5
 # define FPS 80
 # define FRAME_TARGET_TIME (1000 / FPS)
 # define SCALE 1000
@@ -76,7 +77,7 @@
 //# define CUBE_N_TRI 12
 # define MIDLE_X 640
 # define MIDLE_Y 360
-# define DIST_INC 0.1
+# define DIST_INC 0.5
 # define ROTATION_INC_PLUS 0.0872665 / 3//0.00872665
 # define ROTATION_INC_MINUS -0.0872665 / 3//-0.00872665
 
@@ -113,7 +114,8 @@ typedef struct s_camera
 {
 	t_v3	position;
 	t_v3	rotation;
-	float	fov;
+	float	fov_h;
+	float	fov_w;
 } t_cam;
 
 typedef struct s_funarrays t_f;
@@ -135,11 +137,27 @@ typedef struct s_projected_tirangle
 	t_point	p2;
 } t_ptri;
 
+typedef struct s_plan
+{
+	t_v3 point;
+	t_v3 n;
+}t_plane;
+
+typedef struct s_view
+{
+	t_plane	left;
+	t_plane	right;
+	t_plane	top;
+	t_plane	bottom;
+	t_plane	near;
+	t_plane	far;
+}t_view;
+
 typedef struct s_scene //what I project
 {
 	int		time_to_wait;
 	int		previous_frame_time;
-	int		scale;
+	float	scale;
 	int		cloud_size;
 	int		triangle_index_size;
 	float	radius;
@@ -147,6 +165,7 @@ typedef struct s_scene //what I project
 	float	pos_incy;
 	float	pos_incz;
 	float	dot;
+	t_view	view;
 	t_v3	rotation;
 	t_v3	origin;
 	t_v3	origin_cloud;
