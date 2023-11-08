@@ -101,7 +101,7 @@ static int make_triangle_index(t_tri *triangle_index, char *obj)
 	return (j);
 }
 
-static int make_cloud(t_v3 *cloud, char *obj)
+static int make_cloud(t_v3 *cloud, t_v3 *cloud_save, char *obj)
 {
 	int i = 0;
 	int j = 0;
@@ -121,12 +121,15 @@ static int make_cloud(t_v3 *cloud, char *obj)
 		{
 			i += 2;
 			(*(cloud + j)).x = -strtof(obj + i, NULL);
+			(*(cloud_save + j)).x = (*(cloud + j)).x;
 			while (*(obj + i) != ' ')
 				++i;
 			(*(cloud + j)).y = -strtof(obj + (++i), NULL);
+			(*(cloud_save + j)).y = (*(cloud + j)).y;
 			while (*(obj + i) != ' ')
 				++i;
 			(*(cloud + j)).z = strtof(obj + (++i), NULL);
+			(*(cloud_save + j)).z = (*(cloud + j)).z;
 			while ((*(obj + i) && *(obj + i) != '\n'))
 				++i;
 			++j;
@@ -151,10 +154,13 @@ char	populate_3d_space(t_scene *scene)
 	(*scene).cloud = malloc(len * sizeof(t_v3));
 	if ((*scene).cloud == NULL)
 		return (0);
+	(*scene).cloud_save = malloc(len * sizeof(t_v3));
+	if ((*scene).cloud_save == NULL)
+		return (0);
 	(*scene).triangle_index = malloc(len * sizeof(t_tri));
 	if ((*scene).triangle_index == NULL)
 		return (0);
-	(*scene).cloud_size = make_cloud((*scene).cloud, obj_file);
+	(*scene).cloud_size = make_cloud((*scene).cloud, (*scene).cloud_save, obj_file);
 	(*scene).triangle_index_size = make_triangle_index((*scene).triangle_index, obj_file);
 /*	for (int i = 0; i < (*scene).cloud_size; ++i)
 		printf("v%d : x = %f, y = %f, z = %f\n", i, (*((*scene).cloud + i)).x, (*((*scene).cloud + i)).y, (*((*scene).cloud + i)).z);

@@ -69,6 +69,7 @@ int			main(void)
 //game_loop
 	(*scene).previous_frame_time = SDL_GetTicks();
 	(*scene).time_to_wait = -1;
+	perspective_project(scene);
 	while (display(&canvas, fun.fun_update[process_input(fun.fun_event)](scene)))
 	{
 	//	(*scene).time_to_wait = FRAME_TARGET_TIME - (SDL_GetTicks() - (*scene).previous_frame_time);

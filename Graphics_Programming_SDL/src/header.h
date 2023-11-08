@@ -10,14 +10,14 @@
 //# define OBJ "./obj/dragon/dragon.obj"
 //# define Z_VALUE 2//dragon
 
-# define OBJ "./obj/terrain/terrain.obj"
-# define Z_VALUE 1//terrain
+//# define OBJ "./obj/terrain/terrain.obj"
+//# define Z_VALUE 1//terrain
 
 //# define OBJ "./obj/level/level.obj"
 //# define Z_VALUE 1//level
 
-//# define OBJ "./obj/cow/cow.obj"
-//# define Z_VALUE 2//cow
+# define OBJ "./obj/cow/cow.obj"
+# define Z_VALUE 2//cow
 
 //# define OBJ "./obj/Skull/Skull_Low_Poly.obj"
 //# define Z_VALUE 500//skull
@@ -105,7 +105,7 @@ typedef struct s_3dvector
 {
 	float		x;
 	float		y;
-	float		z;
+	float		z;	
 	float		inv_z;
 } t_v3;
 
@@ -142,13 +142,17 @@ typedef struct s_scene //what I project
 	int		scale;
 	int		cloud_size;
 	int		triangle_index_size;
+	float	radius;
 	float	pos_incx;
 	float	pos_incy;
 	float	pos_incz;
 	float	dot;
+	t_v3	rotation;
 	t_v3	origin;
+	t_v3	origin_cloud;
 	t_cam	camera;
 	t_v3	*cloud;
+	t_v3	*cloud_save;
 	t_tri	*triangle_index;
 	t_ptri	*projected_triangle;
 	int		*color_buffer;
