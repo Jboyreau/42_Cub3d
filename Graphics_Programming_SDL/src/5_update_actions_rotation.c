@@ -28,8 +28,8 @@ char	camera_rotation_x_plus(t_scene *scene)
 
 	y = (*scene).camera.position.y;
 	z = (*scene).camera.position.z;
-	(*scene).camera.position.z = (z * cos(ROTATION_INC_MINUS) - y * sin(ROTATION_INC_MINUS));
-	(*scene).camera.position.y = (y * cos(ROTATION_INC_MINUS) + z * sin(ROTATION_INC_MINUS));
+	(*scene).camera.position.z = (z * cos(ROTATION_INC_PLUS) - y * sin(ROTATION_INC_PLUS));
+	(*scene).camera.position.y = (y * cos(ROTATION_INC_PLUS) + z * sin(ROTATION_INC_PLUS));
 	while (i < (*scene).cloud_size)
 	{
 		y = (*((*scene).cloud + i)).y;
