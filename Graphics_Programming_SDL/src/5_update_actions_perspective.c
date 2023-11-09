@@ -132,13 +132,13 @@ char	perspective_project(t_scene *scene)
 			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).c)).z > 0
 			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).a)).x < p.x * (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
 			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).a)).y < p.y * (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
-			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).a)).z < 50
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).a)).z < Z_MAX
 			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).x < p.x * (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
 			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).y < p.y * (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
-			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z < 50
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z < Z_MAX
 			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).c)).x < p.x * (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
 			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).c)).y < p.y * (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
-			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).c)).z < 50
+			&& (*((*scene).cloud + (*((*scene).triangle_index + i)).c)).z < Z_MAX
 			&& is_visible(scene, i) >= 0)
 		](scene, i, &pixel_info);	
 	(*scene).pos_incx = 0;

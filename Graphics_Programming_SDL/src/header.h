@@ -63,7 +63,7 @@
 
 #define X_VALUE 0
 #define Y_VALUE 0.5
-#define Z_MAX 100
+#define Z_MAX 1000
 #define	Z_MIN 0.5
 # define FPS 80
 # define FRAME_TARGET_TIME (1000 / FPS)
