@@ -77,7 +77,7 @@
 //# define CUBE_N_TRI 12
 # define MIDLE_X 640
 # define MIDLE_Y 360
-# define DIST_INC 0.5
+# define DIST_INC 0.2
 # define ROTATION_INC_PLUS 0.0872665 / 3//0.00872665
 # define ROTATION_INC_MINUS -0.0872665 / 3//-0.00872665
 

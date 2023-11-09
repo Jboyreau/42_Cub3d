@@ -15,7 +15,11 @@ static void	init_camera(t_scene *scene)
 static void	init_plane(t_scene *scene)
 {
 	static t_v3	origin = {0, 0, 0, 0};
+	float		fov_h;
+	float		fov_w;
 
+	fov_h = (*scene).camera.fov_h / 2;
+	fov_w = (*scene).camera.fov_w / 2;
 	(*scene).view.near.point = origin;
 	(*scene).view.far.point.z = Z_MIN;
 	(*scene).view.near.n.x = 0;
@@ -27,21 +31,21 @@ static void	init_plane(t_scene *scene)
 	(*scene).view.far.n.y = 0;
 	(*scene).view.far.n.z = -1;
 	(*scene).view.right.point = origin;
-	(*scene).view.right.n.x = -cos((*scene).camera.fov_w / 2);
+	(*scene).view.right.n.x = -cos(fov_w);
 	(*scene).view.right.n.y = 0;
-	(*scene).view.right.n.z = sin((*scene).camera.fov_w / 2);
+	(*scene).view.right.n.z = sin(fov_w);
 	(*scene).view.left.point = origin;
-	(*scene).view.left.n.x = cos((*scene).camera.fov_w / 2);
+	(*scene).view.left.n.x = cos(fov_w);
 	(*scene).view.left.n.y = 0;
-	(*scene).view.left.n.z = sin((*scene).camera.fov_w / 2);
+	(*scene).view.left.n.z = sin(fov_w);
 	(*scene).view.top.point = origin;
 	(*scene).view.top.n.x = 0;
-	(*scene).view.top.n.y = -cos((*scene).camera.fov_h / 2);
-	(*scene).view.top.n.z = sin((*scene).camera.fov_h / 2);
+	(*scene).view.top.n.y = -cos(fov_h);
+	(*scene).view.top.n.z = sin(fov_h);
 	(*scene).view.bottom.point = origin;
 	(*scene).view.bottom.n.x = 0;
-	(*scene).view.bottom.n.y = cos((*scene).camera.fov_h / 2);
-	(*scene).view.bottom.n.z = sin((*scene).camera.fov_h / 2);
+	(*scene).view.bottom.n.y = cos(fov_h);
+	(*scene).view.bottom.n.z = sin(fov_h);
 }
 
 t_scene	*initialize_scene(int *color_buffer, t_f *fun)
