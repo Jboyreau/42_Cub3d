@@ -1,5 +1,13 @@
 #include "header.h"
 
+static void	initialize_inter(void (*inter[])(t_scene *scene, t_line *cp, t_v2 *dot, t_v3 *inside_vertices))
+{
+	inter[0] = &inter_both_outside;
+	inter[1] = &inter_p_outside;
+	inter[2] = &inter_c_outside;
+	inter[4] = &inter_both_inside;
+}
+
 //Choose between flat top, flat bottom or both triangle/
 static void	initialize_flat_top_or_bottom(void (*flat_top_or_bottom[])(t_pixel_info *info, t_point *p0, t_point *p1, t_point *p2))
 {
@@ -104,4 +112,5 @@ void	initialize_fun(t_f *fun)
 	initialize_draw_ft((*fun).draw_ft);
 	initialize_flat_top_or_bottom((*fun).flat_top_or_bottom);
 	initialize_start_draw_ft((*fun).start_draw_ft);
+	initialize_inter((*fun).inter);
 }

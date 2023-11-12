@@ -19,13 +19,13 @@ void	clear_color_buffer(long long int *color_buffer, float *z_buffer)
 
 	while (i < CLEAR_SIZE)
 	{
-		*(z_buffer + i) = 4294967295;
+		*(z_buffer + i) = (float)4294967295;
 		*(color_buffer + i) = -1;
 		++i;
 	}
 	while (i < BUFF_SIZE)
 	{
-		*(z_buffer + i) = 4294967295;
+		*(z_buffer + i) = (float)4294967295;
 		++i;
 	}
 }

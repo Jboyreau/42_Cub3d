@@ -1,11 +1,11 @@
 #include "header.h"
 
-int	process_input(int (*fun_event[])(t_keys *))
+int	process_input(int (*fun_event[])(t_keys *), t_scene *scene)
 {
 	SDL_Event	event;
 	t_keys		keys;
 
-	SDL_PollEvent(&event);
+	(*scene).poll_return = SDL_PollEvent(&event);
 	keys.key = event.key.keysym.sym;
 	keys.wheel = event.wheel.y;
 	keys.mouse_wheel_event = SDL_MOUSEWHEEL;

@@ -12,7 +12,7 @@ void	draw_pixel(t_pixel_info *pixel_info)
 	g = ((*pixel_info).color & 0x0000FF00) * (*(*pixel_info).scene).dot;
 	b = ((*pixel_info).color & 0x000000FF) * (*(*pixel_info).scene).dot;
 	*((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) = (*pixel_info).depth;
-	*((*(*pixel_info).scene).color_buffer + (*pixel_info).cell) = (*pixel_info).color * (*(*pixel_info).scene).dot; 
+	*((*(*pixel_info).scene).color_buffer + (*pixel_info).cell) = 
 		a 
 		| (r & 0x00FF0000)
 		| (g & 0x0000FF00)

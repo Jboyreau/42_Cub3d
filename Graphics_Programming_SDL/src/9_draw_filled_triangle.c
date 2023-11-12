@@ -6,43 +6,25 @@
 
 static void	draw_line(int x_start, int x_end, int y, t_pixel_info *pixel_info)
 {
-	//int start = x_start;
-
 	while (x_start <= x_end)
 	{
+		(*pixel_info).color = 0xFF808080;
 		(*pixel_info).cell = x_start + y;
-		//if (x_start == x_end || x_start == start)
-			//(*pixel_info).color = 0xFF000000;
-		//else
-			(*pixel_info).color = 0xFF808080;
 		(*(*(*pixel_info).scene).fun).fun_draw_pixel[
-			(x_start > LIMIT
-			&& (*pixel_info).y > LIMIT
-			&& (*pixel_info).y < FOVY
-			&& x_start < FOVX 
-			&& *((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) > (*pixel_info).depth)
+			(*((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) > (*pixel_info).depth)
 		](pixel_info);
 		++x_start;
 	}
 }
 
 static void	draw_line2(int x_start, int x_end, int y, t_pixel_info *pixel_info)
-{
-	//int start = x_end;
-	
+{	
 	while (x_end <= x_start)
 	{
-		//if (x_start == x_end || x_end == start)
-			//(*pixel_info).color = 0xFF000000;
-		//else	
-			(*pixel_info).color = 0xFF808080;
+		(*pixel_info).color = 0xFF808080;
 		(*pixel_info).cell = x_end + y;
 		(*(*(*pixel_info).scene).fun).fun_draw_pixel[
-			(x_end > LIMIT
-			&& (*pixel_info).y > LIMIT
-			&& (*pixel_info).y < FOVY
-			&& x_end < FOVX 
-			&& *((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) > (*pixel_info).depth)
+			(*((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) > (*pixel_info).depth)
 		](pixel_info);
 		++x_end;
 	}
@@ -61,11 +43,8 @@ static void	fill_flat_bottom(t_pixel_info *pixel_info, t_point *p0, t_point *p1,
 	x_start = (*p0).x;
 	x_end = (*p0).x;
 	y = (*p0).y;
-//printf("y = %d, m.y = %d\n", y, (*m).y);
 	while (y <= (*m).y)
 	{
-		
-		//printf("x_start = %f, x_end = %f\n", x_start, x_end);
 		(*pixel_info).y = y;
 		if (x_start < x_end)
 			draw_line(round(x_start), round(x_end), ((y << 10) + (y << 8)), pixel_info);
@@ -90,10 +69,8 @@ static void	fill_flat_top(t_pixel_info *pixel_info, t_point *p2, t_point *p1, t_
 	x_start = (*p2).x;
 	x_end = (*p2).x;
 	y = (*p2).y;
-//printf("y = %d, m.y = %d\n", y, (*m).y);
-	while (y > (*m).y)
+	while (y >= (*m).y)
 	{
-		//printf("x_start = %f, x_end = %f\n", x_start, x_end);
 		(*pixel_info).y = y;
 		if (x_start < x_end)
 			draw_line(round(x_start), round(x_end), ((y << 10) + (y << 8)), pixel_info);
@@ -126,20 +103,14 @@ void	flat_bottom(t_pixel_info *pixel_info, t_point *p0, t_point *p1, t_point *p2
 
 static void	draw_filled_triangle(t_point *p0, t_point *p1, t_point *p2, t_pixel_info *pixel_info)
 {
-//printf("\tp0 = (%d,%d), p1 = (%d,%d), p2 = (%d,%d)\n", (*p0).x, (*p0).y, (*p1).x, (*p1).y, (*p2).x, (*p2).y);
-	//TODO : calculate face depth
-	(*pixel_info).depth = (*p0).z + (*p1).z + (*p2).z;
 	(*(*(*pixel_info).scene).fun).flat_top_or_bottom[
 		((*p1).y == (*p0).y)
 		+ (((*p1).y == (*p2).y && ((*p1).y != (*p0).y)) << 1)
 	](pixel_info, p0, p1, p2);
-//printf("\n----------------------------\n\n");
 }
 
 void	draw_ft012(t_pixel_info *pixel_info, int i)
 {
-//printf("012:\n");
-//printf("p0 = (%d), p1 = (%d), p2 = (%d)\n", ((*((*(*pixel_info).scene).projected_triangle + i))).p0.y, ((*((*(*pixel_info).scene).projected_triangle + i))).p1.y, ((*((*(*pixel_info).scene).projected_triangle + i))).p2.y);
 	draw_filled_triangle(
 		&((*((*(*pixel_info).scene).projected_triangle + i))).p0,
 		&((*((*(*pixel_info).scene).projected_triangle + i))).p1,
@@ -150,8 +121,6 @@ void	draw_ft012(t_pixel_info *pixel_info, int i)
 
 void	draw_ft021(t_pixel_info *pixel_info, int i)
 {
-//printf("021:\n");
-//printf("p0 = (%d), p1 = (%d), p2 = (%d)\n", ((*((*(*pixel_info).scene).projected_triangle + i))).p0.y, ((*((*(*pixel_info).scene).projected_triangle + i))).p1.y, ((*((*(*pixel_info).scene).projected_triangle + i))).p2.y);
 	draw_filled_triangle(
 		&((*((*(*pixel_info).scene).projected_triangle + i))).p0,
 		&((*((*(*pixel_info).scene).projected_triangle + i))).p2,
@@ -162,8 +131,6 @@ void	draw_ft021(t_pixel_info *pixel_info, int i)
 
 void	draw_ft102(t_pixel_info *pixel_info, int i)
 {
-//printf("102:\n");
-//printf("p0 = (%d), p1 = (%d), p2 = (%d)\n", ((*((*(*pixel_info).scene).projected_triangle + i))).p0.y, ((*((*(*pixel_info).scene).projected_triangle + i))).p1.y, ((*((*(*pixel_info).scene).projected_triangle + i))).p2.y);
 	draw_filled_triangle(
 		&((*((*(*pixel_info).scene).projected_triangle + i))).p1,
 		&((*((*(*pixel_info).scene).projected_triangle + i))).p0,
@@ -174,8 +141,6 @@ void	draw_ft102(t_pixel_info *pixel_info, int i)
 
 void	draw_ft120(t_pixel_info *pixel_info, int i)
 {
-//printf("120:\n");
-//printf("p0 = (%d), p1 = (%d), p2 = (%d)\n", ((*((*(*pixel_info).scene).projected_triangle + i))).p0.y, ((*((*(*pixel_info).scene).projected_triangle + i))).p1.y, ((*((*(*pixel_info).scene).projected_triangle + i))).p2.y);
 	draw_filled_triangle(
 		&((*((*(*pixel_info).scene).projected_triangle + i))).p1,
 		&((*((*(*pixel_info).scene).projected_triangle + i))).p2,
@@ -186,8 +151,6 @@ void	draw_ft120(t_pixel_info *pixel_info, int i)
 
 void	draw_ft201(t_pixel_info *pixel_info, int i)
 {
-//printf("201:\n");
-//printf("p0 = (%d), p1 = (%d), p2 = (%d)\n", ((*((*(*pixel_info).scene).projected_triangle + i))).p0.y, ((*((*(*pixel_info).scene).projected_triangle + i))).p1.y, ((*((*(*pixel_info).scene).projected_triangle + i))).p2.y);
 	draw_filled_triangle(
 		&((*((*(*pixel_info).scene).projected_triangle + i))).p2,
 		&((*((*(*pixel_info).scene).projected_triangle + i))).p0,
@@ -198,8 +161,6 @@ void	draw_ft201(t_pixel_info *pixel_info, int i)
 
 void	draw_ft210(t_pixel_info *pixel_info, int i)
 {
-//printf("210:\n");
-//printf("p0 = (%d), p1 = (%d), p2 = (%d)\n", ((*((*(*pixel_info).scene).projected_triangle + i))).p0.y, ((*((*(*pixel_info).scene).projected_triangle + i))).p1.y, ((*((*(*pixel_info).scene).projected_triangle + i))).p2.y);
 	draw_filled_triangle(
 		&((*((*(*pixel_info).scene).projected_triangle + i))).p2,
 		&((*((*(*pixel_info).scene).projected_triangle + i))).p1,

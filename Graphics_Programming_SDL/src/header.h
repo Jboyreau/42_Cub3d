@@ -55,17 +55,20 @@
 //# define OBJ "./obj/sword/sword.obj"
 //# define Z_VALUE 2//sword
 
+//# define OBJ "./obj/triangle/triangle.obj"
+//# define Z_VALUE 5//triangle
+
 //# define OBJ "./obj/cube/cube.obj"
-//# define Z_VALUE 5//cube
+//# define Z_VALUE 10//cube
 
 //# define OBJ "./obj/bear/bear.obj"
 //# define Z_VALUE 2//bear
 
 #define X_VALUE 0
 #define Y_VALUE 0.5
-#define Z_MAX 1000
+#define Z_MAX 100
 #define	Z_MIN 0.5
-# define FPS 80
+# define FPS 60
 # define FRAME_TARGET_TIME (1000 / FPS)
 # define SCALE 1000
 # define SCALE_INC 10
@@ -73,6 +76,7 @@
 # define WIDTH 1280
 # define BUFF_SIZE 921600 //HEIGHT * WIDTH
 # define CLEAR_SIZE 460800 //(HEIGHT * WIDTH) / 2
+# define POLY_SIZE 10
 //# define CUBE_SIZE 8
 //# define CUBE_N_TRI 12
 # define MIDLE_X 640
@@ -109,6 +113,14 @@ typedef struct s_3dvector
 	float		z;	
 	float		inv_z;
 } t_v3;
+
+typedef struct s_line
+{
+	t_v3	vec_cur;
+	t_v3	vec_prev;
+	t_v3	*cur;
+	t_v3	*prev;
+} t_line;
 
 typedef struct s_camera
 {
@@ -155,11 +167,16 @@ typedef struct s_view
 
 typedef struct s_scene //what I project
 {
+	int		poll_return;
 	int		time_to_wait;
 	int		previous_frame_time;
 	float	scale;
 	int		cloud_size;
 	int		triangle_index_size;
+	//int		projected_triangle_size;
+	int		poly_size;
+	int		inside_size;
+	int		nb_tri;
 	float	radius;
 	float	pos_incx;
 	float	pos_incy;
@@ -216,6 +233,7 @@ struct s_funarrays
 	void	(*draw_ft[128])(t_pixel_info *t_pixel_info, int i);
 	void	(*flat_top_or_bottom[128])(t_pixel_info *info, t_point *p0, t_point *p1, t_point *p2);
 	void	(*start_draw_ft[128])(t_scene *scene, t_pixel_info *pixel_info, int i);
+	void	(*inter[128])(t_scene *scene, t_line *cp, t_v2 *dot, t_v3 *inside_vertices);
 };
 
 //point cloud generation
@@ -226,7 +244,7 @@ void 	initialize_fun(t_f *fun);
 t_scene	*initialize_scene(int *color_buffer, t_f *fun);
 
 //process input
-int		process_input(int (*fun_event[])(t_keys *));
+int		process_input(int (*fun_event[])(t_keys *), t_scene *scene);
 int		set_nothing(t_keys *);
 int		set_quit(t_keys *);
 int		set_index(t_keys *);
@@ -311,6 +329,14 @@ void	vec3_denormalize(t_v3 *vec, float len);
 
 //back_face_culling
 float is_visible(t_scene *scene, int i);
+
+//Clipping
+t_v3	*tri_to_poly(t_scene *scene, t_tri *face);
+void	poly_to_tri(t_scene *scene, t_v3 *poly);
+void	inter_p_outside(t_scene *scene, t_line *cp, t_v2 *dot, t_v3 *inside_vertices);
+void	inter_c_outside(t_scene *scene, t_line *cp, t_v2 *dot, t_v3 *inside_vertices);
+void	inter_both_inside(t_scene *scene, t_line *cp, t_v2 *dot, t_v3 *inside_vertices);
+void	inter_both_outside(t_scene *scene, t_line *cp, t_v2 *dot, t_v3 *inside_vertices);
 
 //renderer
 char	display(t_w *canvas, char status);

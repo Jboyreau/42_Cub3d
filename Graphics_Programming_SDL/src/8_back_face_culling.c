@@ -8,22 +8,7 @@ float is_visible(t_scene *scene, int i)
 	t_v3	normal;
 	t_v3	camera_ray;
 
-	face.a = *((*scene).cloud + (*((*scene).triangle_index + i)).a);
-	face.b = *((*scene).cloud + (*((*scene).triangle_index + i)).b);
-	face.c = *((*scene).cloud + (*((*scene).triangle_index + i)).c);
-	
-	/*face.a.z += (*scene).camera.position.z;
-	face.b.z += (*scene).camera.position.z;
-	face.c.z += (*scene).camera.position.z;
-	
-	face.a.x += (*scene).camera.position.x;
-	face.b.x += (*scene).camera.position.x;
-	face.c.x += (*scene).camera.position.x;
-	
-	face.a.y += (*scene).camera.position.y;
-	face.b.y += (*scene).camera.position.y;
-	face.c.y += (*scene).camera.position.y;*/
-
+	face = *((*scene).projected_triangle + i);
 	vecAB = vec3_subtract(&(face.b), &(face.a));
 	vec3_normalize(&vecAB);
 	vecAC = vec3_subtract(&(face.c), &(face.a));

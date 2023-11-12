@@ -8,11 +8,16 @@ static void	destroy(SDL_Window *window, SDL_Renderer *renderer, t_scene *scene, 
 	SDL_Quit();
 	if (scene)
 	{
-		free((*scene).z_buffer);
-		free((*scene).color_buffer);
-		free((*scene).cloud);
-		free((*scene).triangle_index);
-		free((*scene).projected_triangle);
+		if ((*scene).z_buffer)
+			free((*scene).z_buffer);
+		if ((*scene).color_buffer)
+			free((*scene).color_buffer);
+		if ((*scene).cloud)
+			free((*scene).cloud);
+		if ((*scene).triangle_index)
+			free((*scene).triangle_index);
+		if ((*scene).projected_triangle)
+			free((*scene).projected_triangle);
 	}
 }
 
@@ -56,6 +61,7 @@ int			main(void)
 	static t_w	canvas = {.window = NULL, .renderer = NULL, .color_buffer = NULL, .color_buffer_texture = NULL};
 	t_scene		*scene;
 	t_f			fun;
+	static char	ret = 1;
 
 //Setup
 	if (initialize_window(&(canvas.window), &(canvas.renderer), &(canvas.color_buffer), &(canvas.color_buffer_texture)) != 0)
@@ -70,11 +76,14 @@ int			main(void)
 	(*scene).previous_frame_time = SDL_GetTicks();
 	(*scene).time_to_wait = -1;
 	perspective_project(scene);
-	while (display(&canvas, fun.fun_update[process_input(fun.fun_event)](scene)))
+	while (display(&canvas, ret))
 	{
-	//	(*scene).time_to_wait = FRAME_TARGET_TIME - (SDL_GetTicks() - (*scene).previous_frame_time);
-	//	(*(*scene).fun).fun_delay[((*scene).time_to_wait > 0)]((*scene).time_to_wait);
-	//	(*scene).previous_frame_time = SDL_GetTicks();
+		(*scene).poll_return = 1;
+		while ((*scene).poll_return && ret)
+			ret = fun.fun_update[process_input(fun.fun_event, scene)](scene);
+		(*scene).time_to_wait = FRAME_TARGET_TIME - (SDL_GetTicks() - (*scene).previous_frame_time);
+		(*(*scene).fun).fun_delay[((*scene).time_to_wait > 0)]((*scene).time_to_wait);
+		(*scene).previous_frame_time = SDL_GetTicks();
 	}
 	return (destroy(canvas.window, canvas.renderer, scene, canvas.color_buffer_texture), 0);
 }

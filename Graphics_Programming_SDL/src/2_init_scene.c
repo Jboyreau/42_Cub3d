@@ -5,8 +5,8 @@ static void	init_camera(t_scene *scene)
 	(*scene).camera.position.x = X_VALUE;
 	(*scene).camera.position.y = Y_VALUE;
 	(*scene).camera.position.z = Z_VALUE;
-	(*scene).camera.fov_w = 2.0 * atan((double)WIDTH / 2.0);
-	(*scene).camera.fov_h = 2.0 * atan((double)HEIGHT / 2.0);
+	(*scene).camera.fov_w = 1.135;//2.0 * atan((double)16 / 2.0);
+	(*scene).camera.fov_h = 0.68;//2.0 * atan((double)9 / 2.0);
 	(*scene).camera.rotation.x = 0;
 	(*scene).camera.rotation.y = 0;
 	(*scene).camera.rotation.z = 0;
@@ -21,11 +21,11 @@ static void	init_plane(t_scene *scene)
 	fov_h = (*scene).camera.fov_h / 2;
 	fov_w = (*scene).camera.fov_w / 2;
 	(*scene).view.near.point = origin;
-	(*scene).view.far.point.z = Z_MIN;
+	(*scene).view.near.point.z = Z_MIN;
 	(*scene).view.near.n.x = 0;
 	(*scene).view.near.n.y = 0;
 	(*scene).view.near.n.z = 1;
-	(*scene).view.near.point = origin;
+	(*scene).view.far.point = origin;
 	(*scene).view.far.point.z = Z_MAX;
 	(*scene).view.far.n.x = 0;
 	(*scene).view.far.n.y = 0;
@@ -40,11 +40,11 @@ static void	init_plane(t_scene *scene)
 	(*scene).view.left.n.z = sin(fov_w);
 	(*scene).view.top.point = origin;
 	(*scene).view.top.n.x = 0;
-	(*scene).view.top.n.y = -cos(fov_h);
+	(*scene).view.top.n.y = cos(fov_h);
 	(*scene).view.top.n.z = sin(fov_h);
 	(*scene).view.bottom.point = origin;
 	(*scene).view.bottom.n.x = 0;
-	(*scene).view.bottom.n.y = cos(fov_h);
+	(*scene).view.bottom.n.y = -cos(fov_h);
 	(*scene).view.bottom.n.z = sin(fov_h);
 }
 
