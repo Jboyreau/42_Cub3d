@@ -5,8 +5,8 @@ static void	init_camera(t_scene *scene)
 	(*scene).camera.position.x = X_VALUE;
 	(*scene).camera.position.y = Y_VALUE;
 	(*scene).camera.position.z = Z_VALUE;
-	(*scene).camera.fov_w = 1.135;//2.0 * atan((double)16 / 2.0);
-	(*scene).camera.fov_h = 0.68;//2.0 * atan((double)9 / 2.0);
+	(*scene).camera.fov_w = 1.135;
+	(*scene).camera.fov_h = 0.68;
 	(*scene).camera.rotation.x = 0;
 	(*scene).camera.rotation.y = 0;
 	(*scene).camera.rotation.z = 0;
