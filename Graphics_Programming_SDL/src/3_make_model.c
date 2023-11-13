@@ -128,8 +128,8 @@ char	populate_3d_space(t_scene *scene)
 		printf("v%d : x = %f, y = %f, z = %f\n", i, (*((*scene).cloud + i)).x, (*((*scene).cloud + i)).y, (*((*scene).cloud + i)).z);
 	for (int i = 0; i < (*scene).triangle_index_size; ++i)
 		printf("f%d : a = %d, b = %d, c = %d\n", i, (*((*scene).triangle_index + i)).a, (*((*scene).triangle_index + i)).b, (*((*scene).triangle_index + i)).c);*/
-	(*scene).projected_triangle = malloc((*scene).triangle_index_size * sizeof(t_ptri));
-	if ((*scene).triangle_index == NULL)
+	(*scene).projected_triangle = malloc(10 * sizeof(t_ptri));
+	if ((*scene).projected_triangle == NULL)
 		return (0);
 	if (obj_file)
 		free(obj_file);

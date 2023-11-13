@@ -13,14 +13,17 @@ void	triangle_to_color_buffer(t_scene *scene, int i, t_pixel_info *pixel_info)
 	(*((*scene).projected_triangle + i)).p0.x = (*((*scene).projected_triangle + i)).a.x;
 	(*((*scene).projected_triangle + i)).p0.y = (*((*scene).projected_triangle + i)).a.y;
 	(*((*scene).projected_triangle + i)).p0.z = (*((*scene).projected_triangle + i)).a.z;
+	(*((*scene).projected_triangle + i)).p0.inv_z = (*((*scene).projected_triangle + i)).a.inv_z;
 	vertex_to_color_buffer(scene, &(*((*scene).projected_triangle + i)).b);
 	(*((*scene).projected_triangle + i)).p1.x = (*((*scene).projected_triangle + i)).b.x;
 	(*((*scene).projected_triangle + i)).p1.y = (*((*scene).projected_triangle + i)).b.y;
 	(*((*scene).projected_triangle + i)).p1.z = (*((*scene).projected_triangle + i)).b.z;
+	(*((*scene).projected_triangle + i)).p1.inv_z = (*((*scene).projected_triangle + i)).b.inv_z;
 	vertex_to_color_buffer(scene, &(*((*scene).projected_triangle + i)).c);
 	(*((*scene).projected_triangle + i)).p2.x = (*((*scene).projected_triangle + i)).c.x;
 	(*((*scene).projected_triangle + i)).p2.y = (*((*scene).projected_triangle + i)).c.y;
 	(*((*scene).projected_triangle + i)).p2.z = (*((*scene).projected_triangle + i)).c.z;
+	(*((*scene).projected_triangle + i)).p2.inv_z = (*((*scene).projected_triangle + i)).c.inv_z;
 	
 	launch(scene, pixel_info, i);
 }
@@ -73,7 +76,7 @@ char	camera_perspective_project(t_scene *scene)
 			(*((*scene).cloud + (*((*scene).triangle_index + i)).a)).z
 			+ (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
 			+ (*((*scene).cloud + (*((*scene).triangle_index + i)).c)).z;
-		poly_to_tri(scene ,tri_to_poly(scene, (*scene).triangle_index + i));
+		poly_to_tri(scene ,tri_to_poly(scene, (*scene).triangle_index + i), (*scene).triangle_index + i);
 		j = -1;
 		while (++j < (*scene).nb_tri)
 			(*(*scene).fun).culling[(is_visible(scene, j) >= 0)](scene, j, &pixel_info);
@@ -103,7 +106,7 @@ char	perspective_project(t_scene *scene)
 			(*((*scene).cloud + (*((*scene).triangle_index + i)).a)).z
 			+ (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
 			+ (*((*scene).cloud + (*((*scene).triangle_index + i)).c)).z;
-		poly_to_tri(scene, tri_to_poly(scene, (*scene).triangle_index + i));
+		poly_to_tri(scene ,tri_to_poly(scene, (*scene).triangle_index + i), (*scene).triangle_index + i);
 		j = -1;
 		while (++j < (*scene).nb_tri)
 			(*(*scene).fun).culling[(is_visible(scene, j) >= 0)](scene, j, &pixel_info);

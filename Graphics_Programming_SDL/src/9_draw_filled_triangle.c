@@ -1,14 +1,32 @@
 #include "header.h"
 
-#define LIMIT 50
-#define FOVY HEIGHT - LIMIT
-#define FOVX WIDTH - LIMIT
+t_v3	*barycentric_weight(t_pixel_info* pixel_info)
+{
+	static t_v3	weight;
+	t_br		ref;
+
+	ref.ac = vec2_subtract(&(*pixel_info).c, &(*pixel_info).a);
+	ref.ab = vec2_subtract(&(*pixel_info).b, &(*pixel_info).a);
+	ref.ap = vec2_subtract(&(*pixel_info).p, &(*pixel_info).a);
+	ref.pc = vec2_subtract(&(*pixel_info).c, &(*pixel_info).p);
+	ref.pb = vec2_subtract(&(*pixel_info).b, &(*pixel_info).p);
+	ref.para_abc = ref.ac.x * ref.ab.y - ref.ac.y * ref.ab.x;
+	ref.alpha = (ref.pc.x * ref.pb.y - ref.pc.y * ref.pb.x) / ref.para_abc;
+	ref.beta = (ref.ac.x * ref.ap.y - ref.ac.y * ref.ap.x) / ref.para_abc;
+	ref.gamma = 1 - ref.alpha - ref.beta;
+	weight.x = ref.alpha;
+	weight.y = ref.beta;
+	weight.z = ref.gamma;
+	return (&weight);
+}
 
 static void	draw_line(int x_start, int x_end, int y, t_pixel_info *pixel_info)
 {
 	while (x_start <= x_end)
 	{
-		(*pixel_info).color = 0xFF808080;
+		(*pixel_info).p.x = x_start;
+		(*pixel_info).p.y = y;
+		(*pixel_info).color = find_color(barycentric_weight(pixel_info), (*(*pixel_info).scene).texture, pixel_info);
 		(*pixel_info).cell = x_start + y;
 		(*(*(*pixel_info).scene).fun).fun_draw_pixel[
 			(*((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) > (*pixel_info).depth)
@@ -21,7 +39,7 @@ static void	draw_line2(int x_start, int x_end, int y, t_pixel_info *pixel_info)
 {	
 	while (x_end <= x_start)
 	{
-		(*pixel_info).color = 0xFF808080;
+		(*pixel_info).color = find_color(barycentric_weight(pixel_info), (*(*pixel_info).scene).texture, pixel_info);
 		(*pixel_info).cell = x_end + y;
 		(*(*(*pixel_info).scene).fun).fun_draw_pixel[
 			(*((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) > (*pixel_info).depth)
@@ -33,13 +51,11 @@ static void	draw_line2(int x_start, int x_end, int y, t_pixel_info *pixel_info)
 static void	fill_flat_bottom(t_pixel_info *pixel_info, t_point *p0, t_point *p1, t_point *m)
 {
 	float	inv_sloap_1;
-	float	inv_sloap_2;
 	float	x_start;
 	float	x_end;
 	int		y;
 
 	inv_sloap_1 = ((*p1).x - (*p0).x) / (float)((*p1).y - (*p0).y);
-	inv_sloap_2 = ((*m).x - (*p0).x) / (float)((*m).y - (*p0).y);
 	x_start = (*p0).x;
 	x_end = (*p0).x;
 	y = (*p0).y;
@@ -51,7 +67,7 @@ static void	fill_flat_bottom(t_pixel_info *pixel_info, t_point *p0, t_point *p1,
 		else
 			draw_line2(round(x_start), round(x_end), ((y << 10) + (y << 8)), pixel_info);
 		x_start += inv_sloap_1;
-		x_end += inv_sloap_2;
+		x_end += (*(*pixel_info).scene).inv_sloap_2;
 		++y;
 	}
 }
@@ -59,13 +75,11 @@ static void	fill_flat_bottom(t_pixel_info *pixel_info, t_point *p0, t_point *p1,
 static void	fill_flat_top(t_pixel_info *pixel_info, t_point *p2, t_point *p1, t_point *m)
 {
 	float	inv_sloap_1;
-	float	inv_sloap_2;
 	float	x_start;
 	float	x_end;
 	int		y;
 
 	inv_sloap_1 = ((*p1).x - (*p2).x) / (float)((*p2).y - (*p1).y);
-	inv_sloap_2 = ((*m).x - (*p2).x) / (float)((*p2).y - (*m).y);
 	x_start = (*p2).x;
 	x_end = (*p2).x;
 	y = (*p2).y;
@@ -77,7 +91,7 @@ static void	fill_flat_top(t_pixel_info *pixel_info, t_point *p2, t_point *p1, t_
 		else
 			draw_line2(round(x_start), round(x_end), ((y << 10) + (y << 8)), pixel_info);
 		x_start += inv_sloap_1;
-		x_end += inv_sloap_2;
+		x_end -= (*(*pixel_info).scene).inv_sloap_2;
 		--y;
 	}
 }
@@ -87,22 +101,34 @@ void	flat_bottom_top(t_pixel_info *pixel_info, t_point *p0, t_point *p1, t_point
 	t_point	m;
 	m.y = (*p1).y;
 	m.x = (((*p2).x - (*p0).x) * ((*p1).y - (*p0).y)) / ((*p2).y - (*p0).y) + (*p0).x;
+	(*(*pixel_info).scene).inv_sloap_2 = ((*p0).x - (*p2).x) / (float)((*p0).y - (*p2).y);
 	fill_flat_bottom(pixel_info, p0, p1, &m);
 	fill_flat_top(pixel_info, p2, p1, &m);
 }
 
 void	flat_top(t_pixel_info *pixel_info, t_point *p0, t_point *p1, t_point *p2)
 {
-		fill_flat_top(pixel_info, p2, p1, p0);
+	(*(*pixel_info).scene).inv_sloap_2 = ((*p0).x - (*p2).x) / (float)((*p0).y - (*p2).y);
+	fill_flat_top(pixel_info, p2, p1, p0);
 }
 
 void	flat_bottom(t_pixel_info *pixel_info, t_point *p0, t_point *p1, t_point *p2)
 {
-		fill_flat_bottom(pixel_info, p0, p1, p2);
+	(*(*pixel_info).scene).inv_sloap_2 = ((*p0).x - (*p2).x) / (float)((*p0).y - (*p2).y);
+	fill_flat_bottom(pixel_info, p0, p1, p2);
 }
 
 static void	draw_filled_triangle(t_point *p0, t_point *p1, t_point *p2, t_pixel_info *pixel_info)
 {
+	(*pixel_info).a.x = (*p0).x;
+	(*pixel_info).b.x = (*p1).x;
+	(*pixel_info).c.x = (*p2).x;
+	(*pixel_info).a.y = (*p0).y;
+	(*pixel_info).b.y = (*p1).y;
+	(*pixel_info).c.y = (*p2).y;
+	(*pixel_info).p0 = (*p0);
+	(*pixel_info).p1 = (*p1);
+	(*pixel_info).p2 = (*p2);
 	(*(*(*pixel_info).scene).fun).flat_top_or_bottom[
 		((*p1).y == (*p0).y)
 		+ (((*p1).y == (*p2).y && ((*p1).y != (*p0).y)) << 1)

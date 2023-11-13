@@ -1,6 +1,6 @@
 #include "header.h"
 
-void	poly_to_tri(t_scene *scene, t_v3 *poly)
+void	poly_to_tri(t_scene *scene, t_v3 *poly, t_tri *face)
 {
 	int	i;
 
@@ -9,8 +9,11 @@ void	poly_to_tri(t_scene *scene, t_v3 *poly)
 	while (++i < (*scene).poly_size - 2)
 	{
 		(*((*scene).projected_triangle + (*scene).nb_tri)).a = *poly;
+		(*((*scene).projected_triangle + (*scene).nb_tri)).p0.uv = (*face).uv_a;
 		(*((*scene).projected_triangle + (*scene).nb_tri)).b = *(poly + i + 1);
+		(*((*scene).projected_triangle + (*scene).nb_tri)).p1.uv = (*face).uv_b;
 		(*((*scene).projected_triangle + (*scene).nb_tri)).c = *(poly + i + 2);
+		(*((*scene).projected_triangle + (*scene).nb_tri)).p2.uv = (*face).uv_c;
 		++(*scene).nb_tri;
 	}
 }

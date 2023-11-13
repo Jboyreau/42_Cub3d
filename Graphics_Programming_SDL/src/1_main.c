@@ -12,12 +12,12 @@ static void	destroy(SDL_Window *window, SDL_Renderer *renderer, t_scene *scene, 
 			free((*scene).z_buffer);
 		if ((*scene).color_buffer)
 			free((*scene).color_buffer);
-		if ((*scene).cloud)
-			free((*scene).cloud);
-		if ((*scene).triangle_index)
-			free((*scene).triangle_index);
-		if ((*scene).projected_triangle)
-			free((*scene).projected_triangle);
+	//	if ((*scene).cloud)
+	//		free((*scene).cloud);
+	//	if ((*scene).triangle_index)
+	//		free((*scene).triangle_index);
+	//	if ((*scene).projected_triangle)
+	//		free((*scene).projected_triangle);
 	}
 }
 

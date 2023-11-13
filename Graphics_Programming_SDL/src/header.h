@@ -64,10 +64,10 @@
 //# define OBJ "./obj/bear/bear.obj"
 //# define Z_VALUE 2//bear
 
-#define X_VALUE 0
-#define Y_VALUE 0.5
-#define Z_MAX 100
-#define	Z_MIN 0.5
+# define X_VALUE 0
+# define Y_VALUE 0.5
+# define Z_MAX 100
+# define Z_MIN 0.5
 # define FPS 60
 # define FRAME_TARGET_TIME (1000 / FPS)
 # define SCALE 1000
@@ -77,13 +77,11 @@
 # define BUFF_SIZE 921600 //HEIGHT * WIDTH
 # define CLEAR_SIZE 460800 //(HEIGHT * WIDTH) / 2
 # define POLY_SIZE 10
-//# define CUBE_SIZE 8
-//# define CUBE_N_TRI 12
 # define MIDLE_X 640
 # define MIDLE_Y 360
 # define DIST_INC 0.2
-# define ROTATION_INC_PLUS 0.0872665 / 3//0.00872665
-# define ROTATION_INC_MINUS -0.0872665 / 3//-0.00872665
+# define ROTATION_INC_PLUS 0.0872665 / 3
+# define ROTATION_INC_MINUS -0.0872665 / 3
 
 typedef struct s_canvas
 {
@@ -91,20 +89,28 @@ typedef struct s_canvas
 	SDL_Renderer	*renderer;
 	int				*color_buffer;
 	SDL_Texture		*color_buffer_texture;
-} t_w;
+}	t_w;
+
+typedef struct s_texture
+{
+	float	u;
+	float	v;
+}	t_tex2;
 
 typedef struct s_color_buffer_point
 {
 	int			x;
 	int			y;
 	float		z;
-} t_point;
+	float		inv_z;
+	t_tex2		uv;
+}	t_point;
 
 typedef struct s_2dvector
 {
 	float		x;
 	float		y;
-} t_v2;
+}	t_v2;
 
 typedef struct s_3dvector
 {
@@ -112,7 +118,20 @@ typedef struct s_3dvector
 	float		y;
 	float		z;	
 	float		inv_z;
-} t_v3;
+}	t_v3;
+
+typedef struct s_barycentric_reference
+{
+	float para_abc;
+	float alpha;
+	float beta;
+	float gamma;
+	t_v2 ac;
+	t_v2 ab;
+	t_v2 ap;
+	t_v2 pc;
+	t_v2 pb;
+}	t_br;
 
 typedef struct s_line
 {
@@ -120,7 +139,7 @@ typedef struct s_line
 	t_v3	vec_prev;
 	t_v3	*cur;
 	t_v3	*prev;
-} t_line;
+}	t_line;
 
 typedef struct s_camera
 {
@@ -128,16 +147,19 @@ typedef struct s_camera
 	t_v3	rotation;
 	float	fov_h;
 	float	fov_w;
-} t_cam;
+}	t_cam;
 
-typedef struct s_funarrays t_f;
+typedef struct s_funarrays	t_f;
 
 typedef struct s_tirangle
 {
 	int		a;
 	int		b;
 	int		c;
-} t_tri;
+	t_tex2	uv_a;
+	t_tex2	uv_b;
+	t_tex2	uv_c;
+}	t_tri;
 
 typedef struct s_projected_tirangle
 {
@@ -147,13 +169,13 @@ typedef struct s_projected_tirangle
 	t_point	p0;
 	t_point	p1;
 	t_point	p2;
-} t_ptri;
+}	t_ptri;
 
 typedef struct s_plan
 {
-	t_v3 point;
-	t_v3 n;
-}t_plane;
+	t_v3	point;
+	t_v3	n;
+}	t_plane;
 
 typedef struct s_view
 {
@@ -163,54 +185,63 @@ typedef struct s_view
 	t_plane	bottom;
 	t_plane	near;
 	t_plane	far;
-}t_view;
+}	t_view;
 
 typedef struct s_scene //what I project
 {
+	int		tex_h;
+	int		tex_w;	
 	int		poll_return;
 	int		time_to_wait;
 	int		previous_frame_time;
 	float	scale;
 	int		cloud_size;
 	int		triangle_index_size;
-	//int		projected_triangle_size;
 	int		poly_size;
 	int		inside_size;
 	int		nb_tri;
-	float	radius;
 	float	pos_incx;
 	float	pos_incy;
 	float	pos_incz;
 	float	dot;
-	t_view	view;
-	t_v3	rotation;
-	t_v3	origin;
-	t_v3	origin_cloud;
-	t_cam	camera;
+	float	inv_sloap_2;
+	int		*color_buffer;
+	float	*z_buffer;
+	int		*texture;
 	t_v3	*cloud;
 	t_v3	*cloud_save;
 	t_tri	*triangle_index;
 	t_ptri	*projected_triangle;
-	int		*color_buffer;
-	float	*z_buffer;
 	t_f		*fun;
-} t_scene;
+	t_v3	rotation;
+	t_v3	origin;
+	t_v3	origin_cloud;
+	t_cam	camera;
+	t_view	view;
+}	t_scene;
 
 typedef struct t_keys
 {
 	int		key;
 	int		wheel;
 	int		mouse_wheel_event;
-} t_keys;
+}	t_keys;
 
 typedef struct s_pixel_info
 {
-	t_scene	*scene;
-	int 	cell;
+	int		cell;
 	int		color;
 	int		y;
 	float	depth;
-} t_pixel_info;
+	t_scene	*scene;
+	t_v2	a;
+	t_v2	b;
+	t_v2	c;
+	t_v2	p;
+	t_point	p0;
+	t_point	p1;
+	t_point	p2;
+}	t_pixel_info;
 
 typedef struct s_dda
 {
@@ -220,7 +251,7 @@ typedef struct s_dda
 	int		abs_delta_y;
 	t_v3	p1;
 	t_v3	p2;	
-} t_dda;
+}	t_dda;
 
 struct s_funarrays
 {
@@ -240,14 +271,14 @@ struct s_funarrays
 char	populate_3d_space(t_scene *scene);
 
 //init
-void 	initialize_fun(t_f *fun);
+void	initialize_fun(t_f *fun);
 t_scene	*initialize_scene(int *color_buffer, t_f *fun);
 
 //process input
 int		process_input(int (*fun_event[])(t_keys *), t_scene *scene);
-int		set_nothing(t_keys *);
-int		set_quit(t_keys *);
-int		set_index(t_keys *);
+int		set_nothing(t_keys *keys);
+int		set_quit(t_keys *keys);
+int		set_index(t_keys *keys);
 
 //update / projection
 //void	clear_color_buffer(int *color_buffer);
@@ -328,11 +359,11 @@ float	vec3_normalize_r(t_v3 *vec);
 void	vec3_denormalize(t_v3 *vec, float len);
 
 //back_face_culling
-float is_visible(t_scene *scene, int i);
+float	is_visible(t_scene *scene, int i);
 
 //Clipping
 t_v3	*tri_to_poly(t_scene *scene, t_tri *face);
-void	poly_to_tri(t_scene *scene, t_v3 *poly);
+void	poly_to_tri(t_scene *scene, t_v3 *poly, t_tri *face);
 void	inter_p_outside(t_scene *scene, t_line *cp, t_v2 *dot, t_v3 *inside_vertices);
 void	inter_c_outside(t_scene *scene, t_line *cp, t_v2 *dot, t_v3 *inside_vertices);
 void	inter_both_inside(t_scene *scene, t_line *cp, t_v2 *dot, t_v3 *inside_vertices);
