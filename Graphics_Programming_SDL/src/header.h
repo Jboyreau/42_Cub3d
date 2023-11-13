@@ -14,7 +14,7 @@
 //# define Z_VALUE 1//terrain
 
 # define OBJ "./obj/level/level.obj"
-# define Z_VALUE 1//level
+# define Z_VALUE 10//level
 
 //# define OBJ "./obj/cow/cow.obj"
 //# define Z_VALUE 2//cow
@@ -314,6 +314,8 @@ char	rotation_y_minus(t_scene *scene);
 char	rotation_y_plus(t_scene *scene);
 char	rotation_z_plus(t_scene *scene);
 char	rotation_z_minus(t_scene *scene);
+void	rev_camera_rotation_x(t_scene *scene, int i, float angle);
+void	rev_camera_rotation_origin_x(t_v3 *camera_position, float angle);
 
 //triangle drawing
 void	draw_triangle(t_scene *scene, t_pixel_info *pixel_info, int i);

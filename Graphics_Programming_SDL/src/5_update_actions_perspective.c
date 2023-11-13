@@ -95,9 +95,11 @@ char	perspective_project(t_scene *scene)
 	i = -1;
 	while(++i < (*scene).cloud_size)
 	{
+		rev_camera_rotation_x(scene, i, -(*scene).camera.rotation.x);
 		(*((*scene).cloud + i)).x += (*scene).pos_incx;
 		(*((*scene).cloud + i)).y += (*scene).pos_incy;
 		(*((*scene).cloud + i)).z += (*scene).pos_incz;
+		rev_camera_rotation_x(scene, i, (*scene).camera.rotation.x);
 	}
 	i = -1;
 	while (++i < (*scene).triangle_index_size)
@@ -119,49 +121,55 @@ char	perspective_project(t_scene *scene)
 
 char	perspective_project_far(t_scene *scene)
 {
+	rev_camera_rotation_origin_x(&((*scene).camera.position), -(*scene).camera.rotation.x);
 	(*scene).camera.position.z += DIST_INC;
-	//(*scene).radius = vec3_length(&((*scene).camera.position));
 	(*scene).pos_incz = DIST_INC;
+	rev_camera_rotation_origin_x(&((*scene).camera.position), (*scene).camera.rotation.x);
 	return (perspective_project(scene));
 }
 
 char	perspective_project_close(t_scene *scene)
 {
+	rev_camera_rotation_origin_x(&((*scene).camera.position), -(*scene).camera.rotation.x);
 	(*scene).camera.position.z -= DIST_INC;
-	//(*scene).radius = vec3_length(&((*scene).camera.position));
 	(*scene).pos_incz = -DIST_INC;
+	rev_camera_rotation_origin_x(&((*scene).camera.position), (*scene).camera.rotation.x);
 	return (perspective_project(scene));
 }
 
 char	perspective_project_down(t_scene *scene)
 {
+	rev_camera_rotation_origin_x(&((*scene).camera.position), -(*scene).camera.rotation.x);
 	(*scene).camera.position.y += DIST_INC;
-	//(*scene).radius = vec3_length(&((*scene).camera.position));
 	(*scene).pos_incy = DIST_INC;
+	rev_camera_rotation_origin_x(&((*scene).camera.position), (*scene).camera.rotation.x);
 	return (perspective_project(scene));
 }
 
 char	perspective_project_up(t_scene *scene)
 {
+	rev_camera_rotation_origin_x(&((*scene).camera.position), -(*scene).camera.rotation.x);
 	(*scene).camera.position.y -= DIST_INC;
-	//(*scene).radius = vec3_length(&((*scene).camera.position));
 	(*scene).pos_incy = -DIST_INC;
+	rev_camera_rotation_origin_x(&((*scene).camera.position), (*scene).camera.rotation.x);
 	return (perspective_project(scene));
 }
 
 char	perspective_project_right(t_scene *scene)
 {
+	rev_camera_rotation_origin_x(&((*scene).camera.position), -(*scene).camera.rotation.x);
 	(*scene).camera.position.x += DIST_INC;
-	//(*scene).radius = vec3_length(&((*scene).camera.position));
 	(*scene).pos_incx = DIST_INC;
+	rev_camera_rotation_origin_x(&((*scene).camera.position), (*scene).camera.rotation.x);
 	return (perspective_project(scene));
 }
 
 char	perspective_project_left(t_scene *scene)
 {
+	rev_camera_rotation_origin_x(&((*scene).camera.position), -(*scene).camera.rotation.x);
 	(*scene).camera.position.x -= DIST_INC;
-	//(*scene).radius = vec3_length(&((*scene).camera.position));
 	(*scene).pos_incx = -DIST_INC;
+	rev_camera_rotation_origin_x(&((*scene).camera.position), (*scene).camera.rotation.x);
 	return (perspective_project(scene));
 }
 

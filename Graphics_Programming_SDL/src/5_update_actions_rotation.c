@@ -11,6 +11,15 @@ void	rev_camera_rotation_x(t_scene *scene, int i, float angle)
 	(*((*scene).cloud + i)).y = y * cos(angle) + z * sin(angle);
 }
 
+void	rev_camera_rotation_origin_x(t_v3 *camera_position, float angle)
+{
+	float	y, z;
+
+	y = (*camera_position).y;
+	z = (*camera_position).z;
+	(*camera_position).z = z * cos(angle) - y * sin(angle);
+	(*camera_position).y = y * cos(angle) + z * sin(angle);
+}
 
 /***************************************************/
 char	camera_rotation_x_minus(t_scene *scene)
@@ -62,11 +71,15 @@ char	camera_rotation_y_minus(t_scene *scene)
 	float	x, z;
 	int		i = 0;
 
+	rev_camera_rotation_origin_x(&((*scene).camera.position), -(*scene).camera.rotation.x);
+	
 	(*scene).camera.rotation.y += ROTATION_INC_MINUS;
 	x = (*scene).camera.position.x;
 	z = (*scene).camera.position.z;
 	(*scene).camera.position.z = (z * cos(ROTATION_INC_MINUS) + x * sin(ROTATION_INC_MINUS));
 	(*scene).camera.position.x = (x * cos(ROTATION_INC_MINUS) - z * sin(ROTATION_INC_MINUS));
+	
+	rev_camera_rotation_origin_x(&((*scene).camera.position), (*scene).camera.rotation.x);
 	while (i < (*scene).cloud_size)
 	{
 		rev_camera_rotation_x(scene, i, -(*scene).camera.rotation.x);
@@ -86,11 +99,15 @@ char	camera_rotation_y_plus(t_scene *scene)
 	float	x, z;
 	int		i = 0;
 
+	rev_camera_rotation_origin_x(&((*scene).camera.position), -(*scene).camera.rotation.x);
+	
 	(*scene).camera.rotation.y += ROTATION_INC_PLUS;
 	x = (*scene).camera.position.x;
 	z = (*scene).camera.position.z;
 	(*scene).camera.position.z = (z * cos(ROTATION_INC_PLUS) + x * sin(ROTATION_INC_PLUS));
 	(*scene).camera.position.x = (x * cos(ROTATION_INC_PLUS) - z * sin(ROTATION_INC_PLUS));
+
+	rev_camera_rotation_origin_x(&((*scene).camera.position), (*scene).camera.rotation.x);
 	while (i < (*scene).cloud_size)
 	{
 		rev_camera_rotation_x(scene, i, -(*scene).camera.rotation.x);
