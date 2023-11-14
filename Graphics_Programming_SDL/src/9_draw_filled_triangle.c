@@ -6,20 +6,15 @@ int	find_color(t_v3 *weight, int *texture, t_pixel_info *pixel_info)
 	float	interpolated_v;
 	int		tw;
 	int		th;
-	int		x;
-	int		y;
+	int 	cell;
 
 	tw = (*(*pixel_info).scene).tex_w;
 	th = (*(*pixel_info).scene).tex_h;
 	interpolated_u = (*weight).x * (*pixel_info).p0.uv.u + (*weight).y * (*pixel_info).p1.uv.u + (*weight).z * (*pixel_info).p2.uv.u;
-//printf("u = %f * %f + %f * %f + %f * %f\n", (*weight).x, (*pixel_info).p0.uv.u, (*weight).y, (*pixel_info).p1.uv.u, (*weight).z, (*pixel_info).p2.uv.u);
 	interpolated_v = (*weight).x * (*pixel_info).p0.uv.v + (*weight).y * (*pixel_info).p1.uv.v + (*weight).z * (*pixel_info).p2.uv.v;
-//printf("u = %f * %f + %f * %f + %f * %f\n", (*weight).x, (*pixel_info).p0.uv.v, (*weight).y, (*pixel_info).p1.uv.v, (*weight).z, (*pixel_info).p2.uv.v);
-	x = abs((int)(interpolated_u * (tw - 1))); //printf("x = %d\n", x);
-	y = abs((int)(interpolated_v * (th - 1))); //printf("y = %d\n", y);
-	x = x * (x < 64 && x > 0);
-	y = y * (y < 64 && x > 0);
-	return (*(texture + y * tw + x));
+	cell = abs((int)(interpolated_v * th)) * tw + abs((int)(interpolated_u * tw));
+	cell *= (cell > 0 && cell < 4096);
+	return (*(texture + cell));
 }
 
 t_v3	*barycentric_weight(t_pixel_info* pixel_info)
