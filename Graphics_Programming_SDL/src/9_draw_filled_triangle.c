@@ -1,23 +1,30 @@
 #include "header.h"
 
-int	find_color(t_v3 *weight, int *texture, t_pixel_info *pixel_info)
+static int	find_color(t_v3 *weight, int *texture, t_pixel_info *pixel_info)
 {
-	float	interpolated_u;
-	float	interpolated_v;
+	t_tex3	interpolated;
 	int		tw;
 	int		th;
 	int 	cell;
 
 	tw = (*(*pixel_info).scene).tex_w;
 	th = (*(*pixel_info).scene).tex_h;
-	interpolated_u = (*weight).x * (*pixel_info).p0.uv.u + (*weight).y * (*pixel_info).p1.uv.u + (*weight).z * (*pixel_info).p2.uv.u;
-	interpolated_v = (*weight).x * (*pixel_info).p0.uv.v + (*weight).y * (*pixel_info).p1.uv.v + (*weight).z * (*pixel_info).p2.uv.v;
-	cell = abs((int)(interpolated_v * th)) * tw + abs((int)(interpolated_u * tw));
-	cell *= (cell > 0 && cell < 4096);
+	interpolated.u = (*weight).x * ((*pixel_info).p0.uv.u * (*pixel_info).p0.inv_z)
+	+ (*weight).y * ((*pixel_info).p1.uv.u * (*pixel_info).p1.inv_z)
+	+ (*weight).z * ((*pixel_info).p2.uv.u * (*pixel_info).p2.inv_z);
+	interpolated.v = (*weight).x * ((*pixel_info).p0.uv.v * (*pixel_info).p0.inv_z)
+	+ (*weight).y * ((*pixel_info).p1.uv.v * (*pixel_info).p1.inv_z)
+	+ (*weight).z * ((*pixel_info).p2.uv.v * (*pixel_info).p2.inv_z);
+	interpolated.w = (*weight).x * (*pixel_info).p0.inv_z + (*weight).y * (*pixel_info).p1.inv_z + (*weight).z * (*pixel_info).p2.inv_z;
+	interpolated.w = 1 / interpolated.w;
+	interpolated.u *= interpolated.w;
+	interpolated.v *= interpolated.w;
+	cell = abs((int)(interpolated.v * th)) * tw + abs((int)(interpolated.u * tw));
+	cell *= (cell > 0 && cell < (*(*pixel_info).scene).t_size);
 	return (*(texture + cell));
 }
 
-t_v3	*barycentric_weight(t_pixel_info* pixel_info)
+static t_v3	*barycentric_weight(t_pixel_info* pixel_info)
 {
 	static t_v3	weight;
 	t_br		ref;
@@ -27,11 +34,11 @@ t_v3	*barycentric_weight(t_pixel_info* pixel_info)
 	ref.ap = vec2_subtract(&(*pixel_info).p, &(*pixel_info).a);
 	ref.pc = vec2_subtract(&(*pixel_info).c, &(*pixel_info).p);
 	ref.pb = vec2_subtract(&(*pixel_info).b, &(*pixel_info).p);
-	//printf("\n--------------------------\n");
-	ref.para_abc = (ref.ac.x * ref.ab.y) - (ref.ac.y * ref.ab.x);// printf("ref_abc %f\n", ref.para_abc);
-	ref.alpha = (ref.pc.x * ref.pb.y - ref.pc.y * ref.pb.x) / ref.para_abc;// printf("ref_alpha %f\n", ref.alpha);
-	ref.beta = (ref.ac.x * ref.ap.y - ref.ac.y * ref.ap.x) / ref.para_abc;// printf("ref_beta %f\n", ref.beta);
-	ref.gamma = 1 - ref.alpha - ref.beta;// printf("ref_gamma %f\n", ref.gamma);
+	ref.para_abc = (ref.ac.x * ref.ab.y) - (ref.ac.y * ref.ab.x);
+	ref.para_abc = 1 / ref.para_abc;
+	ref.alpha = (ref.pc.x * ref.pb.y - ref.pc.y * ref.pb.x) * ref.para_abc;
+	ref.beta = (ref.ac.x * ref.ap.y - ref.ac.y * ref.ap.x) * ref.para_abc;
+	ref.gamma = 1 - ref.alpha - ref.beta;
 	weight.x = ref.alpha;
 	weight.y = ref.beta;
 	weight.z = ref.gamma;

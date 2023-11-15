@@ -12,12 +12,12 @@ static void	destroy(SDL_Window *window, SDL_Renderer *renderer, t_scene *scene, 
 			free((*scene).z_buffer);
 		if ((*scene).color_buffer)
 			free((*scene).color_buffer);
-	//	if ((*scene).cloud)
-	//		free((*scene).cloud);
-	//	if ((*scene).triangle_index)
-	//		free((*scene).triangle_index);
-	//	if ((*scene).projected_triangle)
-	//		free((*scene).projected_triangle);
+		if ((*scene).cloud)
+			free((*scene).cloud);
+		if ((*scene).triangle_index)
+			free((*scene).triangle_index);
+		if ((*scene).upng)
+			upng_free((*scene).upng);
 	}
 }
 
@@ -48,7 +48,7 @@ static char	initialize_window(SDL_Window **window, SDL_Renderer **renderer, int 
 //Create an SDL texture
 	*color_buffer_texture = SDL_CreateTexture(
 		*renderer,
-		SDL_PIXELFORMAT_ARGB8888,
+		SDL_PIXELFORMAT_RGBA32,
 		SDL_TEXTUREACCESS_STREAMING,
 		WIDTH,
 		HEIGHT
@@ -70,11 +70,11 @@ int			main(void)
 	scene = initialize_scene(canvas.color_buffer, &fun);
 	if (scene == NULL)
 		return (write(2, "scene failed\n", 13 ), destroy(canvas.window, canvas.renderer, scene, canvas.color_buffer_texture), 1);
-	//clear_color_buffer(canvas.color_buffer);
 	clear_color_buffer((long long int *)canvas.color_buffer, (*scene).z_buffer);
 //game_loop
 	(*scene).previous_frame_time = SDL_GetTicks();
 	(*scene).time_to_wait = -1;
+	rotation_x(scene, 3.141592);
 	perspective_project(scene);
 	while (display(&canvas, ret))
 	{

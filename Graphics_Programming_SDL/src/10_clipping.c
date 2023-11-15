@@ -16,6 +16,12 @@ void	poly_to_tri(t_scene *scene, t_v3 *poly, t_tri *face)
 		(*((*scene).projected_triangle + (*scene).nb_tri)).p2.uv = (*face).uv_c;
 		++(*scene).nb_tri;
 	}
+	i = -1;
+	while (++i < (*scene).poly_size)
+	{
+		*(poly + i) = (*scene).origin;
+		(*((*scene).inside_vertices + i)) = (*scene).origin;
+	}
 }
 
 void	inter_p_outside(t_scene *scene, t_line *cp, t_v2 *dot, t_v3 *inside_vertices)
@@ -97,16 +103,14 @@ static	void	clip(t_scene *scene, t_plane *plane, t_v3 **poly, t_v3 **ins_vert)
 
 t_v3	*tri_to_poly(t_scene *scene, t_tri *face)
 {
-	static t_v3	poly[POLY_SIZE];
-	static t_v3	inside_vertices[POLY_SIZE];
 	t_v3 *pt_poly;
 	t_v3 *pt_ins_vert;
 
-	pt_poly = poly;
-	pt_ins_vert = inside_vertices;
-	*poly = *((*scene).cloud + (*face).a);
-	*(poly + 1) = *((*scene).cloud + (*face).b);
-	*(poly + 2) = *((*scene).cloud + (*face).c);
+	pt_poly = (*scene).poly;
+	pt_ins_vert = (*scene).inside_vertices;
+	(*(*scene).poly) = *((*scene).cloud + (*face).a);
+	(*((*scene).poly + 1)) = *((*scene).cloud + (*face).b);
+	(*((*scene).poly + 2)) = *((*scene).cloud + (*face).c);
 	(*scene).poly_size = 3;
 //	printf("-------NEAR-------\n");
 	clip(scene, &((*scene).view.near), &pt_poly, &pt_ins_vert);
@@ -121,5 +125,5 @@ t_v3	*tri_to_poly(t_scene *scene, t_tri *face)
 //	printf("-------BOTTOM-------\n");
 	clip(scene, &((*scene).view.bottom), &pt_poly, &pt_ins_vert);
 	//printf("poly_size = %d, inside_size = %d\n----------------------\n", (*scene).poly_size, (*scene).inside_size);
-	return (poly);
+	return ((*scene).poly);
 }

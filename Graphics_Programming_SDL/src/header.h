@@ -6,6 +6,7 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <fcntl.h>
+#include "upng.h"
 
 //# define OBJ "./obj/dragon/dragon.obj"
 //# define Z_VALUE 2//dragon
@@ -26,7 +27,7 @@
 //# define Z_VALUE 3//big_cube
 
 //# define OBJ "./obj/f22/f22.obj"
-//# define Z_VALUE 2//f22
+//# define Z_VALUE 5//f22
 
 //# define OBJ "./obj/book/book2.obj"
 //# define Z_VALUE 2//book
@@ -66,8 +67,8 @@
 
 # define X_VALUE 0
 # define Y_VALUE 0.5
-# define Z_MAX 100
-# define Z_MIN 0.5
+# define Z_MAX 50
+# define Z_MIN 1
 # define FPS 60
 # define FRAME_TARGET_TIME (1000 / FPS)
 # define SCALE 1000
@@ -90,6 +91,13 @@ typedef struct s_canvas
 	int				*color_buffer;
 	SDL_Texture		*color_buffer_texture;
 }	t_w;
+
+typedef struct s_uv_coordinate
+{
+	float	u;
+	float	v;
+	float	w;
+}	t_tex3;
 
 typedef struct s_texture
 {
@@ -190,7 +198,8 @@ typedef struct s_view
 typedef struct s_scene //what I project
 {
 	int		tex_h;
-	int		tex_w;	
+	int		tex_w;
+	int		t_size;
 	int		poll_return;
 	int		time_to_wait;
 	int		previous_frame_time;
@@ -208,11 +217,14 @@ typedef struct s_scene //what I project
 	int		*color_buffer;
 	float	*z_buffer;
 	int		*texture;
+	t_v3	*poly;
+	t_v3	*inside_vertices;
 	t_v3	*cloud;
 	t_v3	*cloud_save;
 	t_tri	*triangle_index;
 	t_ptri	*projected_triangle;
 	t_f		*fun;
+	upng_t	*upng;
 	t_v3	rotation;
 	t_v3	origin;
 	t_v3	origin_cloud;
@@ -304,6 +316,7 @@ void	launch(t_scene *scene, t_pixel_info *pixel_info, int i);
 void	dont_launch(t_scene *scene, t_pixel_info *pixel_info, int i);
 
 //linear transform
+void	rotation_x(t_scene *scene, float angle);
 char	camera_rotation_x_minus(t_scene *scene);
 char	camera_rotation_x_plus(t_scene *scene);
 char	camera_rotation_y_minus(t_scene *scene);
@@ -362,6 +375,9 @@ void	vec3_denormalize(t_v3 *vec, float len);
 
 //back_face_culling
 float	is_visible(t_scene *scene, int i);
+
+//texture
+char	load_texture(char *file, t_scene *scene);
 
 //Clipping
 t_v3	*tri_to_poly(t_scene *scene, t_tri *face);

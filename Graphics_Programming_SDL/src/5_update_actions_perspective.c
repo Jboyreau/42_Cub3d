@@ -79,7 +79,8 @@ char	camera_perspective_project(t_scene *scene)
 		poly_to_tri(scene ,tri_to_poly(scene, (*scene).triangle_index + i), (*scene).triangle_index + i);
 		j = -1;
 		while (++j < (*scene).nb_tri)
-			(*(*scene).fun).culling[(is_visible(scene, j) >= 0)](scene, j, &pixel_info);
+			(*(*scene).fun).culling[(is_visible(scene, j) >= 0 
+			&& (*((*scene).projected_triangle + j)).a.z)](scene, j, &pixel_info);
 	}
 	return (1);
 }
@@ -111,7 +112,8 @@ char	perspective_project(t_scene *scene)
 		poly_to_tri(scene ,tri_to_poly(scene, (*scene).triangle_index + i), (*scene).triangle_index + i);
 		j = -1;
 		while (++j < (*scene).nb_tri)
-			(*(*scene).fun).culling[(is_visible(scene, j) >= 0)](scene, j, &pixel_info);
+			(*(*scene).fun).culling[(is_visible(scene, j) >= 0 
+			&& (*((*scene).projected_triangle + j)).a.z)](scene, j, &pixel_info);
 	}
 	(*scene).pos_incx = 0;
 	(*scene).pos_incy = 0;
