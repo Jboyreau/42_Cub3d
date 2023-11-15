@@ -14,8 +14,8 @@
 //# define OBJ "./obj/terrain/terrain.obj"
 //# define Z_VALUE 1//terrain
 
-# define OBJ "./obj/level/level.obj"
-# define Z_VALUE 10//level
+//# define OBJ "./obj/level/level.obj"
+//# define Z_VALUE 10//level
 
 //# define OBJ "./obj/cow/cow.obj"
 //# define Z_VALUE 2//cow
@@ -59,8 +59,8 @@
 //# define OBJ "./obj/triangle/triangle.obj"
 //# define Z_VALUE 5//triangle
 
-//# define OBJ "./obj/cube/cube.obj"
-//# define Z_VALUE 10//cube
+# define OBJ "./obj/cube/cube.obj"
+# define Z_VALUE 10//cube
 
 //# define OBJ "./obj/bear/bear.obj"
 //# define Z_VALUE 2//bear

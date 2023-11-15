@@ -124,6 +124,23 @@ char	camera_rotation_y_plus(t_scene *scene)
 
 /***************************************************************************************/
 
+void	rotation_x(t_scene *scene, float angle)
+{
+	float	y, z;
+	int		i = 0;
+
+	while (i < (*scene).cloud_size)
+	{
+		y = (*((*scene).cloud + i)).y;
+		z = (*((*scene).cloud + i)).z;
+		
+		//rotation
+		(*((*scene).cloud + i)).z = z * cos(angle) - y * sin(angle);
+		(*((*scene).cloud + i)).y = y * cos(angle) + z * sin(angle);
+		++i;
+	}
+}
+
 char	rotation_x_minus(t_scene *scene)
 {
 	float	y, z;
@@ -146,23 +163,6 @@ char	rotation_x_minus(t_scene *scene)
 	}
 	camera_perspective_project(scene);
 	return (1);
-}
-
-void	rotation_x(t_scene *scene, float angle)
-{
-	float	y, z;
-	int		i = 0;
-
-	while (i < (*scene).cloud_size)
-	{
-		y = (*((*scene).cloud + i)).y;
-		z = (*((*scene).cloud + i)).z;
-		
-		//rotation
-		(*((*scene).cloud + i)).z = z * cos(angle) - y * sin(angle);
-		(*((*scene).cloud + i)).y = y * cos(angle) + z * sin(angle);
-		++i;
-	}
 }
 
 char	rotation_x_plus(t_scene *scene)
