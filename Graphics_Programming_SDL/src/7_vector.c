@@ -19,6 +19,36 @@ t_v2	vec2_subtract(t_v2 *v0, t_v2 *v1)
 	return (sum);
 }
 
+t_v3_uv	vec3uv_multiplication(t_v3_uv *v0, float factor)
+{
+	t_v3_uv new;
+
+	new.x = (*v0).x * factor;
+	new.y = (*v0).y * factor;
+	new.z = (*v0).z * factor;
+	return (new);
+}
+
+t_v3_uv	vec3uv_addition(t_v3_uv *v0, t_v3_uv *v1)
+{
+	t_v3_uv sum;
+
+	sum.x = (*v0).x + (*v1).x;
+	sum.y = (*v0).y + (*v1).y;
+	sum.z = (*v0).z + (*v1).z;
+	return (sum);
+}
+
+t_v3_uv	vec3uv_subtract(t_v3_uv *v0, t_v3_uv *v1)
+{
+	t_v3_uv sum;
+
+	sum.x = (*v0).x - (*v1).x;
+	sum.y = (*v0).y - (*v1).y;
+	sum.z = (*v0).z - (*v1).z;
+	return (sum);
+}
+
 t_v3	vec3_subtract(t_v3 *v0, t_v3 *v1)
 {
 	t_v3 sum;
@@ -100,6 +130,11 @@ t_v3	vec3_cross(t_v3 *a, t_v3 *b)
 float	vec2_dot(t_v2 *a, t_v2 *b)
 {
 	return (((*a).x * (*b).x) + ((*a).y * (*b).y));
+}
+
+float	vec3uv_dot(t_v3_uv *a, t_v3_uv *b)
+{
+	return (((*a).x * (*b).x) + ((*a).y * (*b).y) + ((*a).z * (*b).z));
 }
 
 float	vec3_dot(t_v3 *a, t_v3 *b)

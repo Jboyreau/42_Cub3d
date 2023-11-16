@@ -14,8 +14,8 @@
 //# define OBJ "./obj/terrain/terrain.obj"
 //# define Z_VALUE 1//terrain
 
-//# define OBJ "./obj/level/level.obj"
-//# define Z_VALUE 10//level
+# define OBJ "./obj/level/level.obj"
+# define Z_VALUE 10//level
 
 //# define OBJ "./obj/cow/cow.obj"
 //# define Z_VALUE 2//cow
@@ -34,6 +34,9 @@
 
 //# define OBJ "./obj/floor/floor.obj"
 //# define Z_VALUE 2//floor
+
+//# define OBJ "./obj/drone/drone.obj"
+//# define Z_VALUE 5//drone
 
 //# define OBJ "./obj/assault_rifle/AssaultRifle.obj"
 //# define Z_VALUE 2//AssaultRifle
@@ -59,8 +62,8 @@
 //# define OBJ "./obj/triangle/triangle.obj"
 //# define Z_VALUE 5//triangle
 
-# define OBJ "./obj/cube/cube.obj"
-# define Z_VALUE 10//cube
+//# define OBJ "./obj/cube/cube.obj"
+//# define Z_VALUE 10//cube
 
 //# define OBJ "./obj/bear/bear.obj"
 //# define Z_VALUE 2//bear
@@ -128,14 +131,17 @@ typedef struct s_3dvector
 	float		inv_z;
 }	t_v3;
 
+typedef struct s_3dvector_uv
+{
+	float		x;
+	float		y;
+	float		z;
+	float		u;
+	float		v;
+}	t_v3_uv;
+
 typedef struct s_barycentric_reference
 {
-	float para_abc;
-	float alpha;
-	float beta;
-	float gamma;
-	t_v2 ac;
-	t_v2 ab;
 	t_v2 ap;
 	t_v2 pc;
 	t_v2 pb;
@@ -143,10 +149,10 @@ typedef struct s_barycentric_reference
 
 typedef struct s_line
 {
-	t_v3	vec_cur;
-	t_v3	vec_prev;
-	t_v3	*cur;
-	t_v3	*prev;
+	t_v3_uv	vec_cur;
+	t_v3_uv	vec_prev;
+	t_v3_uv	*cur;
+	t_v3_uv	*prev;
 }	t_line;
 
 typedef struct s_camera
@@ -181,8 +187,8 @@ typedef struct s_projected_tirangle
 
 typedef struct s_plan
 {
-	t_v3	point;
-	t_v3	n;
+	t_v3_uv	point;
+	t_v3_uv	n;
 }	t_plane;
 
 typedef struct s_view
@@ -217,8 +223,8 @@ typedef struct s_scene //what I project
 	int		*color_buffer;
 	float	*z_buffer;
 	int		*texture;
-	t_v3	*poly;
-	t_v3	*inside_vertices;
+	t_v3_uv	*poly;
+	t_v3_uv	*inside_vertices;
 	t_v3	*cloud;
 	t_v3	*cloud_save;
 	t_tri	*triangle_index;
@@ -245,11 +251,20 @@ typedef struct s_pixel_info
 	int		color;
 	int		y;
 	float	depth;
+	float	para_abc;
+	float	p0_itu;
+	float	p1_itu;
+	float	p2_itu;
+	float	p0_itv;
+	float	p1_itv;
+	float	p2_itv;
 	t_scene	*scene;
 	t_v2	a;
 	t_v2	b;
 	t_v2	c;
 	t_v2	p;
+	t_v2	ac;
+	t_v2	ab;
 	t_point	p0;
 	t_point	p1;
 	t_point	p2;
@@ -276,7 +291,7 @@ struct s_funarrays
 	void	(*draw_ft[128])(t_pixel_info *t_pixel_info, int i);
 	void	(*flat_top_or_bottom[128])(t_pixel_info *info, t_point *p0, t_point *p1, t_point *p2);
 	void	(*start_draw_ft[128])(t_scene *scene, t_pixel_info *pixel_info, int i);
-	void	(*inter[128])(t_scene *scene, t_line *cp, t_v2 *dot, t_v3 *inside_vertices);
+	void	(*inter[128])(t_scene *scene, t_line *cp, t_v2 *dot, t_v3_uv *inside_vertices);
 };
 
 //point cloud generation
@@ -372,6 +387,10 @@ void	vec3_normalize(t_v3 *vec);
 void	vec2_normalize(t_v2 *vec);
 float	vec3_normalize_r(t_v3 *vec);
 void	vec3_denormalize(t_v3 *vec, float len);
+t_v3_uv	vec3uv_multiplication(t_v3_uv *v0, float factor);
+t_v3_uv	vec3uv_addition(t_v3_uv *v0, t_v3_uv *v1);
+t_v3_uv	vec3uv_subtract(t_v3_uv *v0, t_v3_uv *v1);
+float	vec3uv_dot(t_v3_uv *a, t_v3_uv *b);
 
 //back_face_culling
 float	is_visible(t_scene *scene, int i);
@@ -380,12 +399,14 @@ float	is_visible(t_scene *scene, int i);
 char	load_texture(char *file, t_scene *scene);
 
 //Clipping
-t_v3	*tri_to_poly(t_scene *scene, t_tri *face);
-void	poly_to_tri(t_scene *scene, t_v3 *poly, t_tri *face);
-void	inter_p_outside(t_scene *scene, t_line *cp, t_v2 *dot, t_v3 *inside_vertices);
-void	inter_c_outside(t_scene *scene, t_line *cp, t_v2 *dot, t_v3 *inside_vertices);
-void	inter_both_inside(t_scene *scene, t_line *cp, t_v2 *dot, t_v3 *inside_vertices);
-void	inter_both_outside(t_scene *scene, t_line *cp, t_v2 *dot, t_v3 *inside_vertices);
+void	uv_tv3(t_v3 *b, t_v3_uv *a);
+void	tv3_uv(t_v3_uv *b, t_v3 *a);
+t_v3_uv	*tri_to_poly(t_scene *scene, t_tri *face);
+void	poly_to_tri(t_scene *scene, t_v3_uv *poly);
+void	inter_p_outside(t_scene *scene, t_line *cp, t_v2 *dot, t_v3_uv *inside_vertices);
+void	inter_c_outside(t_scene *scene, t_line *cp, t_v2 *dot, t_v3_uv *inside_vertices);
+void	inter_both_inside(t_scene *scene, t_line *cp, t_v2 *dot, t_v3_uv *inside_vertices);
+void	inter_both_outside(t_scene *scene, t_line *cp, t_v2 *dot, t_v3_uv *inside_vertices);
 
 //renderer
 char	display(t_w *canvas, char status);

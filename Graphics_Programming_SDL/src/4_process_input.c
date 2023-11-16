@@ -2,8 +2,8 @@
 
 int	process_input(int (*fun_event[])(t_keys *), t_scene *scene)
 {
-	SDL_Event	event;
-	t_keys		keys;
+	SDL_Event		event;
+	t_keys			keys;
 
 	(*scene).poll_return = SDL_PollEvent(&event);
 	keys.key = event.key.keysym.sym;

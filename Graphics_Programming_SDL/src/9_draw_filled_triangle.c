@@ -1,27 +1,20 @@
 #include "header.h"
 
-static int	find_color(t_v3 *weight, int *texture, t_pixel_info *pixel_info)
+static int	find_color(t_v3 *weight, t_pixel_info *pixel_info)
 {
 	t_tex3	interpolated;
-	int		tw;
-	int		th;
 	int 	cell;
 
-	tw = (*(*pixel_info).scene).tex_w;
-	th = (*(*pixel_info).scene).tex_h;
-	interpolated.u = (*weight).x * ((*pixel_info).p0.uv.u * (*pixel_info).p0.inv_z)
-	+ (*weight).y * ((*pixel_info).p1.uv.u * (*pixel_info).p1.inv_z)
-	+ (*weight).z * ((*pixel_info).p2.uv.u * (*pixel_info).p2.inv_z);
-	interpolated.v = (*weight).x * ((*pixel_info).p0.uv.v * (*pixel_info).p0.inv_z)
-	+ (*weight).y * ((*pixel_info).p1.uv.v * (*pixel_info).p1.inv_z)
-	+ (*weight).z * ((*pixel_info).p2.uv.v * (*pixel_info).p2.inv_z);
-	interpolated.w = (*weight).x * (*pixel_info).p0.inv_z + (*weight).y * (*pixel_info).p1.inv_z + (*weight).z * (*pixel_info).p2.inv_z;
-	interpolated.w = 1 / interpolated.w;
-	interpolated.u *= interpolated.w;
-	interpolated.v *= interpolated.w;
-	cell = abs((int)(interpolated.v * th)) * tw + abs((int)(interpolated.u * tw));
-	cell *= (cell > 0 && cell < (*(*pixel_info).scene).t_size);
-	return (*(texture + cell));
+	interpolated.w = 1 / ((*weight).x * (*pixel_info).p0.inv_z + (*weight).y * (*pixel_info).p1.inv_z + (*weight).z * (*pixel_info).p2.inv_z);
+	interpolated.u = ((*weight).x * (*pixel_info).p0_itu
+	+ (*weight).y * (*pixel_info).p1_itu
+	+ (*weight).z * (*pixel_info).p2_itu) * interpolated.w;
+	interpolated.v = ((*weight).x * (*pixel_info).p0_itv
+	+ (*weight).y * (*pixel_info).p1_itv
+	+ (*weight).z * (*pixel_info).p2_itv) * interpolated.w;
+	cell = (*(*pixel_info).scene).tex_w * ((int)(interpolated.v * (*(*pixel_info).scene).tex_h) + interpolated.u);
+	cell *= (cell > -1 && cell < (*(*pixel_info).scene).t_size);
+	return (*((*(*pixel_info).scene).texture + cell));
 }
 
 static t_v3	*barycentric_weight(t_pixel_info* pixel_info)
@@ -29,29 +22,36 @@ static t_v3	*barycentric_weight(t_pixel_info* pixel_info)
 	static t_v3	weight;
 	t_br		ref;
 
-	ref.ac = vec2_subtract(&(*pixel_info).c, &(*pixel_info).a);
-	ref.ab = vec2_subtract(&(*pixel_info).b, &(*pixel_info).a);
 	ref.ap = vec2_subtract(&(*pixel_info).p, &(*pixel_info).a);
 	ref.pc = vec2_subtract(&(*pixel_info).c, &(*pixel_info).p);
 	ref.pb = vec2_subtract(&(*pixel_info).b, &(*pixel_info).p);
-	ref.para_abc = (ref.ac.x * ref.ab.y) - (ref.ac.y * ref.ab.x);
-	ref.para_abc = 1 / ref.para_abc;
-	ref.alpha = (ref.pc.x * ref.pb.y - ref.pc.y * ref.pb.x) * ref.para_abc;
-	ref.beta = (ref.ac.x * ref.ap.y - ref.ac.y * ref.ap.x) * ref.para_abc;
-	ref.gamma = 1 - ref.alpha - ref.beta;
-	weight.x = ref.alpha;
-	weight.y = ref.beta;
-	weight.z = ref.gamma;
+	weight.x = (ref.pc.x * ref.pb.y - ref.pc.y * ref.pb.x) * (*pixel_info).para_abc;
+	weight.y = ((*pixel_info).ac.x * ref.ap.y - (*pixel_info).ac.y * ref.ap.x) * (*pixel_info).para_abc;
+	weight.z = 1 - weight.x - weight.y;
 	return (&weight);
+}
+
+
+static void	interpolated_uv_init(t_pixel_info *pixel_info)
+{
+	(*pixel_info).ac = vec2_subtract(&(*pixel_info).c, &(*pixel_info).a);
+	(*pixel_info).ab = vec2_subtract(&(*pixel_info).b, &(*pixel_info).a);
+	(*pixel_info).para_abc = 1 / (((*pixel_info).ac.x * (*pixel_info).ab.y) - ((*pixel_info).ac.y * (*pixel_info).ab.x));
+	(*pixel_info).p0_itu = (*pixel_info).p0.uv.u * (*pixel_info).p0.inv_z;
+	(*pixel_info).p1_itu = (*pixel_info).p1.uv.u * (*pixel_info).p1.inv_z;
+	(*pixel_info).p2_itu = (*pixel_info).p2.uv.u * (*pixel_info).p2.inv_z;
+	(*pixel_info).p0_itv = (*pixel_info).p0.uv.v * (*pixel_info).p0.inv_z;
+	(*pixel_info).p1_itv = (*pixel_info).p1.uv.v * (*pixel_info).p1.inv_z;
+	(*pixel_info).p2_itv = (*pixel_info).p2.uv.v * (*pixel_info).p2.inv_z;
 }
 
 static void	draw_line(int x_start, int x_end, int y, t_pixel_info *pixel_info)
 {
+	(*pixel_info).p.y = (*pixel_info).y;
 	while (x_start <= x_end)
 	{
 		(*pixel_info).p.x = x_start;
-		(*pixel_info).p.y = (*pixel_info).y;
-		(*pixel_info).color = find_color(barycentric_weight(pixel_info), (*(*pixel_info).scene).texture, pixel_info);
+		(*pixel_info).color = find_color(barycentric_weight(pixel_info), pixel_info);
 		(*pixel_info).cell = x_start + y;
 		(*(*(*pixel_info).scene).fun).fun_draw_pixel[
 			(*((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) > (*pixel_info).depth)
@@ -62,11 +62,11 @@ static void	draw_line(int x_start, int x_end, int y, t_pixel_info *pixel_info)
 
 static void	draw_line2(int x_start, int x_end, int y, t_pixel_info *pixel_info)
 {	
+	(*pixel_info).p.y = (*pixel_info).y;
 	while (x_end <= x_start)
 	{
 		(*pixel_info).p.x = x_end;
-		(*pixel_info).p.y = (*pixel_info).y;
-		(*pixel_info).color = find_color(barycentric_weight(pixel_info), (*(*pixel_info).scene).texture, pixel_info);
+		(*pixel_info).color = find_color(barycentric_weight(pixel_info), pixel_info);
 		(*pixel_info).cell = x_end + y;
 		(*(*(*pixel_info).scene).fun).fun_draw_pixel[
 			(*((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) > (*pixel_info).depth)
@@ -86,6 +86,7 @@ static void	fill_flat_bottom(t_pixel_info *pixel_info, t_point *p0, t_point *p1,
 	x_start = (*p0).x;
 	x_end = (*p0).x;
 	y = (*p0).y;
+	interpolated_uv_init(pixel_info);
 	while (y <= (*m).y)
 	{
 		(*pixel_info).y = y;
@@ -109,7 +110,8 @@ static void	fill_flat_top(t_pixel_info *pixel_info, t_point *p2, t_point *p1, t_
 	inv_sloap_1 = ((*p1).x - (*p2).x) / (float)((*p2).y - (*p1).y);
 	x_start = (*p2).x;
 	x_end = (*p2).x;
-	y = (*p2).y;
+	y = (*p2).y;	
+	interpolated_uv_init(pixel_info);
 	while (y >= (*m).y)
 	{
 		(*pixel_info).y = y;

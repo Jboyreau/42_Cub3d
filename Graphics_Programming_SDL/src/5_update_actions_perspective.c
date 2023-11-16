@@ -76,11 +76,10 @@ char	camera_perspective_project(t_scene *scene)
 			(*((*scene).cloud + (*((*scene).triangle_index + i)).a)).z
 			+ (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
 			+ (*((*scene).cloud + (*((*scene).triangle_index + i)).c)).z;
-		poly_to_tri(scene ,tri_to_poly(scene, (*scene).triangle_index + i), (*scene).triangle_index + i);
+		poly_to_tri(scene, tri_to_poly(scene, (*scene).triangle_index + i));
 		j = -1;
 		while (++j < (*scene).nb_tri)
-			(*(*scene).fun).culling[(is_visible(scene, j) >= 0 
-			&& (*((*scene).projected_triangle + j)).a.z)](scene, j, &pixel_info);
+			(*(*scene).fun).culling[(is_visible(scene, j) >= 0)](scene, j, &pixel_info);
 	}
 	return (1);
 }
@@ -109,11 +108,10 @@ char	perspective_project(t_scene *scene)
 			(*((*scene).cloud + (*((*scene).triangle_index + i)).a)).z
 			+ (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
 			+ (*((*scene).cloud + (*((*scene).triangle_index + i)).c)).z;
-		poly_to_tri(scene ,tri_to_poly(scene, (*scene).triangle_index + i), (*scene).triangle_index + i);
+		poly_to_tri(scene, tri_to_poly(scene, (*scene).triangle_index + i));
 		j = -1;
 		while (++j < (*scene).nb_tri)
-			(*(*scene).fun).culling[(is_visible(scene, j) >= 0 
-			&& (*((*scene).projected_triangle + j)).a.z)](scene, j, &pixel_info);
+			(*(*scene).fun).culling[(is_visible(scene, j) >= 0)](scene, j, &pixel_info);
 	}
 	(*scene).pos_incx = 0;
 	(*scene).pos_incy = 0;
@@ -177,7 +175,7 @@ char	perspective_project_left(t_scene *scene)
 
 char	perspective_project_zoom_plus(t_scene *scene)
 {
-	(*scene).scale += SCALE_INC;
+	(*scene).scale += SCALE_INC * ((*scene).scale + SCALE_INC < 1000);
 	return (perspective_project(scene));
 }
 

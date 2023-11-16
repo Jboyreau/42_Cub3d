@@ -20,29 +20,29 @@ static void	init_plane(t_scene *scene)
 
 	fov_h = (*scene).camera.fov_h / 2;
 	fov_w = (*scene).camera.fov_w / 2;
-	(*scene).view.near.point = origin;
+	tv3_uv(&(*scene).view.near.point, &origin);
 	(*scene).view.near.point.z = Z_MIN;
 	(*scene).view.near.n.x = 0;
 	(*scene).view.near.n.y = 0;
 	(*scene).view.near.n.z = 1;
-	(*scene).view.far.point = origin;
+	tv3_uv(&(*scene).view.far.point, &origin);
 	(*scene).view.far.point.z = Z_MAX;
 	(*scene).view.far.n.x = 0;
 	(*scene).view.far.n.y = 0;
 	(*scene).view.far.n.z = -1;
-	(*scene).view.right.point = origin;
+	tv3_uv(&(*scene).view.right.point, &origin);
 	(*scene).view.right.n.x = -cos(fov_w);
 	(*scene).view.right.n.y = 0;
 	(*scene).view.right.n.z = sin(fov_w);
-	(*scene).view.left.point = origin;
+	tv3_uv(&(*scene).view.left.point, &origin);
 	(*scene).view.left.n.x = cos(fov_w);
 	(*scene).view.left.n.y = 0;
 	(*scene).view.left.n.z = sin(fov_w);
-	(*scene).view.top.point = origin;
+	tv3_uv(&(*scene).view.top.point, &origin);
 	(*scene).view.top.n.x = 0;
 	(*scene).view.top.n.y = cos(fov_h);
 	(*scene).view.top.n.z = sin(fov_h);
-	(*scene).view.bottom.point = origin;
+	tv3_uv(&(*scene).view.bottom.point, &origin);
 	(*scene).view.bottom.n.x = 0;
 	(*scene).view.bottom.n.y = -cos(fov_h);
 	(*scene).view.bottom.n.z = sin(fov_h);
@@ -51,8 +51,8 @@ static void	init_plane(t_scene *scene)
 t_scene	*initialize_scene(int *color_buffer, t_f *fun)
 {
 	static t_scene	scene;
-	static t_v3	poly[POLY_SIZE];
-	static t_v3	inside_vertices[POLY_SIZE];
+	static t_v3_uv	poly[POLY_SIZE];
+	static t_v3_uv	inside_vertices[POLY_SIZE];
 
 	scene.color_buffer = color_buffer;
 	scene.z_buffer = malloc(BUFF_SIZE * sizeof(float));

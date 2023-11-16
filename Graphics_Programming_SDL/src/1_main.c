@@ -78,12 +78,12 @@ int			main(void)
 	perspective_project(scene);
 	while (display(&canvas, ret))
 	{
-		(*scene).poll_return = 1;
-		while ((*scene).poll_return && ret)
-			ret = fun.fun_update[process_input(fun.fun_event, scene)](scene);
-		(*scene).time_to_wait = FRAME_TARGET_TIME - (SDL_GetTicks() - (*scene).previous_frame_time);
-		(*(*scene).fun).fun_delay[((*scene).time_to_wait > 0)]((*scene).time_to_wait);
-		(*scene).previous_frame_time = SDL_GetTicks();
+		ret = fun.fun_update[process_input(fun.fun_event, scene)](scene);
+		SDL_FlushEvent(SDL_KEYDOWN);
+		//SDL_FlushEvent(SDL_KEYUP);
+		//(*scene).time_to_wait = FRAME_TARGET_TIME - (SDL_GetTicks() - (*scene).previous_frame_time);
+		//(*(*scene).fun).fun_delay[((*scene).time_to_wait > 0)]((*scene).time_to_wait);
+		//(*scene).previous_frame_time = SDL_GetTicks();
 	}
 	return (destroy(canvas.window, canvas.renderer, scene, canvas.color_buffer_texture), 0);
 }

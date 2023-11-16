@@ -1,6 +1,6 @@
 #include "header.h"
 
-static void	initialize_inter(void (*inter[])(t_scene *scene, t_line *cp, t_v2 *dot, t_v3 *inside_vertices))
+static void	initialize_inter(void (*inter[])(t_scene *scene, t_line *cp, t_v2 *dot, t_v3_uv *inside_vertices))
 {
 	inter[0] = &inter_both_outside;
 	inter[1] = &inter_p_outside;
