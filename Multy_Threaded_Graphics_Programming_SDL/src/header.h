@@ -71,7 +71,7 @@
 //# define Z_VALUE 2//bear
 
 # define MUTEX_NUM 17
-# define THREAD_NUM 16
+# define THREAD_NUM 8
 # define X_VALUE 0
 # define Y_VALUE 0.5
 # define Z_MAX 50
@@ -212,6 +212,7 @@ typedef struct s_view
 
 typedef struct s_scene //what I project
 {
+	int					input;
 	int					ret;
 	int					tex_h;
 	int					tex_w;
@@ -241,12 +242,13 @@ typedef struct s_scene //what I project
 	t_ptri				*projected_triangle;
 	t_f					*fun;
 	upng_t				*upng;
-	pthread_barrier_t	*wait_triangle;
-	pthread_barrier_t	*wait_main_lock;
 	pthread_barrier_t	*first_wall;
-	pthread_mutex_t		*mutex_buffer;
+	pthread_barrier_t	*wait_triangle;
+	pthread_barrier_t	*start_transform;	
+	pthread_barrier_t	*wait_transform;
 	pthread_mutex_t 	code_mutex[MUTEX_NUM];
 	pthread_t			thread[THREAD_NUM];
+	pthread_t			thread_transform[THREAD_NUM];
 	t_v3				rotation;
 	t_v3				origin;
 	t_cam				camera;
@@ -450,9 +452,6 @@ void	delay(int time_to_wait);
 void	do_not_delay(int time_to_wait);
 
 //threads
-void			lock_code_mutex(pthread_mutex_t *code_mutex, int thread_num);
-void			unlock_code_mutex(pthread_mutex_t *code_mutex, int thread_num);
-void			launch_threads(pthread_t *thread, void *arg);
-pthread_mutex_t	*init_threads(t_scene *scene);
+void			init_threads(t_scene *scene);
 void			*start(void *arg);
 #endif

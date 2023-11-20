@@ -7,12 +7,6 @@ char	nothing(t_scene *scene)
 	return (1);
 }
 
-char	quit(t_scene *scene)
-{
-	(void)scene;
-	return (0);
-}
-
 void	clear_color_buffer(long long int *color_buffer, float *z_buffer)
 {
 	int	i = 0;

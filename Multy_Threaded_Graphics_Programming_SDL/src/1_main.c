@@ -9,13 +9,20 @@ static void code_mutex_destroyer(pthread_mutex_t *code_mutex)
 		pthread_mutex_destroy(code_mutex + i);
 }
 
-static void mutex_buffer_destroyer(pthread_mutex_t *mutex_buffer)
+static void kill_all_threads(t_scene *scene)
 {
-	int i;
+	int i = -1;
+	
+	while (++i < THREAD_NUM)
+		pthread_kill(*((*scene).thread + i), SIGINT);
+}
 
-	i = -1;
-	while (++i < BUFF_SIZE)
-		pthread_mutex_destroy(mutex_buffer + i);
+static void	destroy_barrier(t_scene *scene)
+{
+		pthread_barrier_destroy((*scene).first_wall);
+		pthread_barrier_destroy((*scene).wait_triangle);
+		pthread_barrier_destroy((*scene).start_transform);
+		pthread_barrier_destroy((*scene).wait_transform);
 }
 
 static void	destroy(SDL_Window *window, SDL_Renderer *renderer, t_scene *scene, SDL_Texture *color_buffer_texture)
@@ -36,14 +43,9 @@ static void	destroy(SDL_Window *window, SDL_Renderer *renderer, t_scene *scene, 
 			free((*scene).triangle_index);
 		if ((*scene).upng)
 			upng_free((*scene).upng);
-		mutex_buffer_destroyer((*scene).mutex_buffer);
 		code_mutex_destroyer((*scene).code_mutex);
-		int i = -1;
-		while (++i < THREAD_NUM)
-			pthread_kill(*((*scene).thread + i), SIGINT);
-		pthread_barrier_destroy((*scene).wait_triangle);
-		pthread_barrier_destroy((*scene).wait_main_lock);
-		pthread_barrier_destroy((*scene).first_wall);
+		kill_all_threads(scene);
+		destroy_barrier(scene);
 	}
 }
 
@@ -95,23 +97,24 @@ int			main(void)
 	scene = initialize_scene(canvas.color_buffer, &fun);
 	if (scene == NULL)
 		return (write(2, "Scene failed.\n", 14), destroy(canvas.window, canvas.renderer, scene, canvas.color_buffer_texture), 1);
-	if (init_threads(scene) == NULL)	
-		return (write(2, "Thread failed.\n", 15), destroy(canvas.window, canvas.renderer, scene, canvas.color_buffer_texture), 1);
+	init_threads(scene);	
 	clear_color_buffer((long long int *)canvas.color_buffer, (*scene).z_buffer);
 //game_loop
 	(*scene).previous_frame_time = SDL_GetTicks();
 	(*scene).time_to_wait = -1;
+	(*scene).input = 0;
 	rotation_x(scene, 3.141592);
 	perspective_project(scene);
-	while (display(&canvas, (*scene).ret))
+	while ((*scene).input != 3)
 	{
-		(*scene).ret = fun.fun_update[process_input(fun.fun_event, scene)](scene);
+		(*scene).input = process_input(fun.fun_event, scene);
+		(*scene).ret = fun.fun_update[(*scene).input * ((*scene).input != 3)](scene);
 		SDL_FlushEvent(SDL_KEYDOWN);
+		display(&canvas, (*scene).ret);
 		//SDL_FlushEvent(SDL_KEYUP);
 		//(*scene).time_to_wait = FRAME_TARGET_TIME - (SDL_GetTicks() - (*scene).previous_frame_time);
 		//(*(*scene).fun).fun_delay[((*scene).time_to_wait > 0)]((*scene).time_to_wait);
 		//(*scene).previous_frame_time = SDL_GetTicks();
 	}
-	unlock_code_mutex((*scene).code_mutex, THREAD_NUM);
 	return (destroy(canvas.window, canvas.renderer, scene, canvas.color_buffer_texture), 0);
 }

@@ -74,26 +74,22 @@ static void	initialize_fun_draw_pixel(void (*fun_draw_pixel[])(t_pixel_info *))
 static void	initialize_fun_key_triggered(char (*fun_update[])(t_scene *))
 {
 	fun_update[0] = &nothing;
-	fun_update[1] = &quit;
-	fun_update[2] = &perspective_project;
-	fun_update[4] = &perspective_project_zoom_minus;
-	fun_update[8] = &perspective_project_zoom_plus;
-	fun_update[16] = &perspective_project_far;
-	fun_update[32] = &perspective_project_close;
-	fun_update[64] = &rotation_x_minus;
-	fun_update[128] = &rotation_x_plus;
-	fun_update[256] = &rotation_y_minus;
-	fun_update[512] = &rotation_y_plus;	
-	fun_update[1024] = &rotation_z_minus;
-	fun_update[2048] = &rotation_z_plus;
-	fun_update[4096] = &perspective_project_left;
-	fun_update[8192] = &perspective_project_right;
-	fun_update[16384] = &perspective_project_up;
-	fun_update[32768] = &perspective_project_down;
-	fun_update[26] = &camera_rotation_x_minus;;
-	fun_update[27] = &camera_rotation_x_plus;;
-	fun_update[28] = &camera_rotation_y_minus;;
-	fun_update[29] = &camera_rotation_y_plus;;
+	fun_update[1] = &perspective_project_zoom_minus;
+	fun_update[2] = &perspective_project_zoom_plus; 
+	fun_update[4] =  &perspective_project_far;
+	fun_update[8] = &perspective_project_close;
+	fun_update[16] = &rotation_x_minus;
+	fun_update[32] = &rotation_x_plus;
+	fun_update[64] = &rotation_y_minus;
+	fun_update[128] = &rotation_y_plus;
+	fun_update[256] = &perspective_project_left;
+	fun_update[512] = &perspective_project_right;	
+	fun_update[1024] = &perspective_project_up;
+	fun_update[2048] = &perspective_project_down;
+	fun_update[4096] = &camera_rotation_x_minus;
+	fun_update[8192] = &camera_rotation_x_plus;
+	fun_update[16384] = &camera_rotation_y_minus;
+	fun_update[32768] = &camera_rotation_y_plus;
 }
 
 //According to the value of the event (press key or not) a function is choosed.
