@@ -6,6 +6,7 @@ static int	find_color(t_v3 *weight, t_pixel_info *pixel_info)
 	int 	cell;
 
 	interpolated.w = 1 / ((*weight).x * (*pixel_info).p0.inv_z + (*weight).y * (*pixel_info).p1.inv_z + (*weight).z * (*pixel_info).p2.inv_z);
+	(*pixel_info).depth = interpolated.w;
 	interpolated.u = ((*weight).x * (*pixel_info).p0_itu
 	+ (*weight).y * (*pixel_info).p1_itu
 	+ (*weight).z * (*pixel_info).p2_itu) * interpolated.w;

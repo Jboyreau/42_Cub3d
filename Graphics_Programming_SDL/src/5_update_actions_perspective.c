@@ -72,10 +72,6 @@ char	camera_perspective_project(t_scene *scene)
 	i = -1;
 	while (++i < (*scene).triangle_index_size)
 	{
-		pixel_info.depth =
-			(*((*scene).cloud + (*((*scene).triangle_index + i)).a)).z
-			+ (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
-			+ (*((*scene).cloud + (*((*scene).triangle_index + i)).c)).z;
 		poly_to_tri(scene, tri_to_poly(scene, (*scene).triangle_index + i));
 		j = -1;
 		while (++j < (*scene).nb_tri)
@@ -104,10 +100,6 @@ char	perspective_project(t_scene *scene)
 	i = -1;
 	while (++i < (*scene).triangle_index_size)
 	{
-		pixel_info.depth =
-			(*((*scene).cloud + (*((*scene).triangle_index + i)).a)).z
-			+ (*((*scene).cloud + (*((*scene).triangle_index + i)).b)).z
-			+ (*((*scene).cloud + (*((*scene).triangle_index + i)).c)).z;
 		poly_to_tri(scene, tri_to_poly(scene, (*scene).triangle_index + i));
 		j = -1;
 		while (++j < (*scene).nb_tri)
