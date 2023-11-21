@@ -74,7 +74,7 @@ t_scene	*initialize_scene(int *color_buffer, t_f *fun)
 	scene.pos_incz = Z_VALUE;
 	scene.poly = poly;
 	scene.inside_vertices = inside_vertices;
-	if (load_texture("./obj/texture.png", &scene) == 0)
+	if (load_texture(TEXTURE, &scene) == 0)
 		return (free(scene.z_buffer), NULL);
 	if (populate_3d_space(&scene) == 0)
 		return (free(scene.z_buffer), NULL);

@@ -70,6 +70,13 @@ static void	initialize_fun_draw_pixel(void (*fun_draw_pixel[])(t_pixel_info *))
 	fun_draw_pixel[1] = &draw_pixel;
 }
 
+//According to the coordinate value the pixel is displayed or not.
+static void	initialize_fun_draw_pixel2(void (*fun_draw_pixel2[])(t_pixel_info *))
+{
+	fun_draw_pixel2[0] = &do_not_draw_pixel;
+	fun_draw_pixel2[1] = &draw_pixel2;
+}
+
 //According to the value of the pressed key a function is choosed.
 static void	initialize_fun_key_triggered(char (*fun_update[])(t_scene *))
 {
@@ -105,6 +112,7 @@ void	initialize_fun(t_f *fun)
 	initialize_fun_key_triggered((*fun).fun_update);
 	initialize_fun_event((*fun).fun_event);
 	initialize_fun_draw_pixel((*fun).fun_draw_pixel);
+	initialize_fun_draw_pixel2((*fun).fun_draw_pixel2);
 	initialize_delay((*fun).fun_delay);
 	initialize_dda((*fun).dda);
 	initialize_culling((*fun).culling);

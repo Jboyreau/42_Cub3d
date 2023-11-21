@@ -45,6 +45,9 @@ void	init_threads(t_scene *scene)
 
 	(*scene).arg = (void*)(&arg);
 	arg.pixel_info.scene = scene;
+	arg.pixel_info.screen_space_origin.x =  MIDLE_X;
+	arg.pixel_info.screen_space_origin.y =  MIDLE_Y;	
+	arg.pixel_info.screen_space_origin.z = -100;
 	init_barrier(scene, &arg);
 	init_code_mutex(scene);
 	launch_threads((*scene).thread, (*scene).arg);

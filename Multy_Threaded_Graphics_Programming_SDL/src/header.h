@@ -10,68 +10,88 @@
 # include <signal.h>
 # include "upng.h"
 
-//# define OBJ "./obj/dragon/dragon.obj"
-//# define Z_VALUE 2//dragon
-
-//# define OBJ "./obj/terrain/terrain.obj"
-//# define Z_VALUE 1//terrain
-
  # define OBJ "./obj/level/level.obj"
  # define Z_VALUE 10//level
+ # define TEXTURE "./obj/text/mossystone.png"
 
 //# define OBJ "./obj/cow/cow.obj"
 //# define Z_VALUE 2//cow
-
-//# define OBJ "./obj/Skull/Skull_Low_Poly.obj"
-//# define Z_VALUE 500//skull
-
-//# define OBJ "./obj/big_cub/big_cub.obj"
-//# define Z_VALUE 3//big_cube
-
-//# define OBJ "./obj/f22/f22.obj"
-//# define Z_VALUE 5//f22
-
-//# define OBJ "./obj/book/book2.obj"
-//# define Z_VALUE 2//book
-
-//# define OBJ "./obj/floor/floor.obj"
-//# define Z_VALUE 2//floor
-
-//# define OBJ "./obj/drone/drone.obj"
-//# define Z_VALUE 5//drone
-
-//# define OBJ "./obj/assault_rifle/AssaultRifle.obj"
-//# define Z_VALUE 2//AssaultRifle
-
-//# define OBJ "./obj/famas/famas.obj"
-//# define Z_VALUE 2//famas
-
-//# define OBJ "./obj/egg_bot/egg_bot.obj"
-//# define Z_VALUE 2//egg_bot
-
-//# define OBJ "./obj/naruto/naruto.obj"
-//# define Z_VALUE 2//naruto
-
-//# define OBJ "./obj/cyberman/cyberman.obj"
-//# define Z_VALUE 2//cyberman
-
-//# define OBJ "./obj/monument_alexender/monument_alexender.obj"
-//# define Z_VALUE 2//monument_alexender
-
-//# define OBJ "./obj/sword/sword.obj"
-//# define Z_VALUE 2//sword
-
-//# define OBJ "./obj/triangle/triangle.obj"
-//# define Z_VALUE 5//triangle
+//#define TEXTURE "./obj/texture.png"
 
 //# define OBJ "./obj/cube/cube.obj"
 //# define Z_VALUE 10//cube
+//#define TEXTURE "./obj/texture.png"
+
+//# define OBJ "./obj/f22/f22.obj"
+//# define Z_VALUE 5//f22
+//# define TEXTURE "./obj/f22/f22.png"
+
+//# define OBJ "./obj/f117/f117.obj"
+//# define Z_VALUE 5//f117
+//#define TEXTURE "./obj/f117/f117.png"
+
+//# define OBJ "./obj/drone/drone.obj"
+//# define Z_VALUE 5//drone
+//#define TEXTURE "./obj/drone/drone.png"
+
+//# define OBJ "./obj/crab/crab.obj"
+//# define Z_VALUE 5//crab
+//#define TEXTURE "./obj/crab/crab.png"
+
+//# define OBJ "./obj/sphere/sphere.obj"
+//# define Z_VALUE 5//sphere
+//# define TEXTURE "./obj/sphere/pikuma.png"
+
+//# define OBJ "./obj/big_cub/big_cub.obj"
+//# define Z_VALUE 3//big_cube
+//#define TEXTURE "./obj/texture.png"
+
+//# define OBJ "./obj/floor/floor.obj"
+//# define Z_VALUE 2//floor
+//#define TEXTURE "./obj/texture.png"
+
+//# define OBJ "./obj/assault_rifle/AssaultRifle.obj"
+//# define Z_VALUE 2//AssaultRifle
+//#define TEXTURE "./obj/texture.png"
+
+//# define OBJ "./obj/famas/famas.obj"
+//# define Z_VALUE 2//famas
+//#define TEXTURE "./obj/texture.png"
+
+//# define OBJ "./obj/egg_bot/egg_bot.obj"
+//# define Z_VALUE 2//egg_bot
+//#define TEXTURE "./obj/texture.png"
+
+//# define OBJ "./obj/naruto/naruto.obj"
+//# define Z_VALUE 2//naruto
+//#define TEXTURE "./obj/texture.png"
+
+//# define OBJ "./obj/cyberman/cyberman.obj"
+//# define Z_VALUE 2//cyberman
+//#define TEXTURE "./obj/texture.png"
+
+//# define OBJ "./obj/monument_alexender/monument_alexender.obj"
+//# define Z_VALUE 2//monument_alexender
+//#define TEXTURE "./obj/texture.png"
+
+//# define OBJ "./obj/sword/sword.obj"
+//# define Z_VALUE 2//sword
+//#define TEXTURE "./obj/texture.png"
 
 //# define OBJ "./obj/bear/bear.obj"
 //# define Z_VALUE 2//bear
+//#define TEXTURE "./obj/texture.png"
+
+//# define OBJ "./obj/dragon/dragon.obj"
+//# define Z_VALUE 2//dragon
+//#define TEXTURE "./obj/texture.png"
+
+//# define OBJ "./obj/terrain/terrain.obj"
+//# define Z_VALUE 1//terrain
+//#define TEXTURE "./obj/text/mossystone.png"
 
 # define MUTEX_NUM 17
-# define THREAD_NUM 8
+# define THREAD_NUM 10
 # define X_VALUE 0
 # define Y_VALUE 0.5
 # define Z_MAX 50
@@ -117,10 +137,18 @@ typedef struct s_texture
 	float	v;
 }	t_tex2;
 
+typedef struct s_affine
+{
+	float	a;
+	float	b;
+}	t_aff;
+
 typedef struct s_color_buffer_point
 {
 	int			x;
+	float		fx;
 	int			y;
+	float		fy;
 	float		z;
 	float		inv_z;
 	t_tex2		uv;
@@ -285,6 +313,8 @@ typedef struct s_pixel_info
 	float				p0_itv;
 	float				p1_itv;
 	float				p2_itv;
+	float				dot;
+//	float				dot_prev;
 	t_scene				*scene;
 	pthread_barrier_t	*wait_triangle;
 	pthread_barrier_t	*wait_main_lock;
@@ -295,9 +325,19 @@ typedef struct s_pixel_info
 	t_v2				p;
 	t_v2				ac;
 	t_v2				ab;
+	t_aff				line_equation_01;
+	t_aff				line_equation_02;
+	t_aff				line_equation_12;
+	t_v3				weight;
+	t_v3				screen_space_origin;
+	t_v3				screen_space_p;
+	t_tex3				interpolated;
 	t_point				p0;
 	t_point				p1;
 	t_point				p2;
+	t_point				screen_space_p0;
+	t_point				screen_space_p1;
+	t_point				screen_space_p2;	
 }	t_pixel_info;
 
 typedef struct s_fun_start_argument
@@ -320,6 +360,7 @@ struct s_funarrays
 	char	(*fun_update[65537])(t_scene *);
 	int		(*fun_event[128])(t_keys *);
 	void	(*fun_draw_pixel[128])(t_pixel_info *);
+	void	(*fun_draw_pixel2[128])(t_pixel_info *);
 	void	(*fun_delay[128])(int);
 	void	(*dda[128])(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
 	void	(*culling[128])(t_scene *scene, int i, t_pixel_info *pixel_info);
@@ -391,7 +432,9 @@ void	y_plus(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
 void	x_minus(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
 void	x_plus(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
 void	draw_pixel(t_pixel_info *pixel_info);
+void	draw_pixel2(t_pixel_info *pixel_info);
 void	do_not_draw_pixel(t_pixel_info *pixel_info);
+void	dot_p20(t_pixel_info *pixel_info);
 
 //triangle filling
 void	draw_ft012(t_pixel_info *pixel_info, int i);

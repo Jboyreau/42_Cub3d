@@ -1,23 +1,5 @@
 #include "header.h"
 
-static int	find_color(t_v3 weight, t_pixel_info *pixel_info)
-{
-	t_tex3	interpolated;
-	int 	cell;
-
-	interpolated.w = 1 / (weight.x * (*pixel_info).p0.inv_z + weight.y * (*pixel_info).p1.inv_z + weight.z * (*pixel_info).p2.inv_z);
-	(*pixel_info).depth = interpolated.w;
-	interpolated.u = (weight.x * (*pixel_info).p0_itu
-	+ weight.y * (*pixel_info).p1_itu
-	+ weight.z * (*pixel_info).p2_itu) * interpolated.w;
-	interpolated.v = (weight.x * (*pixel_info).p0_itv
-	+ weight.y * (*pixel_info).p1_itv
-	+ weight.z * (*pixel_info).p2_itv) * interpolated.w;
-	cell = (*(*pixel_info).scene).tex_w * ((int)(interpolated.v * (*(*pixel_info).scene).tex_h) + interpolated.u);
-	cell *= (cell > -1 && cell < (*(*pixel_info).scene).t_size);
-	return (*((*(*pixel_info).scene).texture + cell));
-}
-
 static t_v3	barycentric_weight(t_pixel_info* pixel_info)
 {
 	t_v3	weight;
@@ -49,13 +31,25 @@ static void	interpolated_uv_init(t_pixel_info *pixel_info)
 static void	draw_line(int x_start, int x_end, int y, t_pixel_info *pixel_info)
 {
 	(*pixel_info).p.y = (*pixel_info).y;
+	while (x_start <= x_end - 5)
+	{
+		(*pixel_info).cell = x_start + y;
+		(*pixel_info).p.x = x_start;
+		(*pixel_info).weight = barycentric_weight(pixel_info);
+		(*pixel_info).interpolated.w = 1 / ((*pixel_info).weight.x * (*pixel_info).p0.inv_z + (*pixel_info).weight.y * (*pixel_info).p1.inv_z + (*pixel_info).weight.z * (*pixel_info).p2.inv_z);
+		(*(*(*pixel_info).scene).fun).fun_draw_pixel[
+			(*((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) > (*pixel_info).interpolated.w)
+		](pixel_info);
+		++x_start;
+	}
 	while (x_start <= x_end)
 	{
 		(*pixel_info).cell = x_start + y;
 		(*pixel_info).p.x = x_start;
-		(*pixel_info).color = find_color(barycentric_weight(pixel_info), pixel_info);
-		(*(*(*pixel_info).scene).fun).fun_draw_pixel[
-			(*((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) > (*pixel_info).depth)
+		(*pixel_info).weight = barycentric_weight(pixel_info);
+		(*pixel_info).interpolated.w = 1 / ((*pixel_info).weight.x * (*pixel_info).p0.inv_z + (*pixel_info).weight.y * (*pixel_info).p1.inv_z + (*pixel_info).weight.z * (*pixel_info).p2.inv_z);
+		(*(*(*pixel_info).scene).fun).fun_draw_pixel2[
+			(*((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) > (*pixel_info).interpolated.w)
 		](pixel_info);
 		++x_start;
 	}
@@ -64,12 +58,26 @@ static void	draw_line(int x_start, int x_end, int y, t_pixel_info *pixel_info)
 static void	draw_line2(int x_start, int x_end, int y, t_pixel_info *pixel_info)
 {
 	(*pixel_info).p.y = (*pixel_info).y;
+	while (x_end <= x_start - 5)
+	{
+		(*pixel_info).cell = x_end + y;
+		(*pixel_info).p.x = x_end;
+		(*pixel_info).weight = barycentric_weight(pixel_info);
+		(*pixel_info).interpolated.w = 1 / ((*pixel_info).weight.x * (*pixel_info).p0.inv_z + (*pixel_info).weight.y * (*pixel_info).p1.inv_z + (*pixel_info).weight.z * (*pixel_info).p2.inv_z);
+		(*pixel_info).depth = (*pixel_info).interpolated.w;
+		(*(*(*pixel_info).scene).fun).fun_draw_pixel[
+			(*((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) > (*pixel_info).depth)
+		](pixel_info);
+		++x_end;
+	}
 	while (x_end <= x_start)
 	{
 		(*pixel_info).cell = x_end + y;
 		(*pixel_info).p.x = x_end;
-		(*pixel_info).color = find_color(barycentric_weight(pixel_info), pixel_info);
-		(*(*(*pixel_info).scene).fun).fun_draw_pixel[
+		(*pixel_info).weight = barycentric_weight(pixel_info);
+		(*pixel_info).interpolated.w = 1 / ((*pixel_info).weight.x * (*pixel_info).p0.inv_z + (*pixel_info).weight.y * (*pixel_info).p1.inv_z + (*pixel_info).weight.z * (*pixel_info).p2.inv_z);
+		(*pixel_info).depth = (*pixel_info).interpolated.w;
+		(*(*(*pixel_info).scene).fun).fun_draw_pixel2[
 			(*((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) > (*pixel_info).depth)
 		](pixel_info);
 		++x_end;
@@ -243,12 +251,12 @@ static void	call_thread(t_pixel_info *pixel_info)
 
 static void	draw_filled_triangle(t_point *p0, t_point *p1, t_point *p2, t_pixel_info *pixel_info)
 {
-	(*pixel_info).a.x = (float)(*p0).x;
-	(*pixel_info).a.y = (float)(*p0).y;
-	(*pixel_info).b.x = (float)(*p1).x;
-	(*pixel_info).b.y = (float)(*p1).y;
-	(*pixel_info).c.x = (float)(*p2).x;
-	(*pixel_info).c.y = (float)(*p2).y;
+	(*pixel_info).a.x = (*p0).fx;
+	(*pixel_info).a.y = (*p0).fy;
+	(*pixel_info).b.x = (*p1).fx;
+	(*pixel_info).b.y = (*p1).fy;
+	(*pixel_info).c.x = (*p2).fx;
+	(*pixel_info).c.y = (*p2).fy;
 	(*pixel_info).p0 = (*p0);
 	(*pixel_info).p1 = (*p1);
 	(*pixel_info).p2 = (*p2);
