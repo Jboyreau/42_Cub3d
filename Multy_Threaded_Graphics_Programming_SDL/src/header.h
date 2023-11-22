@@ -10,7 +10,7 @@
 # include <signal.h>
 # include "upng.h"
 
- # define OBJ "./obj/level/level.obj"
+# define OBJ "./obj/level/level.obj"
  # define Z_VALUE 10//level
  # define TEXTURE "./obj/text/mossystone.png"
 
@@ -76,7 +76,7 @@
 
 //# define OBJ "./obj/sword/sword.obj"
 //# define Z_VALUE 2//sword
-//#define TEXTURE "./obj/texture.png"
+//#define TEXTURE "./obj/sword/wood.png"
 
 //# define OBJ "./obj/bear/bear.obj"
 //# define Z_VALUE 2//bear
@@ -94,7 +94,7 @@
 # define THREAD_NUM 10
 # define X_VALUE 0
 # define Y_VALUE 0.5
-# define Z_MAX 50
+# define Z_MAX 30
 # define Z_MIN 1
 # define FPS 60
 # define FRAME_TARGET_TIME (1000 / FPS)
@@ -314,7 +314,6 @@ typedef struct s_pixel_info
 	float				p1_itv;
 	float				p2_itv;
 	float				dot;
-//	float				dot_prev;
 	t_scene				*scene;
 	pthread_barrier_t	*wait_triangle;
 	pthread_barrier_t	*wait_main_lock;
@@ -329,9 +328,15 @@ typedef struct s_pixel_info
 	t_aff				line_equation_02;
 	t_aff				line_equation_12;
 	t_v3				weight;
+	t_v3				weight_start;
+	t_v3				weight_end;
 	t_v3				screen_space_origin;
 	t_v3				screen_space_p;
 	t_tex3				interpolated;
+	t_tex3				interpolated_start;
+	t_tex3				interpolated_end;
+	t_point				p_start;
+	t_point				p_end;
 	t_point				p0;
 	t_point				p1;
 	t_point				p2;
@@ -361,6 +366,8 @@ struct s_funarrays
 	int		(*fun_event[128])(t_keys *);
 	void	(*fun_draw_pixel[128])(t_pixel_info *);
 	void	(*fun_draw_pixel2[128])(t_pixel_info *);
+	void	(*fun_draw_pixel_last[128])(t_pixel_info *);
+	void	(*fun_draw_pixel_last2[128])(t_pixel_info *);
 	void	(*fun_delay[128])(int);
 	void	(*dda[128])(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
 	void	(*culling[128])(t_scene *scene, int i, t_pixel_info *pixel_info);
@@ -433,6 +440,9 @@ void	x_minus(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
 void	x_plus(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
 void	draw_pixel(t_pixel_info *pixel_info);
 void	draw_pixel2(t_pixel_info *pixel_info);
+void	draw_pixel_last(t_pixel_info *pixel_info);
+void	draw_pixel_last2(t_pixel_info *pixel_info);
+void	draw_first_pixel(t_pixel_info *pixel_info);
 void	do_not_draw_pixel(t_pixel_info *pixel_info);
 void	dot_p20(t_pixel_info *pixel_info);
 

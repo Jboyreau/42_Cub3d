@@ -15,8 +15,8 @@ t_ptri	init_face(t_v2 *a, float az, t_point *pb, t_point *pc)
 	face.c.z = (*pc).z;
 	return (face);
 }
-/*
-static void	dot_p02(t_pixel_info *pixel_info)
+
+void	dot_last2(t_pixel_info *pixel_info)
 {
 	t_ptri	face;
 	t_v3	vecAB;
@@ -24,7 +24,12 @@ static void	dot_p02(t_pixel_info *pixel_info)
 	t_v3	normal;
 	t_v3	camera_ray;
 
-	face = init_face(&(*pixel_info).p, (*pixel_info).interpolated.w, &(*pixel_info).screen_space_p0, &(*pixel_info).screen_space_p1);
+	if ((*pixel_info).p_start.y != (*pixel_info).p1.y)
+		face = init_face(&(*pixel_info).p, (*pixel_info).interpolated.w, &(*pixel_info).p_start, &(*pixel_info).p1);
+	else if ((*pixel_info).p_start.y != (*pixel_info).p2.y)
+		face = init_face(&(*pixel_info).p, (*pixel_info).interpolated.w, &(*pixel_info).p2, &(*pixel_info).p_start);
+	else
+		face = init_face(&(*pixel_info).p, (*pixel_info).interpolated.w, &(*pixel_info).p_start, &(*pixel_info).p0);
 	vecAB = vec3_subtract(&(face.b), &(face.a));
 	vecAC = vec3_subtract(&(face.c), &(face.a));
 	normal = vec3_cross(&vecAB, &vecAC);
@@ -32,11 +37,10 @@ static void	dot_p02(t_pixel_info *pixel_info)
 	camera_ray = vec3_subtract(&((*pixel_info).screen_space_origin), &(face).a);
 	vec3_normalize(&camera_ray);
 	(*pixel_info).dot = vec3_dot(&camera_ray, &normal);
-		if ((*pixel_info).dot < 0)
-			printf("fatality\n");
+	(*pixel_info).dot = (*pixel_info).dot * ((*pixel_info).dot > 0 && !(isnan((*pixel_info).dot)));
 }
 
-static void	dot_p01(t_pixel_info *pixel_info)
+void	dot_last(t_pixel_info *pixel_info)
 {
 	t_ptri	face;
 	t_v3	vecAB;
@@ -44,7 +48,12 @@ static void	dot_p01(t_pixel_info *pixel_info)
 	t_v3	normal;
 	t_v3	camera_ray;
 
-	face = init_face(&(*pixel_info).p, (*pixel_info).interpolated.w, &(*pixel_info).screen_space_p0, &(*pixel_info).screen_space_p1);
+	if ((*pixel_info).p_end.y != (*pixel_info).p1.y)
+		face = init_face(&(*pixel_info).p, (*pixel_info).interpolated.w, &(*pixel_info).p_end, &(*pixel_info).p1);
+	else if ((*pixel_info).p_end.y != (*pixel_info).p2.y)
+		face = init_face(&(*pixel_info).p, (*pixel_info).interpolated.w, &(*pixel_info).p2, &(*pixel_info).p_end);
+	else
+		face = init_face(&(*pixel_info).p, (*pixel_info).interpolated.w, &(*pixel_info).p_end, &(*pixel_info).p0);
 	vecAB = vec3_subtract(&(face.b), &(face.a));
 	vecAC = vec3_subtract(&(face.c), &(face.a));
 	normal = vec3_cross(&vecAB, &vecAC);
@@ -52,11 +61,10 @@ static void	dot_p01(t_pixel_info *pixel_info)
 	camera_ray = vec3_subtract(&((*pixel_info).screen_space_origin), &(face).a);
 	vec3_normalize(&camera_ray);
 	(*pixel_info).dot = vec3_dot(&camera_ray, &normal);
-		if ((*pixel_info).dot <= 0)
-			dot_p02(pixel_info);
+	(*pixel_info).dot = (*pixel_info).dot * ((*pixel_info).dot > 0 && !(isnan((*pixel_info).dot)));
 }
 
-static void	dot_p10(t_pixel_info *pixel_info)
+void	dot_p0e(t_pixel_info *pixel_info)
 {
 	t_ptri	face;
 	t_v3	vecAB;
@@ -64,19 +72,19 @@ static void	dot_p10(t_pixel_info *pixel_info)
 	t_v3	normal;
 	t_v3	camera_ray;
 
-	face = init_face(&(*pixel_info).p, (*pixel_info).interpolated.w, &(*pixel_info).screen_space_p1, &(*pixel_info).screen_space_p0);
+	face = init_face(&(*pixel_info).p, (*pixel_info).interpolated.w, &(*pixel_info).p_end, &(*pixel_info).p0);
 	vecAB = vec3_subtract(&(face.b), &(face.a));
 	vecAC = vec3_subtract(&(face.c), &(face.a));
 	normal = vec3_cross(&vecAB, &vecAC);
 	vec3_normalize(&normal);
+	vec3_normalize(&normal);
 	camera_ray = vec3_subtract(&((*pixel_info).screen_space_origin), &(face).a);
 	vec3_normalize(&camera_ray);
 	(*pixel_info).dot = vec3_dot(&camera_ray, &normal);
-		if ((*pixel_info).dot < 0)
-			dot_p01(pixel_info);
+	(*pixel_info).dot = (*pixel_info).dot * ((*pixel_info).dot > 0 && !(isnan((*pixel_info).dot)));
 }
 
-static void	dot_p12(t_pixel_info *pixel_info)
+void	dot_p0s(t_pixel_info *pixel_info)
 {
 	t_ptri	face;
 	t_v3	vecAB;
@@ -84,64 +92,17 @@ static void	dot_p12(t_pixel_info *pixel_info)
 	t_v3	normal;
 	t_v3	camera_ray;
 
-	face = init_face(&(*pixel_info).p, (*pixel_info).interpolated.w, &(*pixel_info).screen_space_p1, &(*pixel_info).screen_space_p2);
+	face = init_face(&(*pixel_info).p, (*pixel_info).interpolated.w, &(*pixel_info).p0, &(*pixel_info).p_start);
 	vecAB = vec3_subtract(&(face.b), &(face.a));
 	vecAC = vec3_subtract(&(face.c), &(face.a));
 	normal = vec3_cross(&vecAB, &vecAC);
 	vec3_normalize(&normal);
 	camera_ray = vec3_subtract(&((*pixel_info).screen_space_origin), &(face).a);
 	vec3_normalize(&camera_ray);
-	(*pixel_info).dot = vec3_dot(&camera_ray, &normal);
-	if ((*pixel_info).dot < 0)
-		dot_p10(pixel_info);
+	(*pixel_info).dot = vec3_dot(&camera_ray, &normal);	
+	(*pixel_info).dot = (*pixel_info).dot * ((*pixel_info).dot > 0 && !(isnan((*pixel_info).dot)));
 }
 
-static void	dot_p21(t_pixel_info *pixel_info)
-{
-	t_ptri	face;
-	t_v3	vecAB;
-	t_v3	vecAC;
-	t_v3	normal;
-	t_v3	camera_ray;
-
-	face = init_face(&(*pixel_info).p, (*pixel_info).interpolated.w, &(*pixel_info).screen_space_p2, &(*pixel_info).screen_space_p1);
-	vecAB = vec3_subtract(&(face.b), &(face.a));
-	vecAC = vec3_subtract(&(face.c), &(face.a));
-	normal = vec3_cross(&vecAB, &vecAC);
-	vec3_normalize(&normal);
-	camera_ray = vec3_subtract(&((*pixel_info).screen_space_origin), &(face).a);
-	vec3_normalize(&camera_ray);
-	(*pixel_info).dot = vec3_dot(&camera_ray, &normal);
-	if ((*pixel_info).dot < 0)
-		dot_p12(pixel_info);
-}
-*/
-
-void	dot_p20(t_pixel_info *pixel_info)
-{
-	t_ptri	face;
-	t_v3	vecAB;
-	t_v3	vecAC;
-	t_v3	normal;
-	t_v3	camera_ray;
-
-	face = init_face(&(*pixel_info).p, (*pixel_info).interpolated.w, &(*pixel_info).screen_space_p2, &(*pixel_info).screen_space_p0);
-	vecAB = vec3_subtract(&(face.b), &(face.a));
-	vecAC = vec3_subtract(&(face.c), &(face.a));
-	normal = vec3_cross(&vecAB, &vecAC);
-	vec3_normalize(&normal);
-	camera_ray = vec3_subtract(&((*pixel_info).screen_space_origin), &(face).a);
-	vec3_normalize(&camera_ray);
-	(*pixel_info).dot = vec3_dot(&camera_ray, &normal);
-//	if ((*pixel_info).dot < 0)
-//		dot_p21(pixel_info);
-}
-/*
-static void calculate_dot(t_pixel_info *pixel_info)
-{
-	dot_p20(pixel_info);
-}
-*/
 static int	find_color(t_pixel_info *pixel_info)
 {
 	int 	cell;
@@ -157,6 +118,48 @@ static int	find_color(t_pixel_info *pixel_info)
 	return (*((*(*pixel_info).scene).texture + cell));
 }
 
+void	draw_pixel_last2(t_pixel_info *pixel_info)
+{
+	int a;
+	int r;
+	int g;
+	int b;
+
+	dot_last(pixel_info);
+	(*pixel_info).color = find_color(pixel_info);
+	a = 0xFF000000;
+	r = ((*pixel_info).color & 0x00FF0000) * (*pixel_info).dot;
+	g = ((*pixel_info).color & 0x0000FF00) * (*pixel_info).dot;
+	b = ((*pixel_info).color & 0x000000FF) * (*pixel_info).dot;
+	*((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) = (*pixel_info).interpolated.w;
+	*((*(*pixel_info).scene).color_buffer + (*pixel_info).cell) = 
+		a 
+		| (r & 0x00FF0000)
+		| (g & 0x0000FF00)
+		| (b & 0x000000FF);
+}
+
+void	draw_pixel_last(t_pixel_info *pixel_info)
+{
+	int a;
+	int r;
+	int g;
+	int b;
+
+	dot_last(pixel_info);
+	(*pixel_info).color = find_color(pixel_info);
+	a = 0xFF000000;
+	r = ((*pixel_info).color & 0x00FF0000) * (*pixel_info).dot;
+	g = ((*pixel_info).color & 0x0000FF00) * (*pixel_info).dot;
+	b = ((*pixel_info).color & 0x000000FF) * (*pixel_info).dot;
+	*((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) = (*pixel_info).interpolated.w;
+	*((*(*pixel_info).scene).color_buffer + (*pixel_info).cell) = 
+		a 
+		| (r & 0x00FF0000)
+		| (g & 0x0000FF00)
+		| (b & 0x000000FF);
+}
+
 void	draw_pixel2(t_pixel_info *pixel_info)
 {
 	int a;
@@ -164,11 +167,34 @@ void	draw_pixel2(t_pixel_info *pixel_info)
 	int g;
 	int b;
 
+	dot_p0s(pixel_info);
 	(*pixel_info).color = find_color(pixel_info);
 	a = 0xFF000000;
 	r = ((*pixel_info).color & 0x00FF0000) * (*pixel_info).dot;
 	g = ((*pixel_info).color & 0x0000FF00) * (*pixel_info).dot;
 	b = ((*pixel_info).color & 0x000000FF) * (*pixel_info).dot;
+	*((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) = (*pixel_info).interpolated.w;
+	*((*(*pixel_info).scene).color_buffer + (*pixel_info).cell) = 
+		a 
+		| (r & 0x00FF0000)
+		| (g & 0x0000FF00)
+		| (b & 0x000000FF);
+}
+
+void	draw_first_pixel(t_pixel_info *pixel_info)
+{
+	int a;
+	int r;
+	int g;
+	int b;
+
+	
+	dot_p0e(pixel_info);
+	(*pixel_info).color = find_color(pixel_info);
+	a = 0xFF000000;
+	r = ((*pixel_info).color & 0x00FF0000) * (*(*pixel_info).scene).dot;
+	g = ((*pixel_info).color & 0x0000FF00) * (*(*pixel_info).scene).dot;
+	b = ((*pixel_info).color & 0x000000FF) * (*(*pixel_info).scene).dot;
 	*((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) = (*pixel_info).interpolated.w;
 	*((*(*pixel_info).scene).color_buffer + (*pixel_info).cell) = 
 		a 
@@ -184,9 +210,8 @@ void	draw_pixel(t_pixel_info *pixel_info)
 	int g;
 	int b;
 
-	dot_p20(pixel_info);
+	dot_p0e(pixel_info);
 	(*pixel_info).color = find_color(pixel_info);
-	//calculate_dot(pixel_info);
 	a = 0xFF000000;
 	r = ((*pixel_info).color & 0x00FF0000) * (*pixel_info).dot;
 	g = ((*pixel_info).color & 0x0000FF00) * (*pixel_info).dot;

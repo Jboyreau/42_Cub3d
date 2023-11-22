@@ -14,7 +14,7 @@ void	clear_color_buffer(long long int *color_buffer, float *z_buffer)
 	while (i < CLEAR_SIZE)
 	{
 		*(z_buffer + i) = (float)0xffffffff;
-		*(color_buffer + i) = -1;
+		*(color_buffer + i) = 0;
 		++i;
 	}
 	while (i < BUFF_SIZE)

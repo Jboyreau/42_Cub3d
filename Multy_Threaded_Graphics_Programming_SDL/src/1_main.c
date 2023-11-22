@@ -111,6 +111,7 @@ int			main(void)
 		(*scene).ret = fun.fun_update[(*scene).input * ((*scene).input != 3)](scene);
 		SDL_FlushEvent(SDL_KEYDOWN);
 		display(&canvas, (*scene).ret);
+		
 		//SDL_FlushEvent(SDL_KEYUP);
 		//(*scene).time_to_wait = FRAME_TARGET_TIME - (SDL_GetTicks() - (*scene).previous_frame_time);
 		//(*(*scene).fun).fun_delay[((*scene).time_to_wait > 0)]((*scene).time_to_wait);
