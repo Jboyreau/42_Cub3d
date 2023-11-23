@@ -10,7 +10,7 @@
 # include <signal.h>
 # include "upng.h"
 
-# define OBJ "./obj/level/level.obj"
+ # define OBJ "./obj/level/level.obj"
  # define Z_VALUE 10//level
  # define TEXTURE "./obj/text/mossystone.png"
 
@@ -91,7 +91,7 @@
 //#define TEXTURE "./obj/text/mossystone.png"
 
 # define MUTEX_NUM 17
-# define THREAD_NUM 10
+# define THREAD_NUM 14
 # define X_VALUE 0
 # define Y_VALUE 0.5
 # define Z_MAX 30
@@ -305,6 +305,7 @@ typedef struct s_pixel_info
 	int					ratio;
 	int					modulo;
 	float				inv_sloap_2;
+	float				inv_sloap_2_factor;
 	float				depth;
 	float				para_abc;
 	float				p0_itu;

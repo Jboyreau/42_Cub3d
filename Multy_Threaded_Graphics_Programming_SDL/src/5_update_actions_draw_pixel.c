@@ -16,6 +16,30 @@ t_ptri	init_face(t_v2 *a, float az, t_point *pb, t_point *pc)
 	return (face);
 }
 
+void	dot_first(t_pixel_info *pixel_info)
+{
+	t_ptri	face;
+	t_v3	vecAB;
+	t_v3	vecAC;
+	t_v3	normal;
+	t_v3	camera_ray;
+
+	if ((*pixel_info).p_start.y == (*pixel_info).p1.y)
+		face = init_face(&(*pixel_info).p, (*pixel_info).interpolated.w, &(*pixel_info).p2, &(*pixel_info).p0);
+	else if ((*pixel_info).p_start.y == (*pixel_info).p2.y)
+		face = init_face(&(*pixel_info).p, (*pixel_info).interpolated.w, &(*pixel_info).p1, &(*pixel_info).p0);
+	else
+		face = init_face(&(*pixel_info).p, (*pixel_info).interpolated.w, &(*pixel_info).p2, &(*pixel_info).p1);
+	vecAB = vec3_subtract(&(face.b), &(face.a));
+	vecAC = vec3_subtract(&(face.c), &(face.a));
+	normal = vec3_cross(&vecAB, &vecAC);
+	vec3_normalize(&normal);
+	camera_ray = vec3_subtract(&((*pixel_info).screen_space_origin), &(face).a);
+	vec3_normalize(&camera_ray);
+	(*pixel_info).dot = vec3_dot(&camera_ray, &normal);
+	(*pixel_info).dot = (*pixel_info).dot * ((*pixel_info).dot > 0 && !(isnan((*pixel_info).dot)));
+}
+
 void	dot_last2(t_pixel_info *pixel_info)
 {
 	t_ptri	face;
@@ -189,12 +213,12 @@ void	draw_first_pixel(t_pixel_info *pixel_info)
 	int b;
 
 	
-	dot_p0e(pixel_info);
+	dot_first(pixel_info);
 	(*pixel_info).color = find_color(pixel_info);
 	a = 0xFF000000;
-	r = ((*pixel_info).color & 0x00FF0000) * (*(*pixel_info).scene).dot;
-	g = ((*pixel_info).color & 0x0000FF00) * (*(*pixel_info).scene).dot;
-	b = ((*pixel_info).color & 0x000000FF) * (*(*pixel_info).scene).dot;
+	r = ((*pixel_info).color & 0x00FF0000) * (*pixel_info).dot;
+	g = ((*pixel_info).color & 0x0000FF00) * (*pixel_info).dot;
+	b = ((*pixel_info).color & 0x000000FF) * (*pixel_info).dot;
 	*((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) = (*pixel_info).interpolated.w;
 	*((*(*pixel_info).scene).color_buffer + (*pixel_info).cell) = 
 		a 

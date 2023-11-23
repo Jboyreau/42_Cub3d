@@ -50,7 +50,8 @@ static void	draw_start(int *x_start, int y, t_pixel_info *pixel_info)
 	(*pixel_info).interpolated.w = (*pixel_info).p_start.z;
 	(*(*(*pixel_info).scene).fun).fun_draw_pixel[
 		(*((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) > (*pixel_info).interpolated.w)
-		+ ((*pixel_info).p.y == (*pixel_info).p0.y || (*pixel_info).p.y == (*pixel_info).p2.y)
+		+ (((*pixel_info).p.y == (*pixel_info).p0.y || (*pixel_info).p.y == (*pixel_info).p2.y)
+		&& (*((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) > (*pixel_info).interpolated.w))
 	](pixel_info);
 	++(*x_start);
 }
@@ -211,18 +212,21 @@ static void	dr_line(float x_start, float x_end, int y, t_pixel_info *pixel_info)
 		draw_last2(x_start, x_end, ((y << 10) + (y << 8)), pixel_info);
 }
 
-static void	fill_flat_bottom(t_pixel_info *pixel_info, t_point *p0, t_point *p1)
+#define THREAD_NUM_ THREAD_NUM
+
+static void	fill_flat_bottom(t_pixel_info *pixel_info, t_point *p0, t_point *p1, int thread_index)
 {
 	float	inv_sloap_1;
 	float	x_start;
 	float	x_end;
 	int		y;
 
-	inv_sloap_1 = ((*p1).x - (*p0).x) / (float)((*p1).y - (*p0).y);
-	x_start = (*p0).x + ((*pixel_info).y_start - (*p0).y) * inv_sloap_1;
-	x_end = (*p0).x + ((*pixel_info).y_start - (*p0).y) * (*pixel_info).inv_sloap_2;
+	inv_sloap_1 = (((*p1).x - (*p0).x) / (float)((*p1).y - (*p0).y));
+	x_start = (*p0).x + thread_index * inv_sloap_1;
+	x_end = (*p0).x + thread_index * (*pixel_info).inv_sloap_2;
+	inv_sloap_1 *= (float)THREAD_NUM_;
 	y = (*pixel_info).y_start;
-	while (y <= (*pixel_info).y_end && (y < (*p1).y && (*p0).y != (*p1).y))
+	while (y < (*p1).y)
 	{
 		(*pixel_info).y = y;
 		if (x_start < x_end)
@@ -230,25 +234,26 @@ static void	fill_flat_bottom(t_pixel_info *pixel_info, t_point *p0, t_point *p1)
 		else
 			draw_line2(x_start, x_end, ((y << 10) + (y << 8)), pixel_info);
 		x_start += inv_sloap_1;
-		x_end += (*pixel_info).inv_sloap_2;
-		++y;
+		x_end += (*pixel_info).inv_sloap_2_factor;
+		y += THREAD_NUM_;
 	}
 	if (y == (*p1).y && (*p0).y != (*p1).y)
 		dr_line(x_start, x_end, y, pixel_info);
 }
 
-static void	fill_flat_top(t_pixel_info *pixel_info, t_point *p2, t_point *p1)
+static void	fill_flat_top(t_pixel_info *pixel_info, t_point *p2, t_point *p1, int thread_index)
 {
 	float	inv_sloap_1;
 	float	x_start;
 	float	x_end;
 	int		y;
 	
-	inv_sloap_1 = ((*p1).x - (*p2).x) / (float)((*p2).y - (*p1).y);	
-	x_start = (*p2).x + ((*p2).y - (*pixel_info).y_start) * inv_sloap_1;
-	x_end = (*p2).x - ((*p2).y - ((*pixel_info).y_start)) * (*pixel_info).inv_sloap_2;
+	inv_sloap_1 = (((*p1).x - (*p2).x) / (float)((*p2).y - (*p1).y));	
+	x_start = (*p2).x + thread_index * inv_sloap_1;
+	x_end = (*p2).x - thread_index * (*pixel_info).inv_sloap_2;
+	inv_sloap_1 *= (float)THREAD_NUM_;
 	y = (*pixel_info).y_start;
-	while (y >= (*pixel_info).y_end && (y > (*p1).y && (*p2).y != (*p1).y))
+	while (y > (*p1).y)
 	{
 		(*pixel_info).y = y;
 		if (x_start < x_end)
@@ -256,8 +261,8 @@ static void	fill_flat_top(t_pixel_info *pixel_info, t_point *p2, t_point *p1)
 		else
 			draw_line2(x_start, x_end, ((y << 10) + (y << 8)), pixel_info);
 		x_start += inv_sloap_1;
-		x_end -= (*pixel_info).inv_sloap_2;
-		--y;
+		x_end -= (*pixel_info).inv_sloap_2_factor;
+		y -= THREAD_NUM_;
 	}
 	if (y == (*p1).y && (*p2).y != (*p1).y)
 		dr_line(x_start, x_end, y, pixel_info);
@@ -265,34 +270,29 @@ static void	fill_flat_top(t_pixel_info *pixel_info, t_point *p2, t_point *p1)
 
 void	flat_bottom_top(t_pixel_info *pixel_info, t_point *p0, t_point *p1, t_point *p2, int thread_index)
 {	
-	(*pixel_info).inv_sloap_2 = ((*p0).x - (*p2).x) / (float)((*p0).y - (*p2).y);
-	
-	(*pixel_info).len_y = (*pixel_info).p1.y - (*pixel_info).p0.y;
-	(*pixel_info).ratio = (*pixel_info).len_y / THREAD_NUM;
-	(*pixel_info).ratio += ((*pixel_info).ratio == 0);
-	(*pixel_info).modulo = (*pixel_info).len_y % THREAD_NUM;
-	(*pixel_info).y_start = (*p0).y + (thread_index * (*pixel_info).ratio);
-	if ((thread_index == THREAD_NUM - 1) && (*pixel_info).modulo != 0 && (*pixel_info).ratio > 0)
-		(*pixel_info).y_end = (*pixel_info).y_start + (*pixel_info).ratio + (*pixel_info).modulo;
-	else
-		(*pixel_info).y_end = (*pixel_info).y_start + (*pixel_info).ratio;
-	(*pixel_info).y_start += (thread_index > 0);
-	fill_flat_bottom(pixel_info, p0, p1);
-	
-	(*pixel_info).len_y = (*pixel_info).p2.y - (*pixel_info).p1.y;
-	(*pixel_info).ratio = (*pixel_info).len_y / THREAD_NUM;
-	(*pixel_info).ratio += ((*pixel_info).ratio == 0);
-	(*pixel_info).modulo = (*pixel_info).len_y % THREAD_NUM;
-	(*pixel_info).y_start = (*p2).y - (thread_index * (*pixel_info).ratio);
-	if ((thread_index == THREAD_NUM - 1) && (*pixel_info).modulo != 0 && (*pixel_info).ratio > 0)
-		(*pixel_info).y_end = (*pixel_info).y_start - (*pixel_info).ratio - (*pixel_info).modulo;
-	else
-		(*pixel_info).y_end = (*pixel_info).y_start - (*pixel_info).ratio;
-	(*pixel_info).y_start += (thread_index > 0);
-	fill_flat_top(pixel_info, p2, p1);
+	(*pixel_info).inv_sloap_2 = (((*p0).x - (*p2).x) / (float)((*p0).y - (*p2).y));
+	(*pixel_info).inv_sloap_2_factor = THREAD_NUM_ * (*pixel_info).inv_sloap_2;
+	(*pixel_info).y_start = (*p0).y + thread_index;
+	fill_flat_bottom(pixel_info, p0, p1, thread_index);
+	(*pixel_info).y_start = (*p2).y - thread_index;
+	fill_flat_top(pixel_info, p2, p1, thread_index);
 }
 
+void	flat_top(t_pixel_info *pixel_info, t_point *p0, t_point *p1, t_point *p2, int thread_index)
+{
+	(*pixel_info).inv_sloap_2 = (((*p0).x - (*p2).x) / (float)((*p0).y - (*p2).y));
+	(*pixel_info).inv_sloap_2_factor = THREAD_NUM_ * (*pixel_info).inv_sloap_2;
+	(*pixel_info).y_start = (*p2).y - thread_index;
+	fill_flat_top(pixel_info, p2, p1, thread_index);
+}
 
+void	flat_bottom(t_pixel_info *pixel_info, t_point *p0, t_point *p1, t_point *p2, int thread_index)
+{
+	(*pixel_info).inv_sloap_2 = (((*p0).x - (*p2).x) / (float)((*p0).y - (*p2).y));
+	(*pixel_info).inv_sloap_2_factor = THREAD_NUM_ * (*pixel_info).inv_sloap_2;
+	(*pixel_info).y_start = (*p0).y + thread_index;
+	fill_flat_bottom(pixel_info, p0, p1, thread_index);
+}
 void	nothing_tb(t_pixel_info *pixel_info, t_point *p0, t_point *p1, t_point *p2, int thread_index)
 {
 	(void)pixel_info;
@@ -301,43 +301,6 @@ void	nothing_tb(t_pixel_info *pixel_info, t_point *p0, t_point *p1, t_point *p2,
 	(void)p2;
 	(void)thread_index;
 }
-
-void	flat_top(t_pixel_info *pixel_info, t_point *p0, t_point *p1, t_point *p2, int thread_index)
-{
-	(*pixel_info).inv_sloap_2 = ((*p0).x - (*p2).x) / (float)((*p0).y - (*p2).y);
-	
-	(*pixel_info).len_y = (*pixel_info).p2.y - (*pixel_info).p0.y;
-	(*pixel_info).ratio = (*pixel_info).len_y / THREAD_NUM;
-	(*pixel_info).ratio += ((*pixel_info).ratio == 0);
-	(*pixel_info).modulo = (*pixel_info).len_y % THREAD_NUM;
-	(*pixel_info).y_start = (*p2).y - (thread_index * (*pixel_info).ratio);
-	if ((thread_index == THREAD_NUM - 1) && (*pixel_info).modulo != 0 && (*pixel_info).ratio > 0)
-		(*pixel_info).y_end = (*pixel_info).y_start - (*pixel_info).ratio - (*pixel_info).modulo;
-	else
-		(*pixel_info).y_end = (*pixel_info).y_start - (*pixel_info).ratio;
-	(*pixel_info).y_start += (thread_index > 0);
-	
-	fill_flat_top(pixel_info, p2, p1);
-}
-
-void	flat_bottom(t_pixel_info *pixel_info, t_point *p0, t_point *p1, t_point *p2, int thread_index)
-{
-	(*pixel_info).inv_sloap_2 = ((*p0).x - (*p2).x) / (float)((*p0).y - (*p2).y);
-	
-	(*pixel_info).len_y = (*pixel_info).p2.y - (*pixel_info).p0.y;
-	(*pixel_info).ratio = (*pixel_info).len_y / THREAD_NUM;
-	(*pixel_info).ratio += ((*pixel_info).ratio == 0);
-	(*pixel_info).modulo = (*pixel_info).len_y % THREAD_NUM;
-	(*pixel_info).y_start = (*p0).y + (thread_index * (*pixel_info).ratio);
-	if ((thread_index == THREAD_NUM - 1) && (*pixel_info).modulo != 0 && (*pixel_info).ratio > 0)
-		(*pixel_info).y_end = (*pixel_info).y_start + (*pixel_info).ratio + (*pixel_info).modulo;
-	else
-		(*pixel_info).y_end = (*pixel_info).y_start + (*pixel_info).ratio;
-	(*pixel_info).y_start += (thread_index > 0);
-	
-	fill_flat_bottom(pixel_info, p0, p1);
-}
-
 /* ROUTINE----------------------------------------------------------------*/
 
 void	find_thread_index(pthread_t *thread, int *thread_index)
@@ -358,7 +321,7 @@ void	*start(void *arg)
 
 	pixel_info = (*(t_arg *)arg).pixel_info;
 	find_thread_index((*pixel_info.scene).thread, &thread_index);
-	while ((*pixel_info.scene).ret)
+	while (1)
 	{
 		pthread_barrier_wait((*(t_arg *)arg).pixel_info.first_wall);
 		pixel_info = (*(t_arg *)arg).pixel_info;
@@ -391,8 +354,7 @@ static void	draw_filled_triangle(t_point *p0, t_point *p1, t_point *p2, t_pixel_
 	(*pixel_info).p2 = (*p2);
 	interpolated_uv_init(pixel_info);
 	(*pixel_info).condition = ((*p1).y == (*p0).y && ((*p1).y != (*p0).y)) 
-	+ (((*p1).y == (*p2).y && ((*p1).y != (*p0).y)) << 1)
-	+ ((((*p1).y == (*p0).y && (*p0).y == (*p2).y) || ((*p1).x == (*p0).x && (*p0).x == (*p2).x)) << 2);
+	+ (((*p1).y == (*p2).y && ((*p1).y != (*p0).y)) << 1);
 	call_thread(pixel_info);
 }
 
