@@ -1,12 +1,8 @@
 #include "header.h"
-
-static void code_mutex_destroyer(pthread_mutex_t *code_mutex)
+static void	destroy_barrier(t_scene *scene)
 {
-	int i;
-
-	i = -1;
-	while (++i < MUTEX_NUM)
-		pthread_mutex_destroy(code_mutex + i);
+	pthread_barrier_destroy((*scene).first_wall);
+	pthread_barrier_destroy((*scene).wait_triangle);
 }
 
 static void kill_all_threads(t_scene *scene)
@@ -15,14 +11,6 @@ static void kill_all_threads(t_scene *scene)
 	
 	while (++i < THREAD_NUM)
 		pthread_kill(*((*scene).thread + i), SIGINT);
-}
-
-static void	destroy_barrier(t_scene *scene)
-{
-		pthread_barrier_destroy((*scene).first_wall);
-		pthread_barrier_destroy((*scene).wait_triangle);
-		pthread_barrier_destroy((*scene).start_transform);
-		pthread_barrier_destroy((*scene).wait_transform);
 }
 
 static void	destroy(SDL_Window *window, SDL_Renderer *renderer, t_scene *scene, SDL_Texture *color_buffer_texture)
@@ -39,12 +27,12 @@ static void	destroy(SDL_Window *window, SDL_Renderer *renderer, t_scene *scene, 
 			free((*scene).color_buffer);
 		if ((*scene).cloud)
 			free((*scene).cloud);
+		if ((*scene).cloud_save)
+			free((*scene).cloud_save);
 		if ((*scene).triangle_index)
 			free((*scene).triangle_index);
 		if ((*scene).upng)
 			upng_free((*scene).upng);
-		code_mutex_destroyer((*scene).code_mutex);
-		kill_all_threads(scene);
 		destroy_barrier(scene);
 	}
 }
@@ -110,12 +98,15 @@ int			main(void)
 		(*scene).input = process_input(fun.fun_event, scene);
 		(*scene).ret = fun.fun_update[(*scene).input * ((*scene).input != 3)](scene);
 		SDL_FlushEvent(SDL_KEYDOWN);
-		display(&canvas, (*scene).ret);
-		
+		display(&canvas, (*scene).ret);	
 		//SDL_FlushEvent(SDL_KEYUP);
 		//(*scene).time_to_wait = FRAME_TARGET_TIME - (SDL_GetTicks() - (*scene).previous_frame_time);
 		//(*(*scene).fun).fun_delay[((*scene).time_to_wait > 0)]((*scene).time_to_wait);
 		//(*scene).previous_frame_time = SDL_GetTicks();
 	}
-	return (destroy(canvas.window, canvas.renderer, scene, canvas.color_buffer_texture), 0);
+	pthread_barrier_wait((*scene).first_wall);
+	kill_all_threads(scene);
+	pthread_barrier_wait((*scene).wait_triangle);
+	destroy(canvas.window, canvas.renderer, scene, canvas.color_buffer_texture);
+	return (0);
 }

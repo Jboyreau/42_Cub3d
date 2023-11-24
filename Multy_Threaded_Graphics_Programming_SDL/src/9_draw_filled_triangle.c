@@ -321,7 +321,7 @@ void	*start(void *arg)
 
 	pixel_info = (*(t_arg *)arg).pixel_info;
 	find_thread_index((*pixel_info.scene).thread, &thread_index);
-	while (1)
+	while ((*(*(t_arg *)arg).pixel_info.scene).input != 3)
 	{
 		pthread_barrier_wait((*(t_arg *)arg).pixel_info.first_wall);
 		pixel_info = (*(t_arg *)arg).pixel_info;

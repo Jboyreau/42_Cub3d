@@ -91,7 +91,7 @@
 //#define TEXTURE "./obj/text/mossystone.png"
 
 # define MUTEX_NUM 17
-# define THREAD_NUM 14
+# define THREAD_NUM 10
 # define X_VALUE 0
 # define Y_VALUE 0.5
 # define Z_MAX 30
@@ -272,11 +272,8 @@ typedef struct s_scene //what I project
 	upng_t				*upng;
 	pthread_barrier_t	*first_wall;
 	pthread_barrier_t	*wait_triangle;
-	pthread_barrier_t	*start_transform;	
-	pthread_barrier_t	*wait_transform;
 	pthread_mutex_t 	code_mutex[MUTEX_NUM];
 	pthread_t			thread[THREAD_NUM];
-	pthread_t			thread_transform[THREAD_NUM];
 	t_v3				rotation;
 	t_v3				origin;
 	t_cam				camera;
