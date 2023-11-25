@@ -1,8 +1,14 @@
 #include "header.h"
+
 static void	destroy_barrier(t_scene *scene)
 {
 	pthread_barrier_destroy((*scene).first_wall);
 	pthread_barrier_destroy((*scene).wait_triangle);
+}
+
+static void	destroy_spinlock(t_scene *scene)
+{
+	pthread_spin_destroy((*scene).fast_lock);
 }
 
 static void kill_all_threads(t_scene *scene)
@@ -34,6 +40,7 @@ static void	destroy(SDL_Window *window, SDL_Renderer *renderer, t_scene *scene, 
 		if ((*scene).upng)
 			upng_free((*scene).upng);
 		destroy_barrier(scene);
+		destroy_spinlock(scene);
 	}
 }
 
@@ -104,9 +111,7 @@ int			main(void)
 		//(*(*scene).fun).fun_delay[((*scene).time_to_wait > 0)]((*scene).time_to_wait);
 		//(*scene).previous_frame_time = SDL_GetTicks();
 	}
-	pthread_barrier_wait((*scene).first_wall);
 	kill_all_threads(scene);
-	pthread_barrier_wait((*scene).wait_triangle);
 	destroy(canvas.window, canvas.renderer, scene, canvas.color_buffer_texture);
 	return (0);
 }

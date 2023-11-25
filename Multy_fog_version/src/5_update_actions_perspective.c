@@ -76,9 +76,7 @@ char	camera_perspective_project(t_scene *scene)
 	int				i;
 
 	pixel_info = &((*((t_arg *)(*scene).arg)).pixel_info);
-	pthread_mutex_lock((*(*pixel_info).scene).code_mutex + INTER_THREAD);
 	clear_color_buffer(((long long int *)((*scene).color_buffer)), (*scene).z_buffer);
-	pthread_mutex_unlock((*(*pixel_info).scene).code_mutex + INTER_THREAD);
 	(*pixel_info).scene = scene;
 	i = -1;
 	while (++i < (*scene).triangle_index_size)
@@ -98,9 +96,7 @@ char	perspective_project(t_scene *scene)
 	int				j;
 	
 	pixel_info = &((*((t_arg *)(*scene).arg)).pixel_info);
-	pthread_mutex_lock((*(*pixel_info).scene).code_mutex + INTER_THREAD);
 	clear_color_buffer(((long long int *)((*scene).color_buffer)), (*scene).z_buffer);
-	pthread_mutex_unlock((*(*pixel_info).scene).code_mutex + INTER_THREAD);
 	(*pixel_info).scene = scene;
 	i = -1;
 	while(++i < (*scene).cloud_size)

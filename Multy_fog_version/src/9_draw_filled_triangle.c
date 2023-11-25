@@ -63,8 +63,6 @@ static void	draw_line2(int x_start, int x_end, int y, t_pixel_info *pixel_info)
 	}
 }
 
-#define THREAD_NUM_ THREAD_NUM
-
 static void	fill_flat_bottom(t_pixel_info *pixel_info, t_point *p0, t_point *p1, int thread_index)
 {
 	float	inv_sloap_1;
@@ -75,7 +73,7 @@ static void	fill_flat_bottom(t_pixel_info *pixel_info, t_point *p0, t_point *p1,
 	inv_sloap_1 = (((*p1).x - (*p0).x) / (float)((*p1).y - (*p0).y));
 	x_start = (*p0).x + thread_index * inv_sloap_1;
 	x_end = (*p0).x + thread_index * (*pixel_info).inv_sloap_2;
-	inv_sloap_1 *= (float)THREAD_NUM_;
+	inv_sloap_1 *= (float)THREAD_NUM;
 	y = (*pixel_info).y_start;
 	while (y <= (*p1).y)
 	{
@@ -86,7 +84,7 @@ static void	fill_flat_bottom(t_pixel_info *pixel_info, t_point *p0, t_point *p1,
 			draw_line2(x_start, x_end, ((y << 10) + (y << 8)), pixel_info);
 		x_start += inv_sloap_1;
 		x_end += (*pixel_info).inv_sloap_2_factor;
-		y += THREAD_NUM_;
+		y += THREAD_NUM;
 	}
 }
 
@@ -100,7 +98,7 @@ static void	fill_flat_top(t_pixel_info *pixel_info, t_point *p2, t_point *p1, in
 	inv_sloap_1 = (((*p1).x - (*p2).x) / (float)((*p2).y - (*p1).y));	
 	x_start = (*p2).x + thread_index * inv_sloap_1;
 	x_end = (*p2).x - thread_index * (*pixel_info).inv_sloap_2;
-	inv_sloap_1 *= (float)THREAD_NUM_;
+	inv_sloap_1 *= (float)THREAD_NUM;
 	y = (*pixel_info).y_start;
 	while (y >= (*p1).y)
 	{
@@ -111,14 +109,14 @@ static void	fill_flat_top(t_pixel_info *pixel_info, t_point *p2, t_point *p1, in
 			draw_line2(x_start, x_end, ((y << 10) + (y << 8)), pixel_info);
 		x_start += inv_sloap_1;
 		x_end -= (*pixel_info).inv_sloap_2_factor;
-		y -= THREAD_NUM_;
+		y -= THREAD_NUM;
 	}
 }
 
 void	flat_bottom_top(t_pixel_info *pixel_info, t_point *p0, t_point *p1, t_point *p2, int thread_index)
 {	
 	(*pixel_info).inv_sloap_2 = (((*p0).x - (*p2).x) / (float)((*p0).y - (*p2).y));
-	(*pixel_info).inv_sloap_2_factor = THREAD_NUM_ * (*pixel_info).inv_sloap_2;
+	(*pixel_info).inv_sloap_2_factor = THREAD_NUM * (*pixel_info).inv_sloap_2;
 	(*pixel_info).y_start = (*p0).y + thread_index;
 	fill_flat_bottom(pixel_info, p0, p1, thread_index);
 	(*pixel_info).y_start = (*p2).y - thread_index;
@@ -128,7 +126,7 @@ void	flat_bottom_top(t_pixel_info *pixel_info, t_point *p0, t_point *p1, t_point
 void	flat_top(t_pixel_info *pixel_info, t_point *p0, t_point *p1, t_point *p2, int thread_index)
 {
 	(*pixel_info).inv_sloap_2 = (((*p0).x - (*p2).x) / (float)((*p0).y - (*p2).y));
-	(*pixel_info).inv_sloap_2_factor = THREAD_NUM_ * (*pixel_info).inv_sloap_2;
+	(*pixel_info).inv_sloap_2_factor = THREAD_NUM * (*pixel_info).inv_sloap_2;
 	(*pixel_info).y_start = (*p2).y - thread_index;
 	fill_flat_top(pixel_info, p2, p1, thread_index);
 }
@@ -136,7 +134,7 @@ void	flat_top(t_pixel_info *pixel_info, t_point *p0, t_point *p1, t_point *p2, i
 void	flat_bottom(t_pixel_info *pixel_info, t_point *p0, t_point *p1, t_point *p2, int thread_index)
 {
 	(*pixel_info).inv_sloap_2 = (((*p0).x - (*p2).x) / (float)((*p0).y - (*p2).y));
-	(*pixel_info).inv_sloap_2_factor = THREAD_NUM_ * (*pixel_info).inv_sloap_2;
+	(*pixel_info).inv_sloap_2_factor = THREAD_NUM * (*pixel_info).inv_sloap_2;
 	(*pixel_info).y_start = (*p0).y + thread_index;
 	fill_flat_bottom(pixel_info, p0, p1, thread_index);
 }
@@ -149,6 +147,28 @@ void	nothing_tb(t_pixel_info *pixel_info, t_point *p0, t_point *p1, t_point *p2,
 	(void)thread_index;
 }
 /* ROUTINE----------------------------------------------------------------*/
+
+void	wait_call(t_pixel_info *pixel_info)
+{
+	while ((*pixel_info).call < 1)
+		;
+}
+
+void	notify_rdy(t_pixel_info *pixel_info)
+{
+	pthread_spin_lock((*pixel_info).fast_lock);
+	++(*pixel_info).rdy;
+	pthread_spin_unlock((*pixel_info).fast_lock);
+	while ((*pixel_info).call)
+		;
+}
+
+void	notify_finish(t_pixel_info *pixel_info)
+{
+	pthread_spin_lock((*pixel_info).fast_lock);
+	++(*pixel_info).finish;
+	pthread_spin_unlock((*pixel_info).fast_lock);
+}
 
 void	find_thread_index(pthread_t *thread, int *thread_index)
 {
@@ -170,22 +190,38 @@ void	*start(void *arg)
 	find_thread_index((*pixel_info.scene).thread, &thread_index);
 	while ((*(*(t_arg *)arg).pixel_info.scene).input != 3)
 	{
-		pthread_barrier_wait((*(t_arg *)arg).pixel_info.first_wall);
+		wait_call(&(*(t_arg *)arg).pixel_info);
 		pixel_info = (*(t_arg *)arg).pixel_info;
+		notify_rdy(&(*(t_arg *)arg).pixel_info);
 		(*(*pixel_info.scene).fun).flat_top_or_bottom[
 		pixel_info.condition
 		](&pixel_info, &pixel_info.p0, &pixel_info.p1, &pixel_info.p2, thread_index);
-		pthread_barrier_wait((*(t_arg *)arg).pixel_info.wait_triangle);
+		notify_finish(&(*(t_arg *)arg).pixel_info);
 	}
 	return (NULL);
 }
 /* ROUTINE----------------------------------------------------------------*/
 
-static void	call_thread(t_pixel_info *pixel_info)
+static void	wait_rdy(t_pixel_info *pixel_info)
 {
-	
-	pthread_barrier_wait((*pixel_info).first_wall);
-	pthread_barrier_wait((*pixel_info).wait_triangle);
+	while ((*pixel_info).rdy < THREAD_NUM)
+		;
+	(*pixel_info).call = 0;
+}
+
+static void	wait_finish(t_pixel_info *pixel_info)
+{
+	while ((*pixel_info).finish < THREAD_NUM)
+		;
+}
+
+static void	call_thread(t_pixel_info *pixel_info)
+{	
+	(*pixel_info).rdy = 0;
+	(*pixel_info).finish = 0;
+	(*pixel_info).call = 1;
+	wait_rdy(pixel_info);
+	wait_finish(pixel_info);
 }
 
 static void	draw_filled_triangle(t_point *p0, t_point *p1, t_point *p2, t_pixel_info *pixel_info)

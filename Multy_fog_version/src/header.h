@@ -10,9 +10,9 @@
 # include <signal.h>
 # include "upng.h"
 
- # define OBJ "./obj/level/level.obj"
- # define Z_VALUE 10//level
- # define TEXTURE "./obj/text/mossystone.png"
+// # define OBJ "./obj/level/level.obj"
+// # define Z_VALUE 10//level
+// # define TEXTURE "./obj/text/mossystone.png"
 
 //# define OBJ "./obj/cow/cow.obj"
 //# define Z_VALUE 2//cow
@@ -30,9 +30,9 @@
 //# define Z_VALUE 5//f117
 //#define TEXTURE "./obj/f117/f117.png"
 
-//# define OBJ "./obj/drone/drone.obj"
-//# define Z_VALUE 5//drone
-//#define TEXTURE "./obj/drone/drone.png"
+# define OBJ "./obj/drone/drone.obj"
+# define Z_VALUE 5//drone
+#define TEXTURE "./obj/drone/drone.png"
 
 //# define OBJ "./obj/crab/crab.obj"
 //# define Z_VALUE 5//crab
@@ -273,8 +273,8 @@ typedef struct s_scene //what I project
 	upng_t				*upng;
 	pthread_barrier_t	*first_wall;
 	pthread_barrier_t	*wait_triangle;
-	pthread_mutex_t 	code_mutex[MUTEX_NUM];
 	pthread_t			thread[THREAD_NUM];
+	pthread_spinlock_t	*fast_lock;
 	t_v3				rotation;
 	t_v3				origin;
 	t_cam				camera;
@@ -290,7 +290,9 @@ typedef struct t_keys
 
 typedef struct s_pixel_info
 {
-	char				first;
+	int					rdy;
+	int					finish;
+	int					call;
 	int					condition;
 	int					cell;
 	int					color;
@@ -317,6 +319,7 @@ typedef struct s_pixel_info
 	pthread_barrier_t	*wait_triangle;
 	pthread_barrier_t	*wait_main_lock;
 	pthread_barrier_t	*first_wall;
+	pthread_spinlock_t	*fast_lock;
 	t_v2				a;
 	t_v2				b;
 	t_v2				c;
