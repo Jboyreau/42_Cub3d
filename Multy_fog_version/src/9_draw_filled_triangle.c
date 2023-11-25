@@ -57,7 +57,7 @@ static void	draw_line2(int x_start, int x_end, int y, t_pixel_info *pixel_info)
 		(*pixel_info).interpolated.w = 1 / ((*pixel_info).weight.x * (*pixel_info).p0.inv_z + (*pixel_info).weight.y * (*pixel_info).p1.inv_z + (*pixel_info).weight.z * (*pixel_info).p2.inv_z);
 		(*pixel_info).depth = (*pixel_info).interpolated.w;
 		(*(*(*pixel_info).scene).fun).fun_draw_pixel[
-			(*((*(*pixel_info).scene).z_buffer + (*pixel_info).cell * ((*pixel_info).cell > -1 && (*pixel_info).cell < BUFF_SIZE)) > (*pixel_info).interpolated.w)
+			(*((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) > (*pixel_info).interpolated.w)
 		](pixel_info);
 		++x_end;
 	}

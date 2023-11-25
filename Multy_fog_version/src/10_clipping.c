@@ -54,7 +54,6 @@ void	inter_p_outside(t_scene *scene, t_line *cp, t_v2 *dot, t_v3_uv *inside_vert
 	(*(inside_vertices + (*scene).inside_size)).v = (*(*cp).prev).v + t * ((*(*cp).cur).v - (*(*cp).prev).v);
 	*(inside_vertices + (*scene).inside_size + 1) = *((*cp).cur);
 	(*scene).inside_size += 2;
-//	printf("\tprev out\n");
 }
 
 void	inter_c_outside(t_scene *scene, t_line *cp, t_v2 *dot, t_v3_uv *inside_vertices)
@@ -69,7 +68,6 @@ void	inter_c_outside(t_scene *scene, t_line *cp, t_v2 *dot, t_v3_uv *inside_vert
 	(*(inside_vertices + (*scene).inside_size)).u = (*(*cp).prev).u + t * ((*(*cp).cur).u - (*(*cp).prev).u);
 	(*(inside_vertices + (*scene).inside_size)).v = (*(*cp).prev).v + t * ((*(*cp).cur).v - (*(*cp).prev).v);
 	++(*scene).inside_size;
-//	printf("\tcur out\n");
 }
 
 void	inter_both_inside(t_scene *scene, t_line *cp, t_v2 *dot, t_v3_uv *inside_vertices)
@@ -77,7 +75,6 @@ void	inter_both_inside(t_scene *scene, t_line *cp, t_v2 *dot, t_v3_uv *inside_ve
 	(void)dot;
 	*(inside_vertices + (*scene).inside_size) = *((*cp).cur);
 	++(*scene).inside_size;
-//	printf("\tinside\n");
 }
 
 void	inter_both_outside(t_scene *scene, t_line *cp, t_v2 *dot, t_v3_uv *inside_vertices)
@@ -86,7 +83,6 @@ void	inter_both_outside(t_scene *scene, t_line *cp, t_v2 *dot, t_v3_uv *inside_v
 	(void)cp;
 	(void)dot;
 	(void)inside_vertices;
-//	printf("\tboth out\n");
 }
 
 static	void	clip(t_scene *scene, t_plane *plane, t_v3_uv **poly, t_v3_uv **ins_vert)
@@ -106,9 +102,9 @@ static	void	clip(t_scene *scene, t_plane *plane, t_v3_uv **poly, t_v3_uv **ins_v
 		cp.vec_cur = vec3uv_subtract(cp.cur, &((*plane).point));
 		dot.y = vec3uv_dot(&(cp.vec_cur), &((*plane).n));
 		(*(*scene).fun).inter[
-			(dot.y >= 0 && dot.x < 0) //p out
-			+ ((dot.x >= 0 && dot.y < 0) << 1) //c out
-			+ ((dot.y >= 0 && dot.x >= 0) << 2) // both inside
+			(dot.y >= 0 && dot.x < 0)
+			+ ((dot.x >= 0 && dot.y < 0) << 1)
+			+ ((dot.y >= 0 && dot.x >= 0) << 2)
 		](scene, &cp, &dot, *ins_vert);
 		dot.x = dot.y;
 		cp.prev = cp.cur;
@@ -134,18 +130,11 @@ t_v3_uv	*tri_to_poly(t_scene *scene, t_tri *face)
 	tv3_uv((*scene).poly + 2, (*scene).cloud + (*face).c);
 	face_uv((*scene).poly + 2, &(*face).uv_c);
 	(*scene).poly_size = 3;
-//	printf("-------NEAR-------\n");
 	clip(scene, &((*scene).view.near), &pt_poly, &pt_ins_vert);
-//	printf("-------FAR-------\n");
 	clip(scene, &((*scene).view.far), &pt_poly, &pt_ins_vert);
-//	printf("-------LEFT-------\n");
 	clip(scene, &((*scene).view.left), &pt_poly, &pt_ins_vert);
-//	printf("-------RIGHT-------\n");
 	clip(scene, &((*scene).view.right), &pt_poly, &pt_ins_vert);
-//	printf("-------TOP-------\n");
 	clip(scene, &((*scene).view.top), &pt_poly, &pt_ins_vert);
-//	printf("-------BOTTOM-------\n");
 	clip(scene, &((*scene).view.bottom), &pt_poly, &pt_ins_vert);
-	//printf("poly_size = %d, inside_size = %d\n----------------------\n", (*scene).poly_size, (*scene).inside_size);
 	return ((*scene).poly);
 }

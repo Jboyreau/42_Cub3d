@@ -20,7 +20,7 @@ static t_v3	calcultate_interpolated_normal(t_pixel_info *pixel_info)
 	return (int_normal);
 }
 
-void	dot_p0s(t_pixel_info *pixel_info)
+void	dot(t_pixel_info *pixel_info)
 {
 	t_v3	p;
 	t_v3	normal;
@@ -32,7 +32,7 @@ void	dot_p0s(t_pixel_info *pixel_info)
 	camera_ray = vec3_subtract(&((*pixel_info).screen_space_origin), &p);
 	vec3_normalize(&camera_ray);
 	(*pixel_info).dot = vec3_dot(&camera_ray, &normal);
-	(*pixel_info).dot = (*pixel_info).dot * ((*pixel_info).dot > 0 && !(isnan((*pixel_info).dot)));
+	(*pixel_info).dot = (*pixel_info).dot * ((*pixel_info).dot >= 0 && !(isnanf((*pixel_info).dot)) && (*pixel_info).dot <= 1);
 }
 
 static int	find_color(t_pixel_info *pixel_info)
@@ -50,13 +50,13 @@ static int	find_color(t_pixel_info *pixel_info)
 	return (*((*(*pixel_info).scene).texture + cell));
 }
 
-static void blend_color(t_pixel_info *pixel_info)
+void blend_color(t_pixel_info *pixel_info)
 {
  // Ajouter une couleur de brouillard grise en fonction de la distance
-    double fog_factor = 1.0 - exp(-0.2 * (*pixel_info).interpolated.w); // Fonction linéaire simple (ajustez si nécessaire)
+    double fog_factor = 1.0 - exp(-0.1 * (*pixel_info).interpolated.w); // Fonction linéaire simple (ajustez si nécessaire)
 
     // Couleur du brouillard grise (par exemple, un gris moyen)
-    int fog_color = 0xFF909090;
+    int fog_color = FOG;
 
     // Extraire les composants de couleur
     int original_r = (*pixel_info).color >> 16 & 0xFF;
@@ -72,95 +72,6 @@ static void blend_color(t_pixel_info *pixel_info)
     (*pixel_info).color = blended_color;
 }
 
-void	draw_pixel_last2(t_pixel_info *pixel_info)
-{
-	int a;
-	int r;
-	int g;
-	int b;
-
-	dot_p0s(pixel_info);
-	(*pixel_info).color = find_color(pixel_info);
-	blend_color(pixel_info);
-	a = 0xFF000000;
-	r = ((*pixel_info).color & 0x00FF0000) * (*pixel_info).dot;
-	g = ((*pixel_info).color & 0x0000FF00) * (*pixel_info).dot;
-	b = ((*pixel_info).color & 0x000000FF) * (*pixel_info).dot;
-	*((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) = (*pixel_info).interpolated.w;
-	*((*(*pixel_info).scene).color_buffer + (*pixel_info).cell) = 
-		a 
-		| (r & 0x00FF0000)
-		| (g & 0x0000FF00)
-		| (b & 0x000000FF);
-}
-
-void	draw_pixel_last(t_pixel_info *pixel_info)
-{
-	int a;
-	int r;
-	int g;
-	int b;
-
-	dot_p0s(pixel_info);
-	(*pixel_info).color = find_color(pixel_info);
-	blend_color(pixel_info);
-	a = 0xFF000000;
-	r = ((*pixel_info).color & 0x00FF0000) * (*pixel_info).dot;
-	g = ((*pixel_info).color & 0x0000FF00) * (*pixel_info).dot;
-	b = ((*pixel_info).color & 0x000000FF) * (*pixel_info).dot;
-	*((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) = (*pixel_info).interpolated.w;
-	*((*(*pixel_info).scene).color_buffer + (*pixel_info).cell) = 
-		a 
-		| (r & 0x00FF0000)
-		| (g & 0x0000FF00)
-		| (b & 0x000000FF);
-}
-
-void	draw_pixel2(t_pixel_info *pixel_info)
-{
-	int a;
-	int r;
-	int g;
-	int b;
-
-	dot_p0s(pixel_info);
-	(*pixel_info).color = find_color(pixel_info);
-	blend_color(pixel_info);
-	a = 0xFF000000;
-	r = ((*pixel_info).color & 0x00FF0000) * (*pixel_info).dot;
-	g = ((*pixel_info).color & 0x0000FF00) * (*pixel_info).dot;
-	b = ((*pixel_info).color & 0x000000FF) * (*pixel_info).dot;
-	*((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) = (*pixel_info).interpolated.w;
-	*((*(*pixel_info).scene).color_buffer + (*pixel_info).cell) = 
-		a 
-		| (r & 0x00FF0000)
-		| (g & 0x0000FF00)
-		| (b & 0x000000FF);
-}
-
-void	draw_first_pixel(t_pixel_info *pixel_info)
-{
-	int a;
-	int r;
-	int g;
-	int b;
-
-	
-	dot_p0s(pixel_info);
-	(*pixel_info).color = find_color(pixel_info);
-	blend_color(pixel_info);
-	a = 0xFF000000;
-	r = ((*pixel_info).color & 0x00FF0000) * (*pixel_info).dot;
-	g = ((*pixel_info).color & 0x0000FF00) * (*pixel_info).dot;
-	b = ((*pixel_info).color & 0x000000FF) * (*pixel_info).dot;
-	*((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) = (*pixel_info).interpolated.w;
-	*((*(*pixel_info).scene).color_buffer + (*pixel_info).cell) = 
-		a 
-		| (r & 0x00FF0000)
-		| (g & 0x0000FF00)
-		| (b & 0x000000FF);
-}
-
 void	draw_pixel(t_pixel_info *pixel_info)
 {
 	int a;
@@ -168,7 +79,7 @@ void	draw_pixel(t_pixel_info *pixel_info)
 	int g;
 	int b;
 
-	dot_p0s(pixel_info);
+	dot(pixel_info);
 	(*pixel_info).color = find_color(pixel_info);
 	blend_color(pixel_info);
 	a = 0xFF000000;

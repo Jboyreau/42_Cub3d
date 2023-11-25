@@ -91,10 +91,10 @@
 //#define TEXTURE "./obj/text/mossystone.png"
 
 # define MUTEX_NUM 17
-# define THREAD_NUM 10
+# define THREAD_NUM 14
 # define X_VALUE 0
 # define Y_VALUE 0.5
-# define Z_MAX 200
+# define Z_MAX 100
 # define Z_MIN 1
 # define FPS 60
 # define FRAME_TARGET_TIME (1000 / FPS)
@@ -110,7 +110,7 @@
 # define DIST_INC 0.2
 # define ROTATION_INC_PLUS 0.0872665 / 3
 # define ROTATION_INC_MINUS -0.0872665 / 3
-
+#define FOG 0xff808080
 enum e_mutex_name
 {
 	INTER_THREAD = 16,
@@ -367,9 +367,6 @@ struct s_funarrays
 	char	(*fun_update[65537])(t_scene *);
 	int		(*fun_event[128])(t_keys *);
 	void	(*fun_draw_pixel[128])(t_pixel_info *);
-	void	(*fun_draw_pixel2[128])(t_pixel_info *);
-	void	(*fun_draw_pixel_last[128])(t_pixel_info *);
-	void	(*fun_draw_pixel_last2[128])(t_pixel_info *);
 	void	(*fun_delay[128])(int);
 	void	(*dda[128])(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
 	void	(*culling[128])(t_scene *scene, int i, t_pixel_info *pixel_info);
@@ -446,7 +443,7 @@ void	draw_pixel_last(t_pixel_info *pixel_info);
 void	draw_pixel_last2(t_pixel_info *pixel_info);
 void	draw_first_pixel(t_pixel_info *pixel_info);
 void	do_not_draw_pixel(t_pixel_info *pixel_info);
-void	dot_p20(t_pixel_info *pixel_info);
+void	dot(t_pixel_info *pixel_info);
 
 //triangle filling
 void	draw_ft012(t_pixel_info *pixel_info, int i);

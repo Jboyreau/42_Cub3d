@@ -7,6 +7,28 @@ static void	vertex_to_color_buffer(t_scene *scene, t_v3 *vertex)
 	(*vertex).y = ((*vertex).y * (*scene).scale) * (*vertex).inv_z + MIDLE_Y;
 }
 
+static void	init_screen_space_normals(t_ptri *face)
+{
+	t_v3 vec1;
+	t_v3 vec2;
+	t_v3 normal;
+
+	vec1 = vec3_subtract(&((*face).b), &((*face).a));
+	vec2 = vec3_subtract(&((*face).c), &((*face).a));
+	normal = vec3_cross(&vec1, &vec2);
+	(*face).p1.normal = normal;//**
+
+	vec1 = vec3_subtract(&((*face).c), &((*face).b));
+	vec2 = vec3_subtract(&((*face).a), &((*face).b));
+	normal = vec3_cross(&vec1, &vec2);
+	(*face).p1.normal = normal;//**
+
+	vec1 = vec3_subtract(&((*face).a), &((*face).c));
+	vec2 = vec3_subtract(&((*face).b), &((*face).c));
+	normal = vec3_cross(&vec1, &vec2);
+	(*face).p2.normal = normal;//**
+}
+
 void	triangle_to_color_buffer(t_scene *scene, int i, t_pixel_info *pixel_info)
 {
 	vertex_to_color_buffer(scene, &(*((*scene).projected_triangle + i)).a);
@@ -30,6 +52,7 @@ void	triangle_to_color_buffer(t_scene *scene, int i, t_pixel_info *pixel_info)
 	(*((*scene).projected_triangle + i)).p2.fy = (*((*scene).projected_triangle + i)).c.y;
 	(*((*scene).projected_triangle + i)).p2.z = (*((*scene).projected_triangle + i)).c.z;
 	(*((*scene).projected_triangle + i)).p2.inv_z = (*((*scene).projected_triangle + i)).c.inv_z;
+	init_screen_space_normals((*scene).projected_triangle + i);
 	(*pixel_info).screen_space_p0 = (*((*scene).projected_triangle + i)).p0;
 	(*pixel_info).screen_space_p1 = (*((*scene).projected_triangle + i)).p1;
 	(*pixel_info).screen_space_p2 = (*((*scene).projected_triangle + i)).p2;
