@@ -31,10 +31,9 @@ static void	interpolated_uv_init(t_pixel_info *pixel_info)
 static void	draw_line(int x_start, int x_end, int y, t_pixel_info *pixel_info)
 {
 	(*pixel_info).p.y = (*pixel_info).y;
-	while (x_start <= x_end)
+	while (x_start <= x_end && x_start >= 0 && x_start <= WIDTH)
 	{
 		(*pixel_info).cell = x_start + y;
-		(*pixel_info).cell *= ((*pixel_info).cell > -1 && (*pixel_info).cell < BUFF_SIZE);
 		(*pixel_info).p.x = x_start;
 		(*pixel_info).weight = barycentric_weight(pixel_info);
 		(*pixel_info).interpolated.w = 1 / ((*pixel_info).weight.x * (*pixel_info).p0.inv_z + (*pixel_info).weight.y * (*pixel_info).p1.inv_z + (*pixel_info).weight.z * (*pixel_info).p2.inv_z);
@@ -48,10 +47,9 @@ static void	draw_line(int x_start, int x_end, int y, t_pixel_info *pixel_info)
 static void	draw_line2(int x_start, int x_end, int y, t_pixel_info *pixel_info)
 {
 	(*pixel_info).p.y = (*pixel_info).y;
-	while (x_end <= x_start)
+	while (x_end <= x_start && x_end >= 0 && x_end <= WIDTH)
 	{
 		(*pixel_info).cell = x_end + y;
-		(*pixel_info).cell *= ((*pixel_info).cell > -1 && (*pixel_info).cell < BUFF_SIZE);
 		(*pixel_info).p.x = x_end;
 		(*pixel_info).weight = barycentric_weight(pixel_info);
 		(*pixel_info).interpolated.w = 1 / ((*pixel_info).weight.x * (*pixel_info).p0.inv_z + (*pixel_info).weight.y * (*pixel_info).p1.inv_z + (*pixel_info).weight.z * (*pixel_info).p2.inv_z);
@@ -75,7 +73,7 @@ static void	fill_flat_bottom(t_pixel_info *pixel_info, t_point *p0, t_point *p1,
 	x_end = (*p0).x + thread_index * (*pixel_info).inv_sloap_2;
 	inv_sloap_1 *= (float)THREAD_NUM;
 	y = (*pixel_info).y_start;
-	while (y <= (*p1).y)
+	while (y <= (*p1).y && y <= HEIGHT)
 	{
 		(*pixel_info).y = y;
 		if (x_start < x_end)
@@ -100,7 +98,7 @@ static void	fill_flat_top(t_pixel_info *pixel_info, t_point *p2, t_point *p1, in
 	x_end = (*p2).x - thread_index * (*pixel_info).inv_sloap_2;
 	inv_sloap_1 *= (float)THREAD_NUM;
 	y = (*pixel_info).y_start;
-	while (y >= (*p1).y)
+	while (y >= (*p1).y && y >= 0)
 	{
 		(*pixel_info).y = y;
 		if (x_start < x_end)

@@ -32,7 +32,8 @@ void	dot(t_pixel_info *pixel_info)
 	camera_ray = vec3_subtract(&((*pixel_info).screen_space_origin), &p);
 	vec3_normalize(&camera_ray);
 	(*pixel_info).dot = vec3_dot(&camera_ray, &normal);
-	(*pixel_info).dot = (*pixel_info).dot * ((*pixel_info).dot >= 0 && !(isnanf((*pixel_info).dot)) && (*pixel_info).dot <= 1);
+	if ((*pixel_info).dot < 0 || isnanf((*pixel_info).dot) || isinf((*pixel_info).dot) || (*pixel_info).dot > 1)
+		(*pixel_info).dot = 0;
 }
 
 static int	find_color(t_pixel_info *pixel_info)
@@ -46,7 +47,7 @@ static int	find_color(t_pixel_info *pixel_info)
 	+ (*pixel_info).weight.y * (*pixel_info).p1_itv
 	+ (*pixel_info).weight.z * (*pixel_info).p2_itv) * (*pixel_info).interpolated.w;
 	cell = (*(*pixel_info).scene).tex_w * ((int)((*pixel_info).interpolated.v * (*(*pixel_info).scene).tex_h) + (*pixel_info).interpolated.u);
-	cell *= (cell > -1 && cell < (*(*pixel_info).scene).t_size);
+	cell *= (cell > 0 && cell < (*(*pixel_info).scene).t_size);
 	return (*((*(*pixel_info).scene).texture + cell));
 }
 
