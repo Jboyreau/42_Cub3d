@@ -10,9 +10,9 @@
 # include <signal.h>
 # include "upng.h"
 
-// # define OBJ "./obj/level/level.obj"
-// # define Z_VALUE 10//level
-// # define TEXTURE "./obj/text/mossystone.png"
+ # define OBJ "./obj/level/level.obj"
+ # define Z_VALUE 10//level
+ # define TEXTURE "./obj/text/mossystone.png"
 
 //# define OBJ "./obj/cow/cow.obj"
 //# define Z_VALUE 2//cow
@@ -34,9 +34,9 @@
 //# define Z_VALUE 5//drone
 //#define TEXTURE "./obj/drone/drone.png"
 
-# define OBJ "./obj/crab/crab.obj"
-# define Z_VALUE 5//crab
-#define TEXTURE "./obj/crab/crab.png"
+//# define OBJ "./obj/crab/crab.obj"
+//# define Z_VALUE 5//crab
+//#define TEXTURE "./obj/crab/crab.png"
 
 //# define OBJ "./obj/sphere/sphere.obj"
 //# define Z_VALUE 5//sphere
@@ -94,7 +94,7 @@
 # define THREAD_NUM 10
 # define X_VALUE 0
 # define Y_VALUE 0.5
-# define Z_MAX 50
+# define Z_MAX 100
 # define Z_MIN 1
 # define FPS 60
 # define FRAME_TARGET_TIME (1000 / FPS)
@@ -107,7 +107,7 @@
 # define POLY_SIZE 10
 # define MIDLE_X 640
 # define MIDLE_Y 360
-# define DIST_INC 0.2
+# define DIST_INC 0.5
 # define ROTATION_INC_PLUS 0.0872665 / 3
 # define ROTATION_INC_MINUS -0.0872665 / 3
 #define FOG 0xff808080
