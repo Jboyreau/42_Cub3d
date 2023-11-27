@@ -10,9 +10,13 @@
 # include <signal.h>
 # include "upng.h"
 
- # define OBJ "./obj/level/level.obj"
- # define Z_VALUE 10//level
- # define TEXTURE "./obj/text/mossystone.png"
+// # define OBJ "./obj/fun/fun.obj"
+// # define Z_VALUE 10//level
+// # define TEXTURE "./obj/wall/west.png"
+
+# define OBJ "./obj/level/level.obj"
+# define Z_VALUE 10//level
+# define TEXTURE "./obj/wall/west.png"
 
 //# define OBJ "./obj/cow/cow.obj"
 //# define Z_VALUE 2//cow
