@@ -38,7 +38,10 @@ static void	draw_line(int x_start, int x_end, int y, t_pixel_info *pixel_info)
 		(*pixel_info).weight = barycentric_weight(pixel_info);
 		(*pixel_info).interpolated.w = 1 / ((*pixel_info).weight.x * (*pixel_info).p0.inv_z + (*pixel_info).weight.y * (*pixel_info).p1.inv_z + (*pixel_info).weight.z * (*pixel_info).p2.inv_z);
 		(*(*(*pixel_info).scene).fun).fun_draw_pixel[
-			(*((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) > (*pixel_info).interpolated.w)
+			(*((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) > (*pixel_info).interpolated.w
+			&& ((*pixel_info).weight.x >= 0 && (*pixel_info).weight.y >= 0
+			&& (*pixel_info).weight.z >= 0
+			&& ((*pixel_info).weight.x + (*pixel_info).weight.y + (*pixel_info).weight.z <= 1)))
 		](pixel_info);
 		++x_start;
 	}
@@ -55,7 +58,10 @@ static void	draw_line2(int x_start, int x_end, int y, t_pixel_info *pixel_info)
 		(*pixel_info).interpolated.w = 1 / ((*pixel_info).weight.x * (*pixel_info).p0.inv_z + (*pixel_info).weight.y * (*pixel_info).p1.inv_z + (*pixel_info).weight.z * (*pixel_info).p2.inv_z);
 		(*pixel_info).depth = (*pixel_info).interpolated.w;
 		(*(*(*pixel_info).scene).fun).fun_draw_pixel[
-			(*((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) > (*pixel_info).interpolated.w)
+			(*((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) > (*pixel_info).interpolated.w
+			&& ((*pixel_info).weight.x >= 0 && (*pixel_info).weight.y >= 0
+			&& (*pixel_info).weight.z >= 0
+			&& ((*pixel_info).weight.x + (*pixel_info).weight.y + (*pixel_info).weight.z <= 1)))
 		](pixel_info);
 		++x_end;
 	}
@@ -224,12 +230,12 @@ static void	call_thread(t_pixel_info *pixel_info)
 
 static void	draw_filled_triangle(t_point *p0, t_point *p1, t_point *p2, t_pixel_info *pixel_info)
 {
-	(*pixel_info).a.x = (*p0).fx;
-	(*pixel_info).a.y = (*p0).fy;
-	(*pixel_info).b.x = (*p1).fx;
-	(*pixel_info).b.y = (*p1).fy;
-	(*pixel_info).c.x = (*p2).fx;
-	(*pixel_info).c.y = (*p2).fy;
+	(*pixel_info).a.x = (*p0).x;
+	(*pixel_info).a.y = (*p0).y;
+	(*pixel_info).b.x = (*p1).x;
+	(*pixel_info).b.y = (*p1).y;
+	(*pixel_info).c.x = (*p2).x;
+	(*pixel_info).c.y = (*p2).y;
 	(*pixel_info).p0 = (*p0);
 	(*pixel_info).p1 = (*p1);
 	(*pixel_info).p2 = (*p2);
