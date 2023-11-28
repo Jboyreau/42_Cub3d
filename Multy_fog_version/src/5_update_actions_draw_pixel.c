@@ -54,7 +54,7 @@ static int	find_color(t_pixel_info *pixel_info)
 void blend_color(t_pixel_info *pixel_info)
 {
  // Ajouter une couleur de brouillard grise en fonction de la distance
-    double fog_factor = 1.0 - exp(-0.07 * (*pixel_info).interpolated.w); // Fonction linéaire simple (ajustez si nécessaire)
+    double fog_factor = 1.0 - exp(-0.08 * (*pixel_info).interpolated.w); // Fonction linéaire simple (ajustez si nécessaire)
 
     // Couleur du brouillard grise (par exemple, un gris moyen)
     int fog_color = FOG;
@@ -64,9 +64,9 @@ void blend_color(t_pixel_info *pixel_info)
     int original_g = (*pixel_info).color >> 8 & 0xFF;
     int original_b = (*pixel_info).color & 0xFF;
 
-    int blended_r = (1.0 - fog_factor) * original_r + fog_factor * (fog_color >> 16 & 0xFF);
-    int blended_g = (1.0 - fog_factor) * original_g + fog_factor * (fog_color >> 8 & 0xFF);
-    int blended_b = (1.0 - fog_factor) * original_b + fog_factor * (fog_color & 0xFF);
+    int blended_r = (1.0 - fog_factor) * original_r + fog_factor * ((fog_color >> 16 & 0xFF) * (*pixel_info).dot);
+    int blended_g = (1.0 - fog_factor) * original_g + fog_factor * ((fog_color >> 8 & 0xFF) * (*pixel_info).dot);
+    int blended_b = (1.0 - fog_factor) * original_b + fog_factor * ((fog_color & 0xFF) * (*pixel_info).dot);
 
     // Combinez les composants de couleur mélangés
     int blended_color = 0xFF000000 | (blended_r << 16) | (blended_g << 8) | blended_b; 
@@ -97,7 +97,7 @@ void	draw_pixel(t_pixel_info *pixel_info)
 			| (b & 0x000000FF);
 		return ;
 	}
-	(*pixel_info).color = 0xff808080;//find_color(pixel_info);
+	(*pixel_info).color = 0xff404040;//find_color(pixel_info);
 	//	blend_color(pixel_info);
 	a = 0xFF000000;
 	r = ((*pixel_info).color & 0x00FF0000) * (*(*pixel_info).scene).dot;
