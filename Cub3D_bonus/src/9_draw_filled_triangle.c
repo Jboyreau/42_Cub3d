@@ -83,9 +83,9 @@ static void	fill_flat_bottom(t_pixel_info *pixel_info, t_point *p0, t_point *p1,
 	{
 		(*pixel_info).y = y;
 		if (x_start < x_end)
-			draw_line(x_start, x_end, ((y << 10) + (y << 8)), pixel_info);
+			draw_line(round(x_start), round(x_end), ((y << 10) + (y << 8)), pixel_info);
 		else
-			draw_line2(x_start, x_end, ((y << 10) + (y << 8)), pixel_info);
+			draw_line2(round(x_start), round(x_end), ((y << 10) + (y << 8)), pixel_info);
 		x_start += inv_sloap_1;
 		x_end += (*pixel_info).inv_sloap_2_factor;
 		y += THREAD_NUM;

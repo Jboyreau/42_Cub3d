@@ -2,7 +2,6 @@
 
 char	load_texture(char *file, t_scene *scene, int cardinal)
 {
-	printf("cardinal = %d\n", cardinal);
 	*((*scene).upng + cardinal) = upng_new_from_file(file);
 	if (*((*scene).upng + cardinal) != NULL)
 	{

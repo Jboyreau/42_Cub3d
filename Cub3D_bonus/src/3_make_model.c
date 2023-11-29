@@ -1,5 +1,4 @@
 #include "header.h"
-#define START_BUFFER_SIZE 500
 
 static char	*load_file(char *file, int *len)
 {
@@ -21,7 +20,6 @@ static char	*load_file(char *file, int *len)
 	close(fd);
 	return (buffer);
 }
-
 
 static void	make_vt(char *obj, t_tex2 *vt)
 {
@@ -84,7 +82,7 @@ static int make_triangle_index(t_tri *triangle_index, char *obj, t_tex2 *vt)
 	while (*(obj + i))
 	{
 		if (check_material(obj + i))
-			(++index, printf("index = %d\n", index));
+			++index;
 		if (*(obj + i) == 'f' && *(obj + i + 1) == ' ')
 			break ;
 		++i;
@@ -92,7 +90,7 @@ static int make_triangle_index(t_tri *triangle_index, char *obj, t_tex2 *vt)
 	while (1)
 	{
 		if (check_material(obj + i))
-			(++index, printf("index = %d\n", index));
+			++index;
 		if (*(obj + i) == '#')
 		{
 			while (*(obj + ++i) && *(obj + i) != '\n')

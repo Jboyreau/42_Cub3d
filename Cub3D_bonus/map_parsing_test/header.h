@@ -10,93 +10,12 @@
 # include <signal.h>
 # include "upng.h"
 
-// # define OBJ "./obj/fun/fun.obj"
-// # define Z_VALUE 10//level
-// # define TEXTURE "./obj/wall/west.png"
-
-//# define OBJ "./obj/level/level.obj"
-//# define Z_VALUE 10//level
-//# define TEXTURE "./obj/wall/west.png"
-
-//# define OBJ "./obj/wall/wall.obj"
-//# define Z_VALUE 10//level
-//# define TEXTURE "./obj/wall/west.png"
-
-//# define OBJ "./obj/cow/cow.obj"
-//# define Z_VALUE 2//cow
-//#define TEXTURE "./obj/texture.png"
-
-//# define OBJ "./obj/cube/cube.obj"
-//# define Z_VALUE 10//cube
-//#define TEXTURE "./obj/texture.png"
-
-//# define OBJ "./obj/f22/f22.obj"
-//# define Z_VALUE 5//f22
-//# define TEXTURE "./obj/f22/f22.png"
-
-//# define OBJ "./obj/f117/f117.obj"
-//# define Z_VALUE 5//f117
-//#define TEXTURE "./obj/f117/f117.png"
-
-//# define OBJ "./obj/drone/drone.obj"
-//# define Z_VALUE 5//drone
-//#define TEXTURE "./obj/drone/drone.png"
-
-# define OBJ "./obj/crab/crab.obj"
-# define Z_VALUE 5//crab
-#define TEXTURE "./obj/crab/crab.png"
-
-//# define OBJ "./obj/sphere/sphere.obj"
-//# define Z_VALUE 5//sphere
-//# define TEXTURE "./obj/sphere/pikuma.png"
-
-//# define OBJ "./obj/big_cub/big_cub.obj"
-//# define Z_VALUE 3//big_cube
-//#define TEXTURE "./obj/texture.png"
-
-//# define OBJ "./obj/floor/floor.obj"
-//# define Z_VALUE 2//floor
-//#define TEXTURE "./obj/texture.png"
-
-//# define OBJ "./obj/assault_rifle/AssaultRifle.obj"
-//# define Z_VALUE 2//AssaultRifle
-//#define TEXTURE "./obj/texture.png"
-
-//# define OBJ "./obj/famas/famas.obj"
-//# define Z_VALUE 2//famas
-//#define TEXTURE "./obj/texture.png"
-
-//# define OBJ "./obj/egg_bot/egg_bot.obj"
-//# define Z_VALUE 2//egg_bot
-//#define TEXTURE "./obj/texture.png"
-
-//# define OBJ "./obj/naruto/naruto.obj"
-//# define Z_VALUE 2//naruto
-//#define TEXTURE "./obj/texture.png"
-
-//# define OBJ "./obj/cyberman/cyberman.obj"
-//# define Z_VALUE 2//cyberman
-//#define TEXTURE "./obj/texture.png"
-
-//# define OBJ "./obj/monument_alexender/monument_alexender.obj"
-//# define Z_VALUE 2//monument_alexender
-//#define TEXTURE "./obj/texture.png"
-
-//# define OBJ "./obj/sword/sword.obj"
-//# define Z_VALUE 2//sword
-//#define TEXTURE "./obj/sword/wood.png"
-
-//# define OBJ "./obj/bear/bear.obj"
-//# define Z_VALUE 2//bear
-//#define TEXTURE "./obj/texture.png"
-
-//# define OBJ "./obj/dragon/dragon.obj"
-//# define Z_VALUE 2//dragon
-//#define TEXTURE "./obj/texture.png"
-
-//# define OBJ "./obj/terrain/terrain.obj"
-//# define Z_VALUE 1//terrain
-//#define TEXTURE "./obj/text/mossystone.png"
+# define OBJ "./obj/wall/wall.obj"
+# define Z_VALUE 10//level
+# define TEXTURE_S "./obj/wall/south.png"
+# define TEXTURE_N "./obj/wall/north.png"
+# define TEXTURE_E "./obj/wall/east.png"
+# define TEXTURE_W "./obj/wall/west.png"
 
 # define MUTEX_NUM 17
 # define THREAD_NUM 14
@@ -119,9 +38,13 @@
 # define ROTATION_INC_PLUS 0.0872665 / 3
 # define ROTATION_INC_MINUS -0.0872665 / 3
 #define FOG 0xff808080
-enum e_mutex_name
+
+enum e_cardinal
 {
-	INTER_THREAD = 16,
+	SOUTH = 0,
+	NORTH = 1,
+	EAST = 2,
+	WEST = 3
 };
 
 typedef struct s_canvas
@@ -216,6 +139,7 @@ typedef struct s_tirangle
 	int		a;
 	int		b;
 	int		c;
+	int		texture;
 	t_tex2	uv_a;
 	t_tex2	uv_b;
 	t_tex2	uv_c;
@@ -251,9 +175,9 @@ typedef struct s_scene //what I project
 {
 	int					input;
 	int					ret;
-	int					tex_h;
-	int					tex_w;
-	int					t_size;
+	int					tex_h[4];
+	int					tex_w[4];
+	int					t_size[4];
 	int					poll_return;
 	int						time_to_wait;
 	int					previous_frame_time;
@@ -270,7 +194,7 @@ typedef struct s_scene //what I project
 	void				*arg;
 	int					*color_buffer;
 	float				*z_buffer;
-	int					*texture;
+	int					*texture[4];
 	t_v3_uv				*poly;
 	t_v3_uv				*inside_vertices;
 	t_v3				*cloud;
@@ -278,7 +202,7 @@ typedef struct s_scene //what I project
 	t_tri				*triangle_index;
 	t_ptri				*projected_triangle;
 	t_f					*fun;
-	upng_t				*upng;
+	upng_t				*upng[4];
 	pthread_barrier_t	*first_wall;
 	pthread_barrier_t	*wait_triangle;
 	pthread_t			thread[THREAD_NUM];
@@ -298,6 +222,7 @@ typedef struct t_keys
 
 typedef struct s_pixel_info
 {
+	int					texture;
 	int					rdy;
 	int					finish;
 	int					call;
@@ -492,7 +417,7 @@ float	vec3uv_dot(t_v3_uv *a, t_v3_uv *b);
 float	is_visible(t_scene *scene, int i);
 
 //texture
-char	load_texture(char *file, t_scene *scene);
+char	load_texture(char *file, t_scene *scene, int cardinal);
 
 //Clipping
 void	uv_tv3(t_v3 *b, t_v3_uv *a);
