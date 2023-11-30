@@ -56,7 +56,6 @@ static void	draw_line2(int x_start, int x_end, int y, t_pixel_info *pixel_info)
 		(*pixel_info).p.x = x_end;
 		(*pixel_info).weight = barycentric_weight(pixel_info);
 		(*pixel_info).interpolated.w = 1 / ((*pixel_info).weight.x * (*pixel_info).p0.inv_z + (*pixel_info).weight.y * (*pixel_info).p1.inv_z + (*pixel_info).weight.z * (*pixel_info).p2.inv_z);
-		(*pixel_info).depth = (*pixel_info).interpolated.w;
 		(*(*(*pixel_info).scene).fun).fun_draw_pixel[
 			(*((*(*pixel_info).scene).z_buffer + (*pixel_info).cell) > (*pixel_info).interpolated.w
 			&& ((*pixel_info).weight.x >= 0 && (*pixel_info).weight.y >= 0
@@ -155,7 +154,7 @@ void	nothing_tb(t_pixel_info *pixel_info, t_point *p0, t_point *p1, t_point *p2,
 void	wait_call(t_pixel_info *pixel_info)
 {
 	while ((*pixel_info).call < 1)
-		;
+		;//usleep(0);
 }
 
 void	notify_rdy(t_pixel_info *pixel_info)
@@ -164,7 +163,7 @@ void	notify_rdy(t_pixel_info *pixel_info)
 	++(*pixel_info).rdy;
 	pthread_spin_unlock((*pixel_info).fast_lock);
 	while ((*pixel_info).call)
-		;
+		;//usleep(0);
 }
 
 void	notify_finish(t_pixel_info *pixel_info)
@@ -209,14 +208,14 @@ void	*start(void *arg)
 static void	wait_rdy(t_pixel_info *pixel_info)
 {
 	while ((*pixel_info).rdy < THREAD_NUM)
-		;
+		;//usleep(0);
 	(*pixel_info).call = 0;
 }
 
 static void	wait_finish(t_pixel_info *pixel_info)
 {
 	while ((*pixel_info).finish < THREAD_NUM)
-		;
+		;//usleep(0);
 }
 
 static void	call_thread(t_pixel_info *pixel_info)

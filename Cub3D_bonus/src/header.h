@@ -8,6 +8,7 @@
 # include <fcntl.h>
 # include <pthread.h>
 # include <signal.h>
+#include <sys/stat.h>
 # include "upng.h"
 
 # define OBJ_WALL "./obj/wall/wall.obj"
@@ -28,7 +29,7 @@
 # define MUTEX_NUM 17
 # define THREAD_NUM 14
 # define X_VALUE 0
-# define Y_VALUE 0.5
+# define Y_VALUE 1
 # define Z_MAX 100
 # define Z_MIN 1
 # define FPS 60
@@ -183,6 +184,7 @@ typedef struct s_view
 
 typedef struct s_scene
 {
+	int					nw;
 	int					part;
 	int					input;
 	int					ret;
@@ -206,8 +208,8 @@ typedef struct s_scene
 	int					poly_size;
 	int					inside_size;
 	int					nb_tri;
-	int					len_line;
-	int					len_nb;
+	int					line_len;
+	int					line_nb;
 	float				pos_incx;
 	float				pos_incy;
 	float				pos_incz;
