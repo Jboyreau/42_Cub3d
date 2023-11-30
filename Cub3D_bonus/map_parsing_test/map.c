@@ -7,6 +7,7 @@ static char *load_map(char *file)
 	int		len;
 	char	*buffer;
 
+//TODO : check flag directory.
 	fd = open(file, O_RDWR);
 	if (fd == -1)
 		return (NULL);
@@ -87,14 +88,7 @@ void	print_process_map(char *map, int line_len, int line_nb)
 	for (int i = 0; i < line_nb; ++i)
 	{
 		for (int j = 0; j < line_len; ++j)
-		{
-			if (*(map + i * line_len + j) == 0)
-				putchar('?');
-			else if (*(map + i * line_len + j) == ' ')
-				putchar('_');
-			else
-				putchar(*(map + i * line_len + j));
-		}
+			putchar(*(map + i * line_len + j));
 		putchar('\n');
 	}
 			

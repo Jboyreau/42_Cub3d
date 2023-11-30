@@ -10,12 +10,19 @@
 # include <signal.h>
 # include "upng.h"
 
-# define OBJ "./obj/wall/wall.obj"
-# define Z_VALUE 10//level
+# define OBJ_WALL "./obj/wall/wall.obj"
+# define Z_VALUE 0//wall
+# define OBJ_FLOOR "./obj/floor/floor.obj"
+# define OBJ_ROOF "./obj/roof/roof.obj"
+# define TYPE_WALL -1
+# define TYPE_FLOOR 3
+# define TYPE_ROOF 4
 # define TEXTURE_S "./obj/wall/south.png"
 # define TEXTURE_N "./obj/wall/north.png"
 # define TEXTURE_E "./obj/wall/east.png"
 # define TEXTURE_W "./obj/wall/west.png"
+# define TEXTURE_F "./obj/floor/floor.png"
+# define TEXTURE_R "./obj/roof/roof.png"
 
 # define MUTEX_NUM 17
 # define THREAD_NUM 14
@@ -44,7 +51,9 @@ enum e_cardinal
 	SOUTH = 0,
 	NORTH = 1,
 	EAST = 2,
-	WEST = 3
+	WEST = 3,
+	FLOOR = 4,
+	ROOF = 5
 };
 
 typedef struct s_canvas
@@ -173,17 +182,26 @@ typedef struct s_view
 
 typedef struct s_scene //what I project
 {
+	int					part;
 	int					input;
 	int					ret;
-	int					tex_h[4];
-	int					tex_w[4];
-	int					t_size[4];
+	int					tex_h[6];
+	int					tex_w[6];
+	int					t_size[6];
 	int					poll_return;
-	int						time_to_wait;
+	int					time_to_wait;
 	int					previous_frame_time;
 	float				scale;
 	int					cloud_size;
 	int					triangle_index_size;
+	int					cloud_size_wall;
+	int					triangle_index_size_wall;
+	int					cloud_size_floor;
+	int					triangle_index_size_floor;
+	int					cloud_size_roof;
+	int					triangle_index_size_roof;
+	int					cloud_size_temp;
+	int					triangle_index_size_temp;
 	int					poly_size;
 	int					inside_size;
 	int					nb_tri;
@@ -191,18 +209,26 @@ typedef struct s_scene //what I project
 	float				pos_incy;
 	float				pos_incz;
 	float				dot;
+	char				*obj_path;
 	void				*arg;
 	int					*color_buffer;
 	float				*z_buffer;
-	int					*texture[4];
+	int					*texture[6];
 	t_v3_uv				*poly;
 	t_v3_uv				*inside_vertices;
 	t_v3				*cloud;
-	t_v3				*cloud_save;
 	t_tri				*triangle_index;
-	t_ptri				*projected_triangle;
+	t_v3				*cloud_wall;
+	t_tri				*triangle_index_wall;
+	t_v3				*cloud_floor;
+	t_tri				*triangle_index_floor;
+	t_v3				*cloud_roof;
+	t_tri				*triangle_index_roof;
+	t_v3				*cloud_temp;
+	t_tri				*triangle_index_temp;
+	t_ptri				projected_triangle[10];
 	t_f					*fun;
-	upng_t				*upng[4];
+	upng_t				*upng[6];
 	pthread_barrier_t	*first_wall;
 	pthread_barrier_t	*wait_triangle;
 	pthread_t			thread[THREAD_NUM];
@@ -328,8 +354,6 @@ void	clear_color_buffer(long long int *color_buffer, float *z_buffer);
 char	nothing(t_scene *scene);
 char	quit(t_scene *scene);
 //char 	ortho_project(t_scene *scene);
-//char 	ortho_project_zoom_plus(t_scene *scene);
-//char 	ortho_project_zoom_minus(t_scene *scene);
 void	triangle_to_color_buffer(t_scene *scene, int i, t_pixel_info *pixel_info);
 void	triangle_to_nowhere(t_scene *scene, int i, t_pixel_info *pixel_info);
 char	perspective_project_zoom_plus(t_scene *scene);

@@ -48,6 +48,74 @@ static void	init_plane(t_scene *scene)
 	(*scene).view.bottom.n.z = sin(fov_h);
 }
 
+static void	affect_wall(t_scene *scene)
+{
+	(*scene).cloud_size_wall = (*scene).cloud_size_temp;
+	(*scene).triangle_index_size_wall = (*scene).triangle_index_size_temp;
+	(*scene).cloud_wall = (*scene).cloud_temp;
+	(*scene).triangle_index_wall = (*scene).triangle_index_temp;
+}
+
+void	affect_floor(t_scene *scene)
+{
+	(*scene).cloud_size_floor = (*scene).cloud_size_temp;
+	(*scene).triangle_index_size_floor = (*scene).triangle_index_size_temp;
+	(*scene).cloud_floor = (*scene).cloud_temp;
+	(*scene).triangle_index_floor = (*scene).triangle_index_temp;
+}
+
+void	affect_roof(t_scene *scene)
+{
+	(*scene).cloud_size_roof = (*scene).cloud_size_temp;
+	(*scene).triangle_index_size_roof = (*scene).triangle_index_size_temp;
+	(*scene).cloud_roof = (*scene).cloud_temp;
+	(*scene).triangle_index_roof = (*scene).triangle_index_temp;
+}
+
+static int populate_map(t_scene *scene)
+{
+	(*scene).obj_path = OBJ_WALL;
+	(*scene).part = TYPE_WALL;
+	if (populate_3d_space(scene) == 0)
+		return (0);
+	affect_wall(scene);
+/*	(*scene).obj_path = OBJ_FLOOR;
+	(*scene).part = TYPE_FLOOR;
+	if (populate_3d_space(scene) == 0)
+		return (0);
+	affect_floor(scene);
+	(*scene).obj_path = OBJ_ROOF;
+	(*scene).part = TYPE_ROOF;
+	if (populate_3d_space(scene) == 0)
+		return (0);
+	affect_roof(scene);*/
+	/*****************************/
+	(*scene).cloud_size = (*scene).cloud_size_wall;
+	(*scene).triangle_index_size = (*scene).triangle_index_size_wall;
+	(*scene).cloud = (*scene).cloud_wall;
+	(*scene).triangle_index = (*scene).triangle_index_wall;
+	/*****************************/
+	return (1);
+}
+
+static int	load_all_texture(t_scene *scene)
+{
+	if (load_texture(TEXTURE_S, scene, SOUTH) == 0)
+		return (0);
+	if (load_texture(TEXTURE_N, scene, NORTH) == 0)
+		return (0);
+	if (load_texture(TEXTURE_E, scene, EAST) == 0)
+		return (0);
+	if (load_texture(TEXTURE_W, scene, WEST) == 0)
+		return (0);
+	if (load_texture(TEXTURE_F, scene, FLOOR) == 0)
+		return (0);
+	if (load_texture(TEXTURE_R, scene, ROOF) == 0)
+		return (0);
+	//TODO : load floor and ground
+	return (1);
+}
+
 t_scene	*initialize_scene(int *color_buffer, t_f *fun)
 {
 	static t_scene	scene;
@@ -74,15 +142,9 @@ t_scene	*initialize_scene(int *color_buffer, t_f *fun)
 	scene.pos_incz = Z_VALUE;
 	scene.poly = poly;
 	scene.inside_vertices = inside_vertices;
-	if (load_texture(TEXTURE_S, &scene, SOUTH) == 0)
+	if (load_all_texture(&scene) == 0)
 		return (free(scene.z_buffer), NULL);
-	if (load_texture(TEXTURE_N, &scene, NORTH) == 0)
-		return (free(scene.z_buffer), NULL);
-	if (load_texture(TEXTURE_E, &scene, EAST) == 0)
-		return (free(scene.z_buffer), NULL);
-	if (load_texture(TEXTURE_W, &scene, WEST) == 0)
-		return (free(scene.z_buffer), NULL);
-	if (populate_3d_space(&scene) == 0)
+	if (populate_map(&scene) == 0)
 		return (free(scene.z_buffer), NULL);
 	return (&scene);
 }

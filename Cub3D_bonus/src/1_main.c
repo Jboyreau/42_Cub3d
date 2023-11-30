@@ -25,7 +25,7 @@ static void	destroy_upng(t_scene *scene)
 	int i;
 
 	i = -1;
-	while (++i < 4)
+	while (++i < 6)
 		if (*((*scene).upng + i))
 			upng_free(*((*scene).upng + i));
 }
@@ -42,12 +42,20 @@ static void	destroy(SDL_Window *window, SDL_Renderer *renderer, t_scene *scene, 
 			free((*scene).z_buffer);
 		if ((*scene).color_buffer)
 			free((*scene).color_buffer);
-		if ((*scene).cloud)
+		if ((*scene).cloud_wall)
+			free((*scene).cloud_wall);
+		if ((*scene).triangle_index_wall)
+			free((*scene).triangle_index_wall);
+		/*
+		if ((*scene).cloud);
 			free((*scene).cloud);
-		if ((*scene).cloud_save)
-			free((*scene).cloud_save);
 		if ((*scene).triangle_index)
 			free((*scene).triangle_index);
+		if ((*scene).cloud_floor)
+			free((*scene).cloud_floor);
+		if ((*scene).triangle_index_roof)
+			free((*scene).triangle_index_roof);
+		*/
 		destroy_upng(scene);
 		destroy_barrier(scene);
 		destroy_spinlock(scene);

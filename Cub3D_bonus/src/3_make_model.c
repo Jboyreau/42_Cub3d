@@ -72,13 +72,14 @@ char	check_material(char *str)
 	return (j == 6);
 }
 
-static int make_triangle_index(t_tri *triangle_index, char *obj, t_tex2 *vt)
+static int make_triangle_index(t_tri *triangle_index, char *obj, t_tex2 *vt, int part)
 {
 	int i = 0;
 	int	j = 0;
 	int	index;
 
-	index = -1;
+	make_vt(obj, vt);
+	index = part;
 	while (*(obj + i))
 	{
 		if (check_material(obj + i))
@@ -131,7 +132,7 @@ static int make_triangle_index(t_tri *triangle_index, char *obj, t_tex2 *vt)
 	return (j);
 }
 
-static int make_cloud(t_v3 *cloud, t_v3 *cloud_save, char *obj)
+static int make_cloud(t_v3 *cloud, char *obj)
 {
 	int i = 0;
 	int j = 0;
@@ -151,15 +152,12 @@ static int make_cloud(t_v3 *cloud, t_v3 *cloud_save, char *obj)
 		{
 			i += 2;
 			(*(cloud + j)).x = strtof(obj + i, NULL);
-			(*(cloud_save + j)).x = (*(cloud + j)).x;
 			while (*(obj + i) != ' ')
 				++i;
 			(*(cloud + j)).y = strtof(obj + (++i), NULL);
-			(*(cloud_save + j)).y = (*(cloud + j)).y;
 			while (*(obj + i) != ' ')
 				++i;
 			(*(cloud + j)).z = strtof(obj + (++i), NULL);
-			(*(cloud_save + j)).z = (*(cloud + j)).z;
 			while ((*(obj + i) && *(obj + i) != '\n'))
 				++i;
 			++j;
@@ -171,32 +169,26 @@ static int make_cloud(t_v3 *cloud, t_v3 *cloud_save, char *obj)
 	return (j);
 }
 
-char	populate_3d_space(t_scene *scene)
+char	populate_3d_space(t_scene *scene, int type)
 {
-	static t_ptri	projected_triangle[10];
 	t_tex2			*vt;
 	static char		*obj_file;
 	int				len;
 
-	obj_file = load_file(OBJ, &len);
+	obj_file = load_file((*scene).obj_path, &len);
 	if (obj_file == NULL)
 		return (0);
-	(*scene).cloud = malloc(len * sizeof(t_v3));
-	if ((*scene).cloud == NULL)
+	(*scene).cloud_temp = malloc(len * sizeof(t_v3));
+	if ((*scene).cloud_temp == NULL)
 		return (0);
-	(*scene).cloud_save = malloc(len * sizeof(t_v3));
-	if ((*scene).cloud_save == NULL)
-		return (0);
-	(*scene).triangle_index = malloc(len * sizeof(t_tri));
-	if ((*scene).triangle_index == NULL)
+	(*scene).triangle_index_temp = malloc(len * sizeof(t_tri));
+	if ((*scene).triangle_index_temp == NULL)
 		return (0);
 	vt = malloc(len * sizeof(t_tri));
 	if (vt == NULL)
 		return (0);
-	(*scene).projected_triangle = projected_triangle;
-	(*scene).cloud_size = make_cloud((*scene).cloud, (*scene).cloud_save, obj_file);
-	make_vt(obj_file, vt);
-	(*scene).triangle_index_size = make_triangle_index((*scene).triangle_index, obj_file, vt);
+	(*scene).cloud_size_temp = make_cloud((*scene).cloud_temp, obj_file);
+	(*scene).triangle_index_size_temp = make_triangle_index((*scene).triangle_index_temp, obj_file, vt, (*scene).part);
 	if (vt)
 		free(vt);
 	if (obj_file)
