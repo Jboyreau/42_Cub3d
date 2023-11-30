@@ -1,4 +1,5 @@
 #include "header.h"
+#include <sys/stat.h>
 #define MAP_PATH "./map/map.txt"
 
 static char *load_map(char *file)
@@ -6,8 +7,18 @@ static char *load_map(char *file)
 	int		fd;
 	int		len;
 	char	*buffer;
+	struct stat info_fichier;
 
-//TODO : check flag directory.
+	if (stat(file, &info_fichier) != 0)
+	{
+		perror("Error get file informations");
+		return (NULL);
+	}
+	if (S_ISDIR(info_fichier.st_mode))
+	{
+		perror("FILE is a directory");
+		return (NULL);
+	}
 	fd = open(file, O_RDWR);
 	if (fd == -1)
 		return (NULL);

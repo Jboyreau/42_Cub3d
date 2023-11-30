@@ -1,11 +1,5 @@
 #include "header.h"
 
-static void	destroy_barrier(t_scene *scene)
-{
-	pthread_barrier_destroy((*scene).first_wall);
-	pthread_barrier_destroy((*scene).wait_triangle);
-}
-
 static void	destroy_spinlock(t_scene *scene)
 {
 	pthread_spin_destroy((*scene).fast_lock);
@@ -42,22 +36,11 @@ static void	destroy(SDL_Window *window, SDL_Renderer *renderer, t_scene *scene, 
 			free((*scene).z_buffer);
 		if ((*scene).color_buffer)
 			free((*scene).color_buffer);
-		if ((*scene).cloud_wall)
-			free((*scene).cloud_wall);
-		if ((*scene).triangle_index_wall)
-			free((*scene).triangle_index_wall);
-		/*
-		if ((*scene).cloud);
+		if ((*scene).cloud)
 			free((*scene).cloud);
 		if ((*scene).triangle_index)
 			free((*scene).triangle_index);
-		if ((*scene).cloud_floor)
-			free((*scene).cloud_floor);
-		if ((*scene).triangle_index_roof)
-			free((*scene).triangle_index_roof);
-		*/
 		destroy_upng(scene);
-		destroy_barrier(scene);
 		destroy_spinlock(scene);
 	}
 }

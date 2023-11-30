@@ -48,7 +48,7 @@ static void	init_plane(t_scene *scene)
 	(*scene).view.bottom.n.z = sin(fov_h);
 }
 
-static void	affect_wall(t_scene *scene)
+void	affect_wall(t_scene *scene)
 {
 	(*scene).cloud_size_wall = (*scene).cloud_size_temp;
 	(*scene).triangle_index_size_wall = (*scene).triangle_index_size_temp;
@@ -79,7 +79,7 @@ static int populate_map(t_scene *scene)
 	if (populate_3d_space(scene) == 0)
 		return (0);
 	affect_wall(scene);
-/*	(*scene).obj_path = OBJ_FLOOR;
+	(*scene).obj_path = OBJ_FLOOR;
 	(*scene).part = TYPE_FLOOR;
 	if (populate_3d_space(scene) == 0)
 		return (0);
@@ -88,13 +88,9 @@ static int populate_map(t_scene *scene)
 	(*scene).part = TYPE_ROOF;
 	if (populate_3d_space(scene) == 0)
 		return (0);
-	affect_roof(scene);*/
-	/*****************************/
-	(*scene).cloud_size = (*scene).cloud_size_wall;
-	(*scene).triangle_index_size = (*scene).triangle_index_size_wall;
-	(*scene).cloud = (*scene).cloud_wall;
-	(*scene).triangle_index = (*scene).triangle_index_wall;
-	/*****************************/
+	affect_roof(scene);
+	if (assemble_map(scene) == 0)
+		return (0);
 	return (1);
 }
 
@@ -112,7 +108,6 @@ static int	load_all_texture(t_scene *scene)
 		return (0);
 	if (load_texture(TEXTURE_R, scene, ROOF) == 0)
 		return (0);
-	//TODO : load floor and ground
 	return (1);
 }
 

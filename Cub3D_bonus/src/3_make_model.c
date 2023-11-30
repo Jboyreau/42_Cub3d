@@ -169,7 +169,7 @@ static int make_cloud(t_v3 *cloud, char *obj)
 	return (j);
 }
 
-char	populate_3d_space(t_scene *scene, int type)
+char	populate_3d_space(t_scene *scene)
 {
 	t_tex2			*vt;
 	static char		*obj_file;

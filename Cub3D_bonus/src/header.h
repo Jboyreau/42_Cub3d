@@ -11,7 +11,8 @@
 # include "upng.h"
 
 # define OBJ_WALL "./obj/wall/wall.obj"
-# define Z_VALUE 0//wall
+#define MAP_PATH "./map/map.txt"
+# define Z_VALUE 10//wall
 # define OBJ_FLOOR "./obj/floor/floor.obj"
 # define OBJ_ROOF "./obj/roof/roof.obj"
 # define TYPE_WALL -1
@@ -180,7 +181,7 @@ typedef struct s_view
 	t_plane	far;
 }	t_view;
 
-typedef struct s_scene //what I project
+typedef struct s_scene
 {
 	int					part;
 	int					input;
@@ -205,10 +206,13 @@ typedef struct s_scene //what I project
 	int					poly_size;
 	int					inside_size;
 	int					nb_tri;
+	int					len_line;
+	int					len_nb;
 	float				pos_incx;
 	float				pos_incy;
 	float				pos_incz;
 	float				dot;
+	char				*map;
 	char				*obj_path;
 	void				*arg;
 	int					*color_buffer;
@@ -229,8 +233,6 @@ typedef struct s_scene //what I project
 	t_ptri				projected_triangle[10];
 	t_f					*fun;
 	upng_t				*upng[6];
-	pthread_barrier_t	*first_wall;
-	pthread_barrier_t	*wait_triangle;
 	pthread_t			thread[THREAD_NUM];
 	pthread_spinlock_t	*fast_lock;
 	t_v3				rotation;
@@ -265,7 +267,6 @@ typedef struct s_pixel_info
 	int					modulo;
 	float				inv_sloap_2;
 	float				inv_sloap_2_factor;
-	float				depth;
 	float				para_abc;
 	float				p0_itu;
 	float				p1_itu;
@@ -337,6 +338,7 @@ struct s_funarrays
 
 //point cloud generation
 char	populate_3d_space(t_scene *scene);
+int		assemble_map(t_scene *scene);
 
 //init
 void	initialize_fun(t_f *fun);
