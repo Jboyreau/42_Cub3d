@@ -29,7 +29,7 @@
 # define MUTEX_NUM 17
 # define THREAD_NUM 14
 # define X_VALUE 0
-# define Y_VALUE 1
+# define Y_VALUE 2
 # define Z_MAX 100
 # define Z_MIN 1
 # define FPS 60
@@ -184,7 +184,8 @@ typedef struct s_view
 
 typedef struct s_scene
 {
-	int					nw;
+	int					nwc;
+	int					nwt;
 	int					part;
 	int					input;
 	int					ret;

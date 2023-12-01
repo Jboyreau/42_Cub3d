@@ -100,21 +100,27 @@ static void	process_map(t_scene *scene, char *map_raw, int line_len, int line_nb
 static int	allocate_model(t_scene *scene, int i, int n_wall)
 {
 	int	map_size;
+	int	n_fr;
 
 	map_size = (*scene).line_len * (*scene).line_nb;
 	while (++i < map_size)
 		if (*((*scene).map + i) == '1')
 			++n_wall;
-	(*scene).cloud_size = n_wall * (*scene).cloud_size_wall;
-	//+ map_size * (*scene).cloud_size_floor
-	//+ map_size * (*scene).cloud_size_roof;
-	(*scene).cloud = malloc((*scene).cloud_size * 100 * sizeof(t_v3));
+	n_fr = 0;
+	i = 0;
+	while (++i < map_size)
+		if (*((*scene).map + i) == '1' || *((*scene).map + i) == '0')
+			++n_fr;
+	(*scene).cloud_size = n_wall * (*scene).cloud_size_wall
+	+ n_fr * (*scene).cloud_size_floor
+	+ n_fr * (*scene).cloud_size_roof;
+	(*scene).cloud = malloc((*scene).cloud_size * sizeof(t_v3));
 	if ((*scene).cloud == NULL)
 		return (0);
-	(*scene).triangle_index_size = n_wall * (*scene).triangle_index_size_wall;
-	//+ map_size * (*scene).triangle_index_size_floor
-	//+ map_size * (*scene).triangle_index_size_roof;
-	(*scene).triangle_index = malloc((*scene).triangle_index_size * 100 * sizeof(t_tri));
+	(*scene).triangle_index_size = n_wall * (*scene).triangle_index_size_wall
+	+ n_fr * (*scene).triangle_index_size_floor
+	+ n_fr * (*scene).triangle_index_size_roof;
+	(*scene).triangle_index = malloc((*scene).triangle_index_size * sizeof(t_tri));
 	if ((*scene).triangle_index == NULL)
 		return (0);
 	return (1);
@@ -123,83 +129,79 @@ static int	allocate_model(t_scene *scene, int i, int n_wall)
 void	paste_wall(t_scene *scene, int z, int x, int n)
 {
 	int i;
+	int cstart;
+	int	tstart;
 
+	cstart = n * (*scene).cloud_size_wall;
+	tstart = n * (*scene).triangle_index_size_wall;
 	i = -1;
 	while (++i < (*scene).cloud_size_wall)
 	{
-		*((*scene).cloud + n * (*scene).cloud_size_wall + i) = 
-		*((*scene).cloud_wall + i);
-		(*((*scene).cloud + n * (*scene).cloud_size_wall + i)).x += x * 8;
-		(*((*scene).cloud + n * (*scene).cloud_size_wall + i)).z += z * 8;
+		*((*scene).cloud + cstart + i) = *((*scene).cloud_wall + i);
+		(*((*scene).cloud + cstart + i)).x += x * 8;
+		(*((*scene).cloud + cstart + i)).z += z * 8;
 	}
 	i = -1;
 	while (++i < (*scene).triangle_index_size_wall)
-	{	
-		*((*scene).triangle_index + n * (*scene).triangle_index_size_wall + i) = 
-		*((*scene).triangle_index_wall + i);
-		(*((*scene).triangle_index + n * (*scene).triangle_index_size_wall + i)).a += 
-		n * (*scene).cloud_size_wall;
-		(*((*scene).triangle_index + n * (*scene).triangle_index_size_wall + i)).b +=
-		n * (*scene).cloud_size_wall;
-		(*((*scene).triangle_index + n * (*scene).triangle_index_size_wall + i)).c +=
-		n * (*scene).cloud_size_wall;
+	{
+		*((*scene).triangle_index + tstart + i) = *((*scene).triangle_index_wall + i);
+		(*((*scene).triangle_index + tstart + i)).a += n * (*scene).cloud_size_wall;
+		(*((*scene).triangle_index + tstart + i)).b += n * (*scene).cloud_size_wall;
+		(*((*scene).triangle_index + tstart + i)).c += n * (*scene).cloud_size_wall;
 	}
 }
-/*
+
 void	paste_floor(t_scene *scene, int z, int x, int n)
 {
 	int i;
+	int cstart;
+	int	tstart;
 
+	tstart = (*scene).nwt + n * (*scene).triangle_index_size_floor;
+	cstart = (*scene).nwc + n * (*scene).cloud_size_floor;
 	i = -1;
 	while (++i < (*scene).cloud_size_floor)
 	{
-		*((*scene).cloud + n * (*scene).cloud_size_floor + (*scene).nw * (*scene).cloud_size_wall + i) = 
-		*((*scene).cloud_floor + i);
-		(*((*scene).cloud + n * (*scene).cloud_size_floor + (*scene).nw * (*scene).cloud_size_wall + i)).x += x * 4;
-		(*((*scene).cloud + n * (*scene).cloud_size_floor + (*scene).nw * (*scene).cloud_size_wall + i)).z += z * 4;
+		*((*scene).cloud + cstart + i) = *((*scene).cloud_floor + i);
+		(*((*scene).cloud +  cstart + i)).x += x * 8;
+		(*((*scene).cloud +  cstart + i)).z += z * 8;
 	}
 	i = -1;
 	while (++i < (*scene).triangle_index_size_floor)
 	{	
-		*((*scene).triangle_index + n * (*scene).triangle_index_size_floor + (*scene).nw * (*scene).triangle_index_size_wall + i) = 
-		*((*scene).triangle_index_floor + i);
-		(*((*scene).triangle_index + n * (*scene).triangle_index_size_floor + (*scene).nw * (*scene).triangle_index_size_wall + i)).a += 
-		n * (*scene).cloud_size_floor;
-		(*((*scene).triangle_index + n * (*scene).triangle_index_size_floor + (*scene).nw * (*scene).triangle_index_size_wall + i)).b +=
-		n * (*scene).cloud_size_floor;
-		(*((*scene).triangle_index + n * (*scene).triangle_index_size_floor + (*scene).nw * (*scene).triangle_index_size_wall + i)).c +=
-		n * (*scene).cloud_size_floor;
+		*((*scene).triangle_index + tstart + i) = *((*scene).triangle_index_floor + i);
+		(*((*scene).triangle_index + tstart + i)).a += (*scene).nwc + n * (*scene).cloud_size_floor;
+		(*((*scene).triangle_index + tstart + i)).b += (*scene).nwc + n * (*scene).cloud_size_floor;
+		(*((*scene).triangle_index + tstart + i)).c += (*scene).nwc + n * (*scene).cloud_size_floor;
 	}
 }
 
 void	paste_roof(t_scene *scene, int z, int x, int n)
 {
 	int i;
-	int	map_size;
+	int cstart;
+	int	tstart;
 
-	map_size = (*scene).line_len * (*scene).line_nb;
+	tstart = (*scene).nwt + n * (*scene).triangle_index_size_roof;
+	cstart = (*scene).nwc + n * (*scene).cloud_size_roof;
 	i = -1;
 	while (++i < (*scene).cloud_size_roof)
 	{
-		*((*scene).cloud + n * (*scene).cloud_size_roof + (*scene).nw * (*scene).cloud_size_wall + map_size * (*scene).cloud_size_roof + i) = 
+		*((*scene).cloud + cstart + i) = 
 		*((*scene).cloud_roof + i);
-		(*((*scene).cloud + n * (*scene).cloud_size_roof + (*scene).nw * (*scene).cloud_size_wall + map_size * (*scene).cloud_size_roof + i)).x += x * 4;
-		(*((*scene).cloud + n * (*scene).cloud_size_roof + (*scene).nw * (*scene).cloud_size_wall + map_size * (*scene).cloud_size_roof + i)).z += z * 4;
+		(*((*scene).cloud + cstart + i)).x += x * 8;
+		(*((*scene).cloud + cstart + i)).z += z * 8;
 	}
 	i = -1;
 	while (++i < (*scene).triangle_index_size_roof)
 	{	
-		*((*scene).triangle_index + n * (*scene).triangle_index_size_roof + (*scene).nw * (*scene).triangle_index_size_wall + map_size * (*scene).triangle_index_size_floor + i) = 
-		*((*scene).triangle_index_roof + i);
-		(*((*scene).triangle_index + n * (*scene).triangle_index_size_roof + (*scene).nw * (*scene).triangle_index_size_wall + map_size * (*scene).triangle_index_size_floor + i)).a += 
-		n * (*scene).cloud_size_roof;
-		(*((*scene).triangle_index + n * (*scene).triangle_index_size_roof + (*scene).nw * (*scene).triangle_index_size_wall + map_size * (*scene).triangle_index_size_floor + i)).b +=
-		n * (*scene).cloud_size_roof;
-		(*((*scene).triangle_index + n * (*scene).triangle_index_size_roof + (*scene).nw * (*scene).triangle_index_size_wall + map_size * (*scene).triangle_index_size_floor + i)).c +=
-		n * (*scene).cloud_size_roof;
+		*((*scene).triangle_index + tstart + i) = *((*scene).triangle_index_roof + i);
+		(*((*scene).triangle_index + tstart + i)).a += (*scene).nwc + n * (*scene).cloud_size_roof;
+		(*((*scene).triangle_index + tstart + i)).b += (*scene).nwc + n * (*scene).cloud_size_roof;
+		(*((*scene).triangle_index + tstart + i)).c += (*scene).nwc + n * (*scene).cloud_size_roof;
 	}
 	
-}*/
+}
 
 static void	assemble_wall(t_scene *scene, int l, int c)
 {
@@ -213,9 +215,10 @@ static void	assemble_wall(t_scene *scene, int l, int c)
 			if (*((*scene).map + l * (*scene).line_len + c) == '1')
 				paste_wall(scene, l, c, ++nbre_wall);
 	}
-	(*scene).nw = nbre_wall;
+	(*scene).nwc = (nbre_wall + 1) * (*scene).cloud_size_wall;
+	(*scene).nwt = (nbre_wall + 1) * (*scene).triangle_index_size_wall;
 }
-/*
+
 static void	assemble_floor(t_scene *scene, int l, int c)
 {
 	int nbre_floor;
@@ -225,8 +228,11 @@ static void	assemble_floor(t_scene *scene, int l, int c)
 	{
 		c = -1;
 		while (++c < (*scene).line_len)
-			paste_floor(scene, -l, c, ++nbre_floor);
+			if (*((*scene).map + l * (*scene).line_len + c) == '1' || *((*scene).map + l * (*scene).line_len + c) == '0')
+			paste_floor(scene, l, c, ++nbre_floor);
 	}
+	(*scene).nwc += (nbre_floor + 1) * (*scene).cloud_size_floor;
+	(*scene).nwt += (nbre_floor + 1) * (*scene).triangle_index_size_floor;
 }
 
 static void	assemble_roof(t_scene *scene, int l, int c)
@@ -238,10 +244,11 @@ static void	assemble_roof(t_scene *scene, int l, int c)
 	{
 		c = -1;
 		while (++c < (*scene).line_len)
-			paste_roof(scene, -l, c, ++nbre_roof);
+			if (*((*scene).map + l * (*scene).line_len + c) == '1' || *((*scene).map + l * (*scene).line_len + c) == '0')
+			paste_roof(scene, l, c, ++nbre_roof);
 	}
 }
-*/
+
 int	assemble_map(t_scene *scene)
 {
 	char	*map_raw;
@@ -258,8 +265,8 @@ int	assemble_map(t_scene *scene)
 	if (allocate_model(scene, -1, 0) == 0)
 		return (0);
 	assemble_wall(scene, -1, -1);
-	//assemble_floor(scene, -1, -1);
-	//assemble_roof(scene, -1, -1);
+	assemble_floor(scene, -1, -1);
+	assemble_roof(scene, -1, -1);
 	destroy_wfr(scene, map_raw);
 	return (1);
 }
