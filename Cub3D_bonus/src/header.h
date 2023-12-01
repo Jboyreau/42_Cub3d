@@ -13,7 +13,7 @@
 
 # define OBJ_WALL "./obj/wall/wall.obj"
 #define MAP_PATH "./map/map.txt"
-# define Z_VALUE 10//wall
+# define Z_VALUE 0//wall
 # define OBJ_FLOOR "./obj/floor/floor.obj"
 # define OBJ_ROOF "./obj/roof/roof.obj"
 # define TYPE_WALL -1
@@ -27,7 +27,7 @@
 # define TEXTURE_R "./obj/roof/roof.png"
 
 # define MUTEX_NUM 17
-# define THREAD_NUM 14
+# define THREAD_NUM 10
 # define X_VALUE 0
 # define Y_VALUE 2
 # define Z_MAX 100

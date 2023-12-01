@@ -109,7 +109,7 @@ static int	allocate_model(t_scene *scene, int i, int n_wall)
 	n_fr = 0;
 	i = 0;
 	while (++i < map_size)
-		if (*((*scene).map + i) == '1' || *((*scene).map + i) == '0')
+		if (*((*scene).map + i) != '?')
 			++n_fr;
 	(*scene).cloud_size = n_wall * (*scene).cloud_size_wall
 	+ n_fr * (*scene).cloud_size_floor
@@ -228,8 +228,8 @@ static void	assemble_floor(t_scene *scene, int l, int c)
 	{
 		c = -1;
 		while (++c < (*scene).line_len)
-			if (*((*scene).map + l * (*scene).line_len + c) == '1' || *((*scene).map + l * (*scene).line_len + c) == '0')
-			paste_floor(scene, l, c, ++nbre_floor);
+			if (*((*scene).map + l * (*scene).line_len + c) != '?')
+				paste_floor(scene, l, c, ++nbre_floor);
 	}
 	(*scene).nwc += (nbre_floor + 1) * (*scene).cloud_size_floor;
 	(*scene).nwt += (nbre_floor + 1) * (*scene).triangle_index_size_floor;
@@ -244,8 +244,8 @@ static void	assemble_roof(t_scene *scene, int l, int c)
 	{
 		c = -1;
 		while (++c < (*scene).line_len)
-			if (*((*scene).map + l * (*scene).line_len + c) == '1' || *((*scene).map + l * (*scene).line_len + c) == '0')
-			paste_roof(scene, l, c, ++nbre_roof);
+			if (*((*scene).map + l * (*scene).line_len + c) != '?')
+				paste_roof(scene, l, c, ++nbre_roof);
 	}
 }
 
