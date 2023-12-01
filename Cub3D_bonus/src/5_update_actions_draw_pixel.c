@@ -80,7 +80,7 @@ void	draw_pixel(t_pixel_info *pixel_info)
 	int g;
 	int b;
 
-	if ((*pixel_info).interpolated.w < 40)
+	if ((*pixel_info).interpolated.w < 60)
 	{
 		dot(pixel_info);
 		(*pixel_info).color = find_color(pixel_info);

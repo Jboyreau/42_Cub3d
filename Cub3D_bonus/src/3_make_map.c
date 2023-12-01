@@ -138,8 +138,8 @@ void	paste_wall(t_scene *scene, int z, int x, int n)
 	while (++i < (*scene).cloud_size_wall)
 	{
 		*((*scene).cloud + cstart + i) = *((*scene).cloud_wall + i);
-		(*((*scene).cloud + cstart + i)).x += x * 8;
-		(*((*scene).cloud + cstart + i)).z += z * 8;
+		(*((*scene).cloud + cstart + i)).x += x * MODEL_SCALE;
+		(*((*scene).cloud + cstart + i)).z += z * MODEL_SCALE;
 	}
 	i = -1;
 	while (++i < (*scene).triangle_index_size_wall)
@@ -163,8 +163,8 @@ void	paste_floor(t_scene *scene, int z, int x, int n)
 	while (++i < (*scene).cloud_size_floor)
 	{
 		*((*scene).cloud + cstart + i) = *((*scene).cloud_floor + i);
-		(*((*scene).cloud +  cstart + i)).x += x * 8;
-		(*((*scene).cloud +  cstart + i)).z += z * 8;
+		(*((*scene).cloud +  cstart + i)).x += x * MODEL_SCALE;
+		(*((*scene).cloud +  cstart + i)).z += z * MODEL_SCALE;
 	}
 	i = -1;
 	while (++i < (*scene).triangle_index_size_floor)
@@ -189,8 +189,8 @@ void	paste_roof(t_scene *scene, int z, int x, int n)
 	{
 		*((*scene).cloud + cstart + i) = 
 		*((*scene).cloud_roof + i);
-		(*((*scene).cloud + cstart + i)).x += x * 8;
-		(*((*scene).cloud + cstart + i)).z += z * 8;
+		(*((*scene).cloud + cstart + i)).x += x * MODEL_SCALE;
+		(*((*scene).cloud + cstart + i)).z += z * MODEL_SCALE;
 	}
 	i = -1;
 	while (++i < (*scene).triangle_index_size_roof)

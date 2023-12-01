@@ -11,9 +11,10 @@
 #include <sys/stat.h>
 # include "upng.h"
 
+# define MODEL_SCALE 16
 # define OBJ_WALL "./obj/wall/wall.obj"
-#define MAP_PATH "./map/map.txt"
-# define Z_VALUE 0//wall
+# define MAP_PATH "./map/map.txt"
+# define Z_VALUE 0
 # define OBJ_FLOOR "./obj/floor/floor.obj"
 # define OBJ_ROOF "./obj/roof/roof.obj"
 # define TYPE_WALL -1
