@@ -105,15 +105,15 @@ static int	allocate_model(t_scene *scene, int i, int n_wall)
 	while (++i < map_size)
 		if (*((*scene).map + i) == '1')
 			++n_wall;
-	(*scene).cloud_size = n_wall * (*scene).cloud_size_wall 
-	+ map_size * (*scene).cloud_size_floor
-	+ map_size * (*scene).cloud_size_roof;
+	(*scene).cloud_size = n_wall * (*scene).cloud_size_wall;
+	//+ map_size * (*scene).cloud_size_floor
+	//+ map_size * (*scene).cloud_size_roof;
 	(*scene).cloud = malloc((*scene).cloud_size * 100 * sizeof(t_v3));
 	if ((*scene).cloud == NULL)
 		return (0);
-	(*scene).triangle_index_size = n_wall * (*scene).triangle_index_size_wall
-	+ map_size * (*scene).triangle_index_size_floor
-	+ map_size * (*scene).triangle_index_size_roof;
+	(*scene).triangle_index_size = n_wall * (*scene).triangle_index_size_wall;
+	//+ map_size * (*scene).triangle_index_size_floor
+	//+ map_size * (*scene).triangle_index_size_roof;
 	(*scene).triangle_index = malloc((*scene).triangle_index_size * 100 * sizeof(t_tri));
 	if ((*scene).triangle_index == NULL)
 		return (0);
@@ -129,8 +129,8 @@ void	paste_wall(t_scene *scene, int z, int x, int n)
 	{
 		*((*scene).cloud + n * (*scene).cloud_size_wall + i) = 
 		*((*scene).cloud_wall + i);
-		(*((*scene).cloud + n * (*scene).cloud_size_wall + i)).x += x * 4;
-		(*((*scene).cloud + n * (*scene).cloud_size_wall + i)).z += z * 4;
+		(*((*scene).cloud + n * (*scene).cloud_size_wall + i)).x += x * 8;
+		(*((*scene).cloud + n * (*scene).cloud_size_wall + i)).z += z * 8;
 	}
 	i = -1;
 	while (++i < (*scene).triangle_index_size_wall)
@@ -145,7 +145,7 @@ void	paste_wall(t_scene *scene, int z, int x, int n)
 		n * (*scene).cloud_size_wall;
 	}
 }
-
+/*
 void	paste_floor(t_scene *scene, int z, int x, int n)
 {
 	int i;
@@ -199,7 +199,7 @@ void	paste_roof(t_scene *scene, int z, int x, int n)
 		n * (*scene).cloud_size_roof;
 	}
 	
-}
+}*/
 
 static void	assemble_wall(t_scene *scene, int l, int c)
 {
@@ -211,11 +211,11 @@ static void	assemble_wall(t_scene *scene, int l, int c)
 		c = -1;
 		while (++c < (*scene).line_len)
 			if (*((*scene).map + l * (*scene).line_len + c) == '1')
-				paste_wall(scene, -l, c, ++nbre_wall);
+				paste_wall(scene, l, c, ++nbre_wall);
 	}
 	(*scene).nw = nbre_wall;
 }
-
+/*
 static void	assemble_floor(t_scene *scene, int l, int c)
 {
 	int nbre_floor;
@@ -241,7 +241,7 @@ static void	assemble_roof(t_scene *scene, int l, int c)
 			paste_roof(scene, -l, c, ++nbre_roof);
 	}
 }
-
+*/
 int	assemble_map(t_scene *scene)
 {
 	char	*map_raw;
@@ -258,8 +258,8 @@ int	assemble_map(t_scene *scene)
 	if (allocate_model(scene, -1, 0) == 0)
 		return (0);
 	assemble_wall(scene, -1, -1);
-	assemble_floor(scene, -1, -1);
-	assemble_roof(scene, -1, -1);
+	//assemble_floor(scene, -1, -1);
+	//assemble_roof(scene, -1, -1);
 	destroy_wfr(scene, map_raw);
 	return (1);
 }

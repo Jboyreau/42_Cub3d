@@ -84,7 +84,7 @@ void	draw_pixel(t_pixel_info *pixel_info)
 	{
 		dot(pixel_info);
 		(*pixel_info).color = find_color(pixel_info);
-		blend_color(pixel_info);
+	//	blend_color(pixel_info);
 		a = 0xFF000000;
 		r = ((*pixel_info).color & 0x00FF0000) * (*pixel_info).dot;
 		g = ((*pixel_info).color & 0x0000FF00) * (*pixel_info).dot;
