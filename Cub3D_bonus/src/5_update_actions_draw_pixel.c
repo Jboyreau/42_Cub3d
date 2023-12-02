@@ -54,7 +54,7 @@ static int	find_color(t_pixel_info *pixel_info)
 void blend_color(t_pixel_info *pixel_info)
 {
  // Ajouter une couleur de brouillard grise en fonction de la distance
-    double fog_factor = 1.0 - exp(-0.08 * (*pixel_info).interpolated.w); // Fonction linéaire simple (ajustez si nécessaire)
+    double fog_factor = 1.0 - exp(-0.01 * (*pixel_info).interpolated.w); // Fonction linéaire simple (ajustez si nécessaire)
 
     // Couleur du brouillard grise (par exemple, un gris moyen)
     int fog_color = FOG;
@@ -84,7 +84,7 @@ void	draw_pixel(t_pixel_info *pixel_info)
 	{
 		dot(pixel_info);
 		(*pixel_info).color = find_color(pixel_info);
-	//	blend_color(pixel_info);
+		//blend_color(pixel_info);
 		a = 0xFF000000;
 		r = ((*pixel_info).color & 0x00FF0000) * (*pixel_info).dot;
 		g = ((*pixel_info).color & 0x0000FF00) * (*pixel_info).dot;

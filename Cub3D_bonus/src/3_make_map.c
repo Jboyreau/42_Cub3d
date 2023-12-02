@@ -273,7 +273,7 @@ int	assemble_map(t_scene *scene)
 	map_raw = load_map(MAP_PATH, 0, 0, NULL);
 	if (map_raw == NULL)
 		return (write(2, "Error\n Load map failed.\n", 24), 0);
-	//TODO:Choper les textures et isololer la map.
+	//TODO:Choper les textures et isoler la map.
 	set_map_size(map_raw, &((*scene).line_len), &((*scene).line_nb));
 	process_map(scene, map_raw, (*scene).line_len, (*scene).line_nb);
 	if ((*scene).map == NULL)
