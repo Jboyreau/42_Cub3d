@@ -141,6 +141,23 @@ void	rotation_x(t_scene *scene, float angle)
 	}
 }
 
+void	rotation_y(t_scene *scene, float angle)
+{
+	float	x, z;
+	int		i = 0;
+
+	while (i < (*scene).cloud_size)
+	{
+		x = (*((*scene).cloud + i)).x;
+		z = (*((*scene).cloud + i)).z;
+		
+		//rotation
+		(*((*scene).cloud + i)).z = z * cos(angle) + x * sin(angle);
+		(*((*scene).cloud + i)).x = x * cos(angle) - z * sin(angle);
+		++i;
+	}
+}
+
 char	rotation_x_minus(t_scene *scene)
 {
 	float	y, z;

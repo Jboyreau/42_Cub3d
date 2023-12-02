@@ -30,7 +30,7 @@
 # define MUTEX_NUM 17
 # define THREAD_NUM 10
 # define X_VALUE 0
-# define Y_VALUE 2
+# define Y_VALUE 3
 # define Z_MAX 100
 # define Z_MIN 1
 # define FPS 60
@@ -185,6 +185,9 @@ typedef struct s_view
 
 typedef struct s_scene
 {
+	char				card;
+	int					px;
+	int					pz;
 	int					nwc;
 	int					nwt;
 	int					part;
@@ -377,6 +380,7 @@ void	dont_launch(t_scene *scene, t_pixel_info *pixel_info, int i);
 
 //linear transform
 void	rotation_x(t_scene *scene, float angle);
+void	rotation_y(t_scene *scene, float angle);
 char	camera_rotation_x_minus(t_scene *scene);
 char	camera_rotation_x_plus(t_scene *scene);
 char	camera_rotation_y_minus(t_scene *scene);

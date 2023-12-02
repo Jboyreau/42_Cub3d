@@ -137,9 +137,9 @@ t_scene	*initialize_scene(int *color_buffer, t_f *fun)
 	scene.pos_incz = Z_VALUE;
 	scene.poly = poly;
 	scene.inside_vertices = inside_vertices;
-	if (load_all_texture(&scene) == 0)
-		return (free(scene.z_buffer), NULL);
 	if (populate_map(&scene) == 0)
+		return (free(scene.z_buffer), NULL);
+	if (load_all_texture(&scene) == 0)
 		return (free(scene.z_buffer), NULL);
 	return (&scene);
 }

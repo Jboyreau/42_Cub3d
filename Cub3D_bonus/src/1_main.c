@@ -52,12 +52,12 @@ static char	initialize_window(SDL_Window **window, SDL_Renderer **renderer, int 
 		return (SDL_Quit(), write(2, "Error init SDL\n", 15));
 //Create Window
 	*window = SDL_CreateWindow(
-				NULL, //borderless
+				"Cub3D", //borderless
 				SDL_WINDOWPOS_CENTERED, //posx
 				SDL_WINDOWPOS_CENTERED,//posy
 				WIDTH,
 				HEIGHT,
-				SDL_WINDOW_BORDERLESS
+				SDL_WINDOW_SHOWN
 	);
 	if (*window == NULL)
 		return (write(2, "Error SDL Window\n", 17));
@@ -80,6 +80,25 @@ static char	initialize_window(SDL_Window **window, SDL_Renderer **renderer, int 
 	return (0);
 }
 
+static void	init_position(t_scene * scene)
+{
+	int	i;
+
+	rotation_x(scene, 3.141592);
+	i = -1;
+	while (++i < (*scene).cloud_size)
+	{
+		(*((*scene).cloud + i)).x += -(*scene).px;
+		(*((*scene).cloud + i)).z += (*scene).pz;
+	}
+	if ((*scene).card == 'S')
+		rotation_y(scene, 3.141592);
+	if ((*scene).card == 'E')
+		rotation_y(scene, 1.5708);
+	if ((*scene).card == 'W')
+		rotation_y(scene, -1.5708);
+}
+
 int			main(void)
 {
 	static t_w	canvas = {.window = NULL, .renderer = NULL, .color_buffer = NULL, .color_buffer_texture = NULL};
@@ -96,10 +115,10 @@ int			main(void)
 	init_threads(scene);	
 	clear_color_buffer((long long int *)canvas.color_buffer, (*scene).z_buffer);
 //game_loop
-	(*scene).previous_frame_time = SDL_GetTicks();
-	(*scene).time_to_wait = -1;
-	(*scene).input = 0;
-	rotation_x(scene, 3.141592);
+//	(*scene).previous_frame_time = SDL_GetTicks();
+//	(*scene).time_to_wait = -1;
+//	(*scene).input = 0;
+	init_position(scene);
 	perspective_project(scene);
 	while ((*scene).input != 3)
 	{

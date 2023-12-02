@@ -26,20 +26,17 @@ static char *load_map(char *file, int fd, int len, char *buffer)
 
 	if (stat(file, &info_fichier) != 0)
 	{
-		perror("Error get file informations");
+		perror("Error\nUnanble to get file informations.");
 		return (NULL);
 	}
 	if (S_ISDIR(info_fichier.st_mode))
-	{
-		perror("FILE is a directory");
-		return (NULL);
-	}
+		return (perror("Error\nFILE is a directory."), NULL);
 	fd = open(file, O_RDWR);
 	if (fd == -1)
-		return (NULL);
+		return (write(2, "Error\nCan't open map.\n", 22), NULL);
 	len = lseek(fd, 0, SEEK_END) + 1;
 	if (len == 1)
-		return (NULL);
+		return (write(2, "Error\nInvalid map.\n", 19), NULL);
 	buffer = malloc(len);
 	if (buffer == NULL)
 		return (NULL);
@@ -249,6 +246,24 @@ static void	assemble_roof(t_scene *scene, int l, int c)
 	}
 }
 
+static void	get_player_position(t_scene *scene, int l, int c)
+{
+	while (++l < (*scene).line_nb)
+	{
+		c = -1;
+		while (++c < (*scene).line_len)
+			if (*((*scene).map + l * (*scene).line_len + c) == 'N'
+			|| *((*scene).map + l * (*scene).line_len + c) == 'S'
+			|| *((*scene).map + l * (*scene).line_len + c) == 'E'
+			|| *((*scene).map + l * (*scene).line_len + c) == 'W')
+			{
+				(*scene).px = c * MODEL_SCALE;
+				(*scene).pz = l * MODEL_SCALE;
+				(*scene).card = *((*scene).map + l * (*scene).line_len + c); 
+			}
+	}
+}
+
 int	assemble_map(t_scene *scene)
 {
 	char	*map_raw;
@@ -257,16 +272,18 @@ int	assemble_map(t_scene *scene)
 	(*scene).line_nb = 0;
 	map_raw = load_map(MAP_PATH, 0, 0, NULL);
 	if (map_raw == NULL)
-		return (write(2, "Error open map failed.\n", 23), 0);
+		return (write(2, "Error\n Load map failed.\n", 24), 0);
+	//TODO:Choper les textures et isololer la map.
 	set_map_size(map_raw, &((*scene).line_len), &((*scene).line_nb));
 	process_map(scene, map_raw, (*scene).line_len, (*scene).line_nb);
 	if ((*scene).map == NULL)
-		return (write(2, "Error process map failed.\n", 27), 1);
+		return (write(2, "Error\n process map failed.\n", 28), 1);
 	if (allocate_model(scene, -1, 0) == 0)
 		return (0);
 	assemble_wall(scene, -1, -1);
 	assemble_floor(scene, -1, -1);
 	assemble_roof(scene, -1, -1);
+	get_player_position(scene, -1, -1);
 	destroy_wfr(scene, map_raw);
 	return (1);
 }

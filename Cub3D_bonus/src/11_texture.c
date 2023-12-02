@@ -14,7 +14,7 @@ char	load_texture(char *file, t_scene *scene, int cardinal)
 			*((*scene).t_size + cardinal) = *((*scene).tex_h + cardinal) * (*((*scene).tex_w + cardinal));
 			return (1);
 		}
-		return (0);
+		return (write(2,"Error\nUnable to load texture.\n", 30), 0);
 	}
-	return (0);
+	return (write(2,"Error\nUnable to load texture.\n", 30), 0);
 }
