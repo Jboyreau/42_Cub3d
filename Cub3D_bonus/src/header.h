@@ -188,6 +188,7 @@ typedef struct s_scene
 	char				card;
 	int					px;
 	int					pz;
+	int					wall_last_index;
 	int					nwc;
 	int					nwt;
 	int					part;

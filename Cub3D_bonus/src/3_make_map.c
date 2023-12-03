@@ -347,6 +347,7 @@ static void	assemble_wall(t_scene *scene, int l, int c)
 			if (*((*scene).map + l * (*scene).line_len + c) == '1')
 				paste_wall(scene, l, c, ++nbre_wall);
 	}
+	(*scene).wall_last_index = (nbre_wall + 1) * (*scene).cloud_size_wall;
 	(*scene).nwc = (nbre_wall + 1) * (*scene).cloud_size_wall;
 	(*scene).nwt = (nbre_wall + 1) * (*scene).triangle_index_size_wall;
 }

@@ -115,9 +115,33 @@ char	camera_perspective_project(t_scene *scene)
 	return (1);
 }
 
+int	test(t_scene *scene)
+{
+	int		i;
+	int		condition;
+	float	next_x;
+	float	next_y;
+	float	next_z;
+
+	i = -1;
+	condition = 0;
+	while (++i < (*scene).wall_last_index && condition == 0)
+	{
+		next_x = (*((*scene).cloud + i)).x + (*scene).pos_incx;
+		next_y = (*((*scene).cloud + i)).y + (*scene).pos_incy;
+		next_z = (*((*scene).cloud + i)).z + (*scene).pos_incz;
+		condition = ((next_x > -3 && next_x < 3))
+		&& ((next_y > -3 && next_y < 3))
+		&& ((next_z > -3 && next_z < 3));
+	}
+	//printf("condition %d\n", condition);
+	return (condition);
+}
+
 char	perspective_project(t_scene *scene)
 {
 	t_pixel_info	*pixel_info;
+	int				condition;
 	int				i;
 	int				j;
 	
@@ -125,7 +149,8 @@ char	perspective_project(t_scene *scene)
 	clear_color_buffer(((long long int *)((*scene).color_buffer)), (*scene).z_buffer);
 	(*pixel_info).scene = scene;
 	i = -1;
-	while(++i < (*scene).cloud_size)
+	condition = test(scene);
+	while(++i < (*scene).cloud_size && condition == 0)
 	{
 		rev_camera_rotation_x(scene, i, -(*scene).camera.rotation.x);
 		(*((*scene).cloud + i)).x += (*scene).pos_incx;

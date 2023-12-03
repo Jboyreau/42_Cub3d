@@ -32,7 +32,7 @@ void	dot(t_pixel_info *pixel_info)
 	camera_ray = vec3_subtract(&((*pixel_info).screen_space_origin), &p);
 	vec3_normalize(&camera_ray);
 	(*pixel_info).dot = vec3_dot(&camera_ray, &normal);
-	if ((*pixel_info).dot < 0.35 || isnanf((*pixel_info).dot) || isinf((*pixel_info).dot) || (*pixel_info).dot > 1)
+	if ((*pixel_info).dot < 0.35 || isnanf((*pixel_info).dot) || isinf((*pixel_info).dot) )//|| (*pixel_info).dot > 1)
 		(*pixel_info).dot = 0.35;
 }
 
