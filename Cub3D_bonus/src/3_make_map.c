@@ -1,6 +1,6 @@
 #include "header.h"
 
-static void	destroy_wfr(t_scene *scene, char *map_raw)
+static void	d(t_scene *scene, char *map_raw)
 {
 	if ((*scene).cloud_wall)
 		free((*scene).cloud_wall);
@@ -45,6 +45,135 @@ static char *load_map(char *file, int fd, int len, char *buffer)
 	return (close(fd), buffer);
 }
 
+static int	is_cardinal(char *map_raw, char **cardinal, int *index_c)
+{
+	int i;
+
+	if (*(map_raw) == 0)
+		return (-1);
+	i = -1;
+	while (++i < 4)
+	{
+		if (*(map_raw) == **(cardinal + i) && *(map_raw + 1) == *(*(cardinal + i) + 1))
+			return (*index_c = i, 1);
+	}
+	while (i < 6)
+	{
+		if (*(map_raw) == **(cardinal + i))
+			return (*index_c = i, 1);
+		++i;
+	}
+	return (-1);
+}
+
+static void	write_tex(char *map_raw, t_scene *scene, int index, int j)
+{
+	if (index == 0)
+		*((*scene).tno + j) = *(map_raw);
+	else if (index == 1)
+		*((*scene).tso + j) = *(map_raw);
+	else if (index == 2)
+		*((*scene).tea + j) = *(map_raw);
+	else if (index == 3)
+		*((*scene).twe + j) = *(map_raw);
+	else if (index == 4)
+		*((*scene).tf + j) = *(map_raw);
+	else if (index == 5)
+		*((*scene).tr + j) = *(map_raw);
+}
+
+static void	write_tex_end(t_scene *scene, int index, int j)
+{
+	if (index == 0)
+		*((*scene).tno + j) = 0;
+	else if (index == 1)
+		*((*scene).tso + j) = 0;
+	else if (index == 2)
+		*((*scene).tea + j) = 0;
+	else if (index == 3)
+		*((*scene).twe + j) = 0;
+	else if (index == 4)
+		*((*scene).tf + j) = 0;
+	else if (index == 5)
+		*((*scene).tr + j) = 0;
+}
+
+static int	get_cardinal(t_scene *scene, char **cardinal, char* map_raw, int *sum)
+{
+	int			index_c;
+	int			j;
+	static int	i = 0;
+
+	index_c = -1;
+	if (is_cardinal(map_raw + i, cardinal, &index_c) == -1)
+		return (0);
+	*sum += index_c;
+	i += 2;
+	while (*(map_raw + i) && *(map_raw + i) == ' ')
+		++i;
+	j = 0;
+	while (*(map_raw + i) && *(map_raw + i) != '\n')
+	{
+		write_tex(map_raw + i, scene, index_c, j);
+		++i;
+		++j;
+	}
+	if ((*map_raw + i) == 0)
+		return (0);
+	write_tex_end(scene, index_c, j);
+	return (++i, 1);
+}
+
+static void	purge(char *map_raw)
+{
+	int	i;
+	int	j;
+	int	nl_num;
+
+	i = 0;
+	j = 0;
+	nl_num = 0;
+	while (*(map_raw + i) && nl_num < 6)
+	{
+		if (*(map_raw + i) == '\n')
+			++nl_num;
+		++i;
+	}
+	while (*(map_raw + i) && *(map_raw + i) == '\n')
+		++i;
+	while (*(map_raw + i))
+	{
+		*(map_raw + j) = *(map_raw + i);
+		++i;
+		++j;
+	}
+	*(map_raw + (++j)) = 0;
+}
+
+static int	get_texture(t_scene *scene, char *map_raw)
+{
+	static char	*cardinal[6] = {"NO", "SO", "EA", "WE", "F", "C"};
+	int			sum;
+
+	sum = 0;
+	if (get_cardinal(scene, cardinal, map_raw, &sum) == 0)
+		return (0);
+	if (get_cardinal(scene, cardinal, map_raw, &sum) == 0)
+		return (0);
+	if (get_cardinal(scene, cardinal, map_raw, &sum) == 0)
+		return (0);
+	if (get_cardinal(scene, cardinal, map_raw, &sum) == 0)
+		return (0);
+	if (get_cardinal(scene, cardinal, map_raw, &sum) == 0)
+		return (0);
+	if (get_cardinal(scene, cardinal, map_raw, &sum) == 0)
+		return (0);
+	if (sum != 15)
+		return (0);
+	purge(map_raw);
+	return (1);
+}
+
 static void set_map_size(char *map_raw, int *line_len, int *line_nb)
 {
 	int	i;
@@ -66,7 +195,7 @@ static void set_map_size(char *map_raw, int *line_len, int *line_nb)
 	}
 }
 
-static void	process_map(t_scene *scene, char *map_raw, int line_len, int line_nb)
+static int	process_map(t_scene *scene, char *map_raw, int line_len, int line_nb)
 {
 	static int		len = 0;
 	static int		i = -1;
@@ -74,7 +203,7 @@ static void	process_map(t_scene *scene, char *map_raw, int line_len, int line_nb
 
 	(*scene).map = malloc(line_len * line_nb);
 	if ((*scene).map == NULL)
-		return ;
+		return (0);
 	while (*(map_raw + (++i)))
 	{
 		++len;
@@ -92,7 +221,13 @@ static void	process_map(t_scene *scene, char *map_raw, int line_len, int line_nb
 				*((*scene).map + (j++)) = *(map_raw + i);
 		}
 	}
+	return (1);
 }
+
+/*static void	is_valid(char *raw_map)
+{
+	;
+}*/
 
 static int	allocate_model(t_scene *scene, int i, int n_wall)
 {
@@ -264,26 +399,46 @@ static void	get_player_position(t_scene *scene, int l, int c)
 	}
 }
 
-int	assemble_map(t_scene *scene)
+static void	assemble(t_scene *scene)
 {
-	char	*map_raw;
-
-	(*scene).line_len = 0;
-	(*scene).line_nb = 0;
-	map_raw = load_map(MAP_PATH, 0, 0, NULL);
-	if (map_raw == NULL)
-		return (write(2, "Error\n Load map failed.\n", 24), 0);
-	//TODO:Choper les textures et isoler la map.
-	set_map_size(map_raw, &((*scene).line_len), &((*scene).line_nb));
-	process_map(scene, map_raw, (*scene).line_len, (*scene).line_nb);
-	if ((*scene).map == NULL)
-		return (write(2, "Error\n process map failed.\n", 28), 1);
-	if (allocate_model(scene, -1, 0) == 0)
-		return (0);
 	assemble_wall(scene, -1, -1);
 	assemble_floor(scene, -1, -1);
 	assemble_roof(scene, -1, -1);
 	get_player_position(scene, -1, -1);
-	destroy_wfr(scene, map_raw);
-	return (1);
+}
+
+static void init_stuff(t_scene *scene)
+{
+	(*scene).map = NULL;
+	(*scene).line_len = 0;
+	(*scene).line_nb = 0;
+}
+
+static void p(char *str, int len)
+{
+	write(2, str, len);
+}
+
+int	assemble_map(t_scene *scene)
+{
+	static char	*map_raw = NULL;
+	static char *e = "Error\n Wrong texture descriptor.\n";
+
+	init_stuff(scene);
+	map_raw = load_map(MAP_PATH, 0, 0, NULL);
+	if (map_raw == NULL)
+		return (d(scene, map_raw), p("Error\n Load map failed.\n", 24), 0);
+/***************************************************************************/
+	if (get_texture(scene, map_raw) == 0)
+		return (d(scene, map_raw), p(e, 33), 0);
+	set_map_size(map_raw, &((*scene).line_len), &((*scene).line_nb));
+	if (process_map(scene, map_raw, (*scene).line_len, (*scene).line_nb) == 0)
+		return (d(scene, map_raw), p("Error\n Process map failed.\n", 28), 0);
+	//if (is_valid(map_raw) == 0) //only '0' '1' '?' 'N' 'S' 'E' 'W'; flood fill (pos x;y < 0) ou (pos x;y > lien_len || line nb) ou (pos x;y == '?') => invalid; ligne ???? ou 0????1
+	//	return (d(scene, map_raw), p("Error\n Map is invalid.\n", 23), 0);
+/***************************************************************************/
+	if (allocate_model(scene, -1, 0) == 0)
+		return (d(scene, map_raw), 0);
+	assemble(scene);
+	return (d(scene, map_raw), 1);
 }

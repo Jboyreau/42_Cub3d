@@ -219,6 +219,12 @@ typedef struct s_scene
 	float				pos_incy;
 	float				pos_incz;
 	float				dot;
+	char				tno[100];
+	char				tso[100];
+	char				tea[100];
+	char				twe[100];
+	char				tf[100];
+	char				tr[100];
 	char				*map;
 	char				*obj_path;
 	void				*arg;

@@ -12,21 +12,23 @@ static void	init_screen_space_normals(t_ptri *face)
 	t_v3 vec1;
 	t_v3 vec2;
 	t_v3 normal;
-
 	vec1 = vec3_subtract(&((*face).b), &((*face).a));
 	vec2 = vec3_subtract(&((*face).c), &((*face).a));
 	normal = vec3_cross(&vec1, &vec2);
-	(*face).p1.normal = normal;//**
+	(*face).p0.normal = normal;//**
+	//printf("p0_normal = %f,%f,%f\n", (*face).p0.normal.x, (*face).p0.normal.y, (*face).p0.normal.z);
 
 	vec1 = vec3_subtract(&((*face).c), &((*face).b));
 	vec2 = vec3_subtract(&((*face).a), &((*face).b));
 	normal = vec3_cross(&vec1, &vec2);
 	(*face).p1.normal = normal;//**
+	//printf("p1_normal = %f,%f,%f\n", (*face).p1.normal.x, (*face).p1.normal.y, (*face).p1.normal.z);
 
 	vec1 = vec3_subtract(&((*face).a), &((*face).c));
 	vec2 = vec3_subtract(&((*face).b), &((*face).c));
 	normal = vec3_cross(&vec1, &vec2);
 	(*face).p2.normal = normal;//**
+	//printf("p1_normal = %f,%f,%f\n", (*face).p2.normal.x, (*face).p2.normal.y, (*face).p2.normal.z);
 }
 
 void	triangle_to_color_buffer(t_scene *scene, int i, t_pixel_info *pixel_info)

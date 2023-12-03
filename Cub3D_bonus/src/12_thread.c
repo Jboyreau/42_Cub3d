@@ -26,7 +26,7 @@ void	init_threads(t_scene *scene)
 	arg.pixel_info.scene = scene;
 	arg.pixel_info.screen_space_origin.x = MIDLE_X;
 	arg.pixel_info.screen_space_origin.y = MIDLE_Y;
-	arg.pixel_info.screen_space_origin.z = -70;
+	arg.pixel_info.screen_space_origin.z = -80;
 	arg.pixel_info.rdy = 0;
 	arg.pixel_info.call = 0;
 	arg.pixel_info.finish = 0;

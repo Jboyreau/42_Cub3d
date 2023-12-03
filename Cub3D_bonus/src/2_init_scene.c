@@ -96,17 +96,17 @@ static int populate_map(t_scene *scene)
 
 static int	load_all_texture(t_scene *scene)
 {
-	if (load_texture(TEXTURE_S, scene, SOUTH) == 0)
+	if (load_texture((*scene).tso, scene, SOUTH) == 0)
 		return (0);
-	if (load_texture(TEXTURE_N, scene, NORTH) == 0)
+	if (load_texture((*scene).tno, scene, NORTH) == 0)
 		return (0);
-	if (load_texture(TEXTURE_E, scene, EAST) == 0)
+	if (load_texture((*scene).tea, scene, EAST) == 0)
 		return (0);
-	if (load_texture(TEXTURE_W, scene, WEST) == 0)
+	if (load_texture((*scene).twe, scene, WEST) == 0)
 		return (0);
-	if (load_texture(TEXTURE_F, scene, FLOOR) == 0)
+	if (load_texture((*scene).tf, scene, FLOOR) == 0)
 		return (0);
-	if (load_texture(TEXTURE_R, scene, ROOF) == 0)
+	if (load_texture((*scene).tr, scene, ROOF) == 0)
 		return (0);
 	return (1);
 }
