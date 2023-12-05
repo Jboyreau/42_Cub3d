@@ -111,12 +111,13 @@ static int	load_all_texture(t_scene *scene)
 	return (1);
 }
 
-t_scene	*initialize_scene(int *color_buffer, t_f *fun)
+t_scene	*initialize_scene(int *color_buffer, t_f *fun, char *map_path)
 {
 	static t_scene	scene;
 	static t_v3_uv	poly[POLY_SIZE];
 	static t_v3_uv	inside_vertices[POLY_SIZE];
 
+	scene.map_path = map_path;
 	scene.color_buffer = color_buffer;
 	scene.z_buffer = malloc(BUFF_SIZE * sizeof(float));
 	if (scene.z_buffer == NULL)

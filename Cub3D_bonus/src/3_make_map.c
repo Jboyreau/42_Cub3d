@@ -224,11 +224,198 @@ static int	process_map(t_scene *scene, char *map_raw, int line_len, int line_nb)
 	return (1);
 }
 
-/*static void	is_valid(char *raw_map)
+/******************************************************************************************************/
+static int count_player(t_scene *scene)
 {
-	;
-}*/
+	int	l;
+	int	c;
+	int nb;
 
+	l = -1;
+	nb = 0;
+	while (++l < (*scene).line_nb)
+	{
+		c = -1;
+		while (++c < (*scene).line_len)
+			if (*((*scene).map + l * (*scene).line_len + c) == 'N'
+			|| *((*scene).map + l * (*scene).line_len + c) == 'S'
+			|| *((*scene).map + l * (*scene).line_len + c) == 'E'
+			|| *((*scene).map + l * (*scene).line_len + c) == 'W')
+			{
+				(*scene).px = c;
+				(*scene).pz = l;
+				(*scene).card = *((*scene).map + l * (*scene).line_len + c); 
+				++nb;
+			}
+	}
+	return (nb);
+}
+
+static int check_error(t_scene *scene, int px, int pz)
+{
+	if (*((*scene).map + pz * (*scene).line_len + px) != '1'
+	&& *((*scene).map + pz * (*scene).line_len + px) != '_')
+		return (1);
+	return (0);
+}
+
+static int	check_lim(t_scene *scene, int px, int pz)
+{
+	if (px < 0 || px >= (*scene).line_len)
+		return (1);
+	if (pz < 0 || pz >= (*scene).line_nb)
+		return (1);
+	return (0);
+}
+
+static int	check_uright(t_scene *scene, int px, int pz)
+{
+	if (check_lim(scene, px, pz))
+		return (0);
+	if ((*((*scene).map + pz * (*scene).line_len + px) == '?' 
+	|| *((*scene).map + pz * (*scene).line_len + px) == '1'
+	|| *((*scene).map + pz * (*scene).line_len + px) == '_'))
+		return (0);
+	return (1);
+}
+
+static int	check_uleft(t_scene *scene, int px, int pz)
+{
+	if (check_lim(scene, px, pz))
+		return (0);
+	if ((*((*scene).map + pz * (*scene).line_len + px) == '?' 
+	|| *((*scene).map + pz * (*scene).line_len + px) == '1'
+	|| *((*scene).map + pz * (*scene).line_len + px) == '_'))
+		return (0);
+	return (1);
+}
+
+static int	check_dright(t_scene *scene, int px, int pz)
+{
+	if (check_lim(scene, px, pz))
+		return (0);
+	if ((*((*scene).map + pz * (*scene).line_len + px) == '?' 
+	|| *((*scene).map + pz * (*scene).line_len + px) == '1'
+	|| *((*scene).map + pz * (*scene).line_len + px) == '_'))
+		return (0);
+	return (1);
+}
+
+static int	check_dleft(t_scene *scene, int px, int pz)
+{
+	if (check_lim(scene, px, pz))
+		return (0);
+	if ((*((*scene).map + pz * (*scene).line_len + px) == '?' 
+	|| *((*scene).map + pz * (*scene).line_len + px) == '1'
+	|| *((*scene).map + pz * (*scene).line_len + px) == '_'))
+		return (0);
+	return (1);
+}
+
+static int	flood_fill2(t_scene *scene, int px, int pz, int *error)
+{
+	*((*scene).map + pz * (*scene).line_len + px) = '_';
+	if (*error && check_uright(scene, px + 1, pz + 1))
+		flood_fill(scene, px + 1, pz + 1);//up_right
+	else if (check_error(scene, px + 1, pz + 1))
+		*error = 0;
+	if (*error && check_uleft(scene, px - 1, pz + 1))
+		flood_fill(scene, px - 1, pz + 1);//up_left
+	else if (check_error(scene, px - 1, pz + 1))
+		*error = 0;
+	if (*error && check_dright(scene, px + 1, pz - 1))
+		flood_fill(scene, px + 1, pz - 1);//down_right
+	else if (check_error(scene, px + 1, pz - 1))
+		*error = 0;
+	if (*error && check_dleft(scene, px - 1, pz - 1))
+		flood_fill(scene, px - 1, pz - 1);//down_left
+	else if (check_error(scene, px - 1, pz - 1))
+		*error = 0;
+	return (*error);
+}
+
+static int	check_up(t_scene *scene, int px, int pz)
+{
+	if (check_lim(scene, px, pz))
+		return (0);
+	if ((*((*scene).map + pz * (*scene).line_len + px) == '?' 
+	|| *((*scene).map + pz * (*scene).line_len + px) == '1'
+	|| *((*scene).map + pz * (*scene).line_len + px) == '_'))
+		return (0);
+	return (1);
+}
+
+static int	check_down(t_scene *scene, int px, int pz)
+{
+	if (check_lim(scene, px, pz))
+		return (0);
+	if ((*((*scene).map + pz * (*scene).line_len + px) == '?' 
+	|| *((*scene).map + pz * (*scene).line_len + px) == '1'
+	|| *((*scene).map + pz * (*scene).line_len + px) == '_'))
+		return (0);
+	return (1);
+}
+
+static int	check_right(t_scene *scene, int px, int pz)
+{
+	if (check_lim(scene, px, pz))
+		return (0);
+	if ((*((*scene).map + pz * (*scene).line_len + px) == '?' 
+	|| *((*scene).map + pz * (*scene).line_len + px) == '1'
+	|| *((*scene).map + pz * (*scene).line_len + px) == '_'))
+		return (0);
+	return (1);
+}
+
+static int	check_left(t_scene *scene, int px, int pz)
+{
+	if (check_lim(scene, px, pz))
+		return (0);
+	if ((*((*scene).map + pz * (*scene).line_len + px) == '?' 
+	|| *((*scene).map + pz * (*scene).line_len + px) == '1'
+	|| *((*scene).map + pz * (*scene).line_len + px) == '_'))
+		return (0);
+	return (1);
+}
+
+int	flood_fill(t_scene *scene, int px, int pz)
+{
+	static int	error = 1;
+	
+	*((*scene).map + pz * (*scene).line_len + px) = '_';
+	if (error && check_up(scene, px, pz + 1))
+		flood_fill(scene, px, pz + 1);//up
+	else if (check_error(scene, px, pz + 1))
+		error = 0;
+	if (error && check_down(scene, px, pz - 1))
+		flood_fill(scene, px, pz - 1);//down
+	else if (check_error(scene, px, pz - 1))
+		error = 0;
+	if (error && check_right(scene, px + 1, pz))
+		flood_fill(scene, px + 1, pz);//right
+	else if (check_error(scene, px + 1, pz))
+		error = 0;
+	if (error && check_left(scene, px - 1, pz))
+		flood_fill(scene, px - 1, pz);//left
+	else if (check_error(scene, px -1, pz))
+		error = 0;
+	error = flood_fill2(scene, px, pz, &error);
+	return (error);
+}
+
+static int	is_valid(t_scene *scene)
+{
+	char	sc;
+	char	ret;
+
+	if (count_player(scene) != 1)
+		return (write(2, "Error\nBad player quantity.\n", 27), 0);
+	sc = *((*scene).map + (*scene).pz * (*scene).line_len + (*scene).px);
+	ret = flood_fill(scene, (*scene).px, (*scene).pz);
+	*((*scene).map + (*scene).pz * (*scene).line_len + (*scene).px) = sc;
+	return (ret);
+}
+/******************************************************************************************************/
 static int	allocate_model(t_scene *scene, int i, int n_wall)
 {
 	int	map_size;
@@ -239,7 +426,7 @@ static int	allocate_model(t_scene *scene, int i, int n_wall)
 		if (*((*scene).map + i) == '1')
 			++n_wall;
 	n_fr = 0;
-	i = 0;
+	i = -1;
 	while (++i < map_size)
 		if (*((*scene).map + i) != '?')
 			++n_fr;
@@ -426,17 +613,19 @@ int	assemble_map(t_scene *scene)
 	static char *e = "Error\n Wrong texture descriptor.\n";
 
 	init_stuff(scene);
-	map_raw = load_map(MAP_PATH, 0, 0, NULL);
+	map_raw = load_map((*scene).map_path, 0, 0, NULL);
 	if (map_raw == NULL)
-		return (d(scene, map_raw), p("Error\n Load map failed.\n", 24), 0);
+		return (d(scene, map_raw), p("Error\nLoad map failed.\n", 24), 0);
 /***************************************************************************/
 	if (get_texture(scene, map_raw) == 0)
 		return (d(scene, map_raw), p(e, 33), 0);
 	set_map_size(map_raw, &((*scene).line_len), &((*scene).line_nb));
+	if ((*scene).line_len < 3 || (*scene).line_nb < 3)
+		return (d(scene, map_raw), p("Error\nEmpty map.\n", 17), 0);
 	if (process_map(scene, map_raw, (*scene).line_len, (*scene).line_nb) == 0)
-		return (d(scene, map_raw), p("Error\n Process map failed.\n", 28), 0);
-	//if (is_valid(map_raw) == 0) //only '0' '1' '?' 'N' 'S' 'E' 'W'; flood fill (pos x;y < 0) ou (pos x;y > lien_len || line nb) ou (pos x;y == '?') => invalid; ligne ???? ou 0????1
-	//	return (d(scene, map_raw), p("Error\n Map is invalid.\n", 23), 0);
+		return (d(scene, map_raw), p("Error\nProcess map failed.\n", 26), 0);
+	if (is_valid(scene) == 0)
+		return (d(scene, map_raw), p("Error\n Map is invalid.\n", 23), 0);
 /***************************************************************************/
 	if (allocate_model(scene, -1, 0) == 0)
 		return (d(scene, map_raw), 0);

@@ -31,7 +31,7 @@
 # define THREAD_NUM 10
 # define X_VALUE 0
 # define Y_VALUE 3
-# define Z_MAX 100
+# define Z_MAX 150
 # define Z_MIN 1
 # define FPS 60
 # define FRAME_TARGET_TIME (1000 / FPS)
@@ -226,6 +226,7 @@ typedef struct s_scene
 	char				twe[100];
 	char				tf[100];
 	char				tr[100];
+	char				*map_path;
 	char				*map;
 	char				*obj_path;
 	void				*arg;
@@ -356,7 +357,7 @@ int		assemble_map(t_scene *scene);
 
 //init
 void	initialize_fun(t_f *fun);
-t_scene	*initialize_scene(int *color_buffer, t_f *fun);
+t_scene	*initialize_scene(int *color_buffer, t_f *fun, char *map_path);
 
 //process input
 int		process_input(int (*fun_event[])(t_keys *), t_scene *scene);
@@ -480,4 +481,7 @@ void	do_not_delay(int time_to_wait);
 //threads
 void			init_threads(t_scene *scene);
 void			*start(void *arg);
+
+//parsing
+int	flood_fill(t_scene *scene, int px, int pz);
 #endif

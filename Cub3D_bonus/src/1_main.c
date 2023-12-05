@@ -99,20 +99,49 @@ static void	init_position(t_scene * scene)
 		rotation_y(scene, -1.5708);
 }
 
-int			main(void)
+int	check_map_ext(char** argv)
+{
+	int		len;
+	int		j;
+	int		i;
+	int		k;
+	char	*ext;
+
+	ext = ".cub";
+	i = 0;
+	while (*(*(argv + 1) + i))
+		++i;
+	len = i;
+	if (len < 5)
+		return (1);
+	j = 5;
+	k = 0;
+	while (--j > -1)
+	{
+		if (*(ext + j) != *(*(argv + 1) + i - k))
+			return (1);
+		++k;
+	}
+	putchar('\n');
+	return (0);
+}
+
+int	main(int argc, char** argv)
 {
 	static t_w	canvas = {.window = NULL, .renderer = NULL, .color_buffer = NULL, .color_buffer_texture = NULL};
 	t_scene		*scene;
 	t_f			fun;
 
+	if (argc < 2 || check_map_ext(argv))
+		return (write(2, "Error\nMissing .cub map descriptor.\n", 35), 1);
 //Setup
 	if (initialize_window(&(canvas.window), &(canvas.renderer), &(canvas.color_buffer), &(canvas.color_buffer_texture)) != 0)
 		return (1);
 	initialize_fun(&fun);
-	scene = initialize_scene(canvas.color_buffer, &fun);
+	scene = initialize_scene(canvas.color_buffer, &fun, *(argv + 1));
 	if (scene == NULL)
 		return (write(2, "Scene failed.\n", 14), destroy(canvas.window, canvas.renderer, scene, canvas.color_buffer_texture), 1);
-	init_threads(scene);	
+	init_threads(scene);
 	clear_color_buffer((long long int *)canvas.color_buffer, (*scene).z_buffer);
 //game_loop
 //	(*scene).previous_frame_time = SDL_GetTicks();
