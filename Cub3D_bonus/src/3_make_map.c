@@ -231,18 +231,17 @@ static int check_garbage(t_scene *scene)
 	int	c;
 
 	l = -1;
-	nb = 0;
 	while (++l < (*scene).line_nb)
 	{
 		c = -1;
 		while (++c < (*scene).line_len)
 			if (*((*scene).map + l * (*scene).line_len + c) != 'N'
-			|| *((*scene).map + l * (*scene).line_len + c) != 'S'
-			|| *((*scene).map + l * (*scene).line_len + c) != 'E'
-			|| *((*scene).map + l * (*scene).line_len + c) != 'W'
-			|| *((*scene).map + l * (*scene).line_len + c) != '0'
-			|| *((*scene).map + l * (*scene).line_len + c) != '1'
-			|| *((*scene).map + l * (*scene).line_len + c) != '?')
+			&& *((*scene).map + l * (*scene).line_len + c) != 'S'
+			&& *((*scene).map + l * (*scene).line_len + c) != 'E'
+			&& *((*scene).map + l * (*scene).line_len + c) != 'W'
+			&& *((*scene).map + l * (*scene).line_len + c) != '0'
+			&& *((*scene).map + l * (*scene).line_len + c) != '1'
+			&& *((*scene).map + l * (*scene).line_len + c) != '?')
 			{
 				return (0);
 			}
@@ -432,7 +431,7 @@ static int	is_valid(t_scene *scene)
 	char	sc;
 	char	ret;
 
-	if (check_garbage(t_scene *scene) == 0)
+	if (check_garbage(scene) == 0)
 		return (0);
 	if (count_player(scene) != 1)
 		return (write(2, "Error\nBad player quantity.\n", 27), 0);
