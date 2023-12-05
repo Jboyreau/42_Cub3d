@@ -225,6 +225,30 @@ static int	process_map(t_scene *scene, char *map_raw, int line_len, int line_nb)
 }
 
 /******************************************************************************************************/
+static int check_garbage(t_scene *scene)
+{
+	int	l;
+	int	c;
+
+	l = -1;
+	nb = 0;
+	while (++l < (*scene).line_nb)
+	{
+		c = -1;
+		while (++c < (*scene).line_len)
+			if (*((*scene).map + l * (*scene).line_len + c) != 'N'
+			|| *((*scene).map + l * (*scene).line_len + c) != 'S'
+			|| *((*scene).map + l * (*scene).line_len + c) != 'E'
+			|| *((*scene).map + l * (*scene).line_len + c) != 'W'
+			|| *((*scene).map + l * (*scene).line_len + c) != '0'
+			|| *((*scene).map + l * (*scene).line_len + c) != '1'
+			|| *((*scene).map + l * (*scene).line_len + c) != '?')
+			{
+				return (0);
+			}
+	}
+	return (1);
+}
 static int count_player(t_scene *scene)
 {
 	int	l;
@@ -408,6 +432,8 @@ static int	is_valid(t_scene *scene)
 	char	sc;
 	char	ret;
 
+	if (check_garbage(t_scene *scene) == 0)
+		return (0);
 	if (count_player(scene) != 1)
 		return (write(2, "Error\nBad player quantity.\n", 27), 0);
 	sc = *((*scene).map + (*scene).pz * (*scene).line_len + (*scene).px);
