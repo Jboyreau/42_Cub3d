@@ -45,9 +45,8 @@ static void	destroy(SDL_Window *window, SDL_Renderer *renderer, t_scene *scene, 
 	}
 }
 
-static char	initialize_window(SDL_Window **window, SDL_Renderer **renderer, int **color_buffer, SDL_Texture **color_buffer_texture)
+static char	initialize_window(SDL_Window **window, SDL_Renderer **renderer,  SDL_Texture **color_buffer_texture)
 {
-
 	if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
 		return (SDL_Quit(), write(2, "Error init SDL\n", 15));
 //Create Window
@@ -65,10 +64,6 @@ static char	initialize_window(SDL_Window **window, SDL_Renderer **renderer, int 
 	*renderer = SDL_CreateRenderer(*window, -1, 0);
 	if (*renderer == NULL)
 		return (SDL_DestroyWindow(*window), SDL_Quit(), write(2, "Error SDL Renderer\n", 19));
-//Color_buffer allocation
-	*color_buffer = malloc(sizeof(int) * BUFF_SIZE);
-	if (*color_buffer == NULL)
-		return (SDL_DestroyWindow(*window), SDL_DestroyRenderer(*renderer), SDL_Quit(), 1);
 //Create an SDL texture
 	*color_buffer_texture = SDL_CreateTexture(
 		*renderer,
@@ -128,21 +123,21 @@ int	check_map_ext(char** argv)
 
 int	main(int argc, char** argv)
 {
-	static t_w	canvas = {.window = NULL, .renderer = NULL, .color_buffer = NULL, .color_buffer_texture = NULL};
+	static t_w	canvas = {.window = NULL, .renderer = NULL, .color_buffer_texture = NULL};
 	t_scene		*scene;
 	t_f			fun;
 
 	if (argc < 2 || check_map_ext(argv))
 		return (write(2, "Error\nMissing .cub map descriptor.\n", 35), 1);
-//Setup
-	if (initialize_window(&(canvas.window), &(canvas.renderer), &(canvas.color_buffer), &(canvas.color_buffer_texture)) != 0)
-		return (1);
 	initialize_fun(&fun);
-	scene = initialize_scene(canvas.color_buffer, &fun, *(argv + 1));
+	scene = initialize_scene(&fun, *(argv + 1));
 	if (scene == NULL)
-		return (write(2, "Scene failed.\n", 14), destroy(canvas.window, canvas.renderer, scene, canvas.color_buffer_texture), 1);
+		return (write(2, "Scene failed.\n", 14), 1);
+	//Setup
+	if (initialize_window(&(canvas.window), &(canvas.renderer), &(canvas.color_buffer_texture)) != 0)
+		return (1);
 	init_threads(scene);
-	clear_color_buffer((long long int *)canvas.color_buffer, (*scene).z_buffer);
+	clear_color_buffer((long long int *)(*scene).color_buffer, (*scene).z_buffer);
 //game_loop
 //	(*scene).previous_frame_time = SDL_GetTicks();
 //	(*scene).time_to_wait = -1;
@@ -152,9 +147,9 @@ int	main(int argc, char** argv)
 	while ((*scene).input != 3)
 	{
 		(*scene).input = process_input(fun.fun_event, scene);
-		(*scene).ret = fun.fun_update[(*scene).input * ((*scene).input != 3)](scene);
+		fun.fun_update[(*scene).input * ((*scene).input != 3)](scene);
 		SDL_FlushEvent(SDL_KEYDOWN);
-		display(&canvas, (*scene).ret);	
+		display(&canvas, scene);	
 		//SDL_FlushEvent(SDL_KEYUP);
 		//(*scene).time_to_wait = FRAME_TARGET_TIME - (SDL_GetTicks() - (*scene).previous_frame_time);
 		//(*(*scene).fun).fun_delay[((*scene).time_to_wait > 0)]((*scene).time_to_wait);

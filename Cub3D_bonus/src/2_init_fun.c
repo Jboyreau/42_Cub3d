@@ -67,7 +67,8 @@ static void	initialize_delay(void (*fun_event[])(int))
 static void	initialize_fun_draw_pixel(void (*fun_draw_pixel[])(t_pixel_info *))
 {
 	fun_draw_pixel[0] = &do_not_draw_pixel;
-	fun_draw_pixel[1] = &draw_pixel;
+	fun_draw_pixel[1] = &draw_per_tri_shading;
+	fun_draw_pixel[2] = &draw_per_pixel_shading;
 }
 
 //According to the value of the pressed key a function is choosed.

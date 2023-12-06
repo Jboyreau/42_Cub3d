@@ -28,7 +28,7 @@
 # define TEXTURE_R "./obj/roof/roof.png"
 
 # define MUTEX_NUM 17
-# define THREAD_NUM 10
+# define THREAD_NUM 18
 # define X_VALUE 0
 # define Y_VALUE 3
 # define Z_MAX 150
@@ -193,7 +193,6 @@ typedef struct s_scene
 	int					nwt;
 	int					part;
 	int					input;
-	int					ret;
 	int					tex_h[6];
 	int					tex_w[6];
 	int					t_size[6];
@@ -357,7 +356,7 @@ int		assemble_map(t_scene *scene);
 
 //init
 void	initialize_fun(t_f *fun);
-t_scene	*initialize_scene(int *color_buffer, t_f *fun, char *map_path);
+t_scene	*initialize_scene(t_f *fun, char *map_path);
 
 //process input
 int		process_input(int (*fun_event[])(t_keys *), t_scene *scene);
@@ -412,11 +411,8 @@ void	y_minus(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
 void	y_plus(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
 void	x_minus(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
 void	x_plus(t_scene *scene, t_pixel_info *pixel_info, t_dda *dda);
-void	draw_pixel(t_pixel_info *pixel_info);
-void	draw_pixel2(t_pixel_info *pixel_info);
-void	draw_pixel_last(t_pixel_info *pixel_info);
-void	draw_pixel_last2(t_pixel_info *pixel_info);
-void	draw_first_pixel(t_pixel_info *pixel_info);
+void	draw_per_tri_shading(t_pixel_info *pixel_info);
+void	draw_per_pixel_shading(t_pixel_info *pixel_info);
 void	do_not_draw_pixel(t_pixel_info *pixel_info);
 void	dot(t_pixel_info *pixel_info);
 
@@ -472,7 +468,7 @@ void	inter_both_inside(t_scene *scene, t_line *cp, t_v2 *dot, t_v3_uv *inside_ve
 void	inter_both_outside(t_scene *scene, t_line *cp, t_v2 *dot, t_v3_uv *inside_vertices);
 
 //renderer
-char	display(t_w *canvas, char status);
+void	display(t_w *canvas, t_scene *scene);
 
 //delay
 void	delay(int time_to_wait);

@@ -134,7 +134,6 @@ int	test(t_scene *scene)
 		&& ((next_y > -3 && next_y < 3))
 		&& ((next_z > -3 && next_z < 3));
 	}
-	//printf("condition %d\n", condition);
 	return (condition);
 }
 

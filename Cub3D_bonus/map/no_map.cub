@@ -5,10 +5,4 @@ WE ./obj/wall/west.png
 F ./obj/floor/floor.png
 C ./obj/roof/roof.png
 
-11111111111
-10000000001
-11101110111
-10001 11001
-10N01111111
-10001
-11111
+

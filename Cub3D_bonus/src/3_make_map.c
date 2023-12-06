@@ -201,7 +201,7 @@ static int	process_map(t_scene *scene, char *map_raw, int line_len, int line_nb)
 	static int		i = -1;
 	static int		j = 0;
 
-	(*scene).map = malloc(line_len * line_nb);
+	(*scene).map = malloc(line_len * line_nb + 1);
 	if ((*scene).map == NULL)
 		return (0);
 	while (*(map_raw + (++i)))
@@ -225,6 +225,7 @@ static int	process_map(t_scene *scene, char *map_raw, int line_len, int line_nb)
 }
 
 /******************************************************************************************************/
+
 static int check_garbage(t_scene *scene)
 {
 	int	l;
@@ -248,6 +249,7 @@ static int check_garbage(t_scene *scene)
 	}
 	return (1);
 }
+
 static int count_player(t_scene *scene)
 {
 	int	l;
@@ -440,6 +442,7 @@ static int	is_valid(t_scene *scene)
 	*((*scene).map + (*scene).pz * (*scene).line_len + (*scene).px) = sc;
 	return (ret);
 }
+
 /******************************************************************************************************/
 static int	allocate_model(t_scene *scene, int i, int n_wall)
 {
@@ -544,7 +547,6 @@ void	paste_roof(t_scene *scene, int z, int x, int n)
 		(*((*scene).triangle_index + tstart + i)).b += (*scene).nwc + n * (*scene).cloud_size_roof;
 		(*((*scene).triangle_index + tstart + i)).c += (*scene).nwc + n * (*scene).cloud_size_roof;
 	}
-	
 }
 
 static void	assemble_wall(t_scene *scene, int l, int c)
@@ -635,7 +637,7 @@ static void p(char *str, int len)
 int	assemble_map(t_scene *scene)
 {
 	static char	*map_raw = NULL;
-	static char *e = "Error\n Wrong texture descriptor.\n";
+	static char *e = "Error\nWrong texture descriptor.\n";
 
 	init_stuff(scene);
 	map_raw = load_map((*scene).map_path, 0, 0, NULL);
@@ -650,7 +652,7 @@ int	assemble_map(t_scene *scene)
 	if (process_map(scene, map_raw, (*scene).line_len, (*scene).line_nb) == 0)
 		return (d(scene, map_raw), p("Error\nProcess map failed.\n", 26), 0);
 	if (is_valid(scene) == 0)
-		return (d(scene, map_raw), p("Error\n Map is invalid.\n", 23), 0);
+		return (d(scene, map_raw), p("Error\nMap is invalid.\n", 23), 0);
 /***************************************************************************/
 	if (allocate_model(scene, -1, 0) == 0)
 		return (d(scene, map_raw), 0);
