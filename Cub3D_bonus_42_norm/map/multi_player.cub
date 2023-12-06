@@ -1,0 +1,14 @@
+SO ./obj/wall/south.png
+NO ./obj/wall/north.png
+EA ./obj/wall/east.png
+WE ./obj/wall/west.png
+F ./obj/floor/floor.png
+C ./obj/roof/roof.png
+
+11111111111
+10000000001
+11101110111
+10N01 11N01
+10001111111
+10001
+11111
