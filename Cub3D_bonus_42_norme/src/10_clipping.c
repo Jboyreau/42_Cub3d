@@ -1,24 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   10_clipping.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jboyreau <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/12/07 20:07:25 by jboyreau          #+#    #+#             */
+/*   Updated: 2023/12/07 20:56:49 by jboyreau         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "header.h"
-
-static void	face_uv(t_v3_uv *a, t_tex2 *face)
-{
-	(*a).u = (*face).u;
-	(*a).v = (*face).v;
-}
-
-void	uv_tv3(t_v3 *b, t_v3_uv *a)
-{
-	(*b).x = (*a).x;
-	(*b).y = (*a).y;
-	(*b).z = (*a).z;
-}
-
-void	tv3_uv(t_v3_uv *b, t_v3 *a)
-{
-	(*b).x = (*a).x;
-	(*b).y = (*a).y;
-	(*b).z = (*a).z;
-}
 
 void	poly_to_tri(t_scene *scene, t_v3_uv *poly)
 {
@@ -31,61 +23,24 @@ void	poly_to_tri(t_scene *scene, t_v3_uv *poly)
 		uv_tv3(&(*((*scene).projected_triangle + (*scene).nb_tri)).a, poly);
 		(*((*scene).projected_triangle + (*scene).nb_tri)).p0.uv.u = (*poly).u;
 		(*((*scene).projected_triangle + (*scene).nb_tri)).p0.uv.v = (*poly).v;
-		uv_tv3(&(*((*scene).projected_triangle + (*scene).nb_tri)).b, poly + i + 1);
-		(*((*scene).projected_triangle + (*scene).nb_tri)).p1.uv.u = (*(poly + i + 1)).u;
-		(*((*scene).projected_triangle + (*scene).nb_tri)).p1.uv.v = (*(poly + i + 1)).v;
-		uv_tv3(&(*((*scene).projected_triangle + (*scene).nb_tri)).c, poly + i + 2);
-		(*((*scene).projected_triangle + (*scene).nb_tri)).p2.uv.u = (*(poly + i + 2)).u;
-		(*((*scene).projected_triangle + (*scene).nb_tri)).p2.uv.v = (*(poly + i + 2)).v;
+		uv_tv3(&(*((*scene).projected_triangle + (*scene).nb_tri)).b, poly
+			+ i + 1);
+		(*((*scene).projected_triangle + (*scene).nb_tri)).p1.uv.u = (*(poly
+					+ i + 1)).u;
+		(*((*scene).projected_triangle + (*scene).nb_tri)).p1.uv.v = (*(poly
+					+ i + 1)).v;
+		uv_tv3(&(*((*scene).projected_triangle + (*scene).nb_tri)).c, poly
+			+ i + 2);
+		(*((*scene).projected_triangle + (*scene).nb_tri)).p2.uv.u = (*(poly
+					+ i + 2)).u;
+		(*((*scene).projected_triangle + (*scene).nb_tri)).p2.uv.v = (*(poly
+					+ i + 2)).v;
 		++(*scene).nb_tri;
 	}
 }
 
-void	inter_p_outside(t_scene *scene, t_line *cp, t_v2 *dot, t_v3_uv *inside_vertices)
-{
-	float	t;
-	t_v3_uv	q12;
-	
-	t = ((*dot).x / ((*dot).x - (*dot).y));
-	q12 = vec3uv_subtract((*cp).cur, (*cp).prev);
-	q12 = vec3uv_multiplication(&q12, t);
-	*(inside_vertices + (*scene).inside_size) = vec3uv_addition((*cp).prev, &q12);
-	(*(inside_vertices + (*scene).inside_size)).u = (*(*cp).prev).u + t * ((*(*cp).cur).u - (*(*cp).prev).u);
-	(*(inside_vertices + (*scene).inside_size)).v = (*(*cp).prev).v + t * ((*(*cp).cur).v - (*(*cp).prev).v);
-	*(inside_vertices + (*scene).inside_size + 1) = *((*cp).cur);
-	(*scene).inside_size += 2;
-}
-
-void	inter_c_outside(t_scene *scene, t_line *cp, t_v2 *dot, t_v3_uv *inside_vertices)
-{
-	float	t;
-	t_v3_uv	q12;
-
-	t = ((*dot).x / ((*dot).x - (*dot).y));
-	q12 = vec3uv_subtract((*cp).cur, (*cp).prev);
-	q12 = vec3uv_multiplication(&q12, t);
-	*(inside_vertices + (*scene).inside_size) = vec3uv_addition((*cp).prev, &q12);
-	(*(inside_vertices + (*scene).inside_size)).u = (*(*cp).prev).u + t * ((*(*cp).cur).u - (*(*cp).prev).u);
-	(*(inside_vertices + (*scene).inside_size)).v = (*(*cp).prev).v + t * ((*(*cp).cur).v - (*(*cp).prev).v);
-	++(*scene).inside_size;
-}
-
-void	inter_both_inside(t_scene *scene, t_line *cp, t_v2 *dot, t_v3_uv *inside_vertices)
-{
-	(void)dot;
-	*(inside_vertices + (*scene).inside_size) = *((*cp).cur);
-	++(*scene).inside_size;
-}
-
-void	inter_both_outside(t_scene *scene, t_line *cp, t_v2 *dot, t_v3_uv *inside_vertices)
-{
-	(void)scene;
-	(void)cp;
-	(void)dot;
-	(void)inside_vertices;
-}
-
-static	void	clip(t_scene *scene, t_plane *plane, t_v3_uv **poly, t_v3_uv **ins_vert)
+static	void	clip(t_scene *scene, t_plane *plane, t_v3_uv **poly,
+t_v3_uv **ins_vert)
 {
 	t_line		cp;
 	t_v2		dot;
@@ -111,9 +66,7 @@ static	void	clip(t_scene *scene, t_plane *plane, t_v3_uv **poly, t_v3_uv **ins_v
 		++(cp.cur);
 	}
 	(*scene).poly_size = (*scene).inside_size;
-	temp = *poly;
-	*poly = *ins_vert;
-	*ins_vert = temp;
+	return (temp = *poly, *poly = *ins_vert, *ins_vert = temp, (void)0);
 }
 
 t_v3_uv	*tri_to_poly(t_scene *scene, t_tri *face)

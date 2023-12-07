@@ -6,7 +6,7 @@
 /*   By: jboyreau <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 16:00:05 by jboyreau          #+#    #+#             */
-/*   Updated: 2023/12/07 00:13:58 by jboyreau         ###   ########.fr       */
+/*   Updated: 2023/12/07 22:01:41 by jboyreau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,8 @@
 # define MIDLE_X 640
 # define MIDLE_Y 360
 # define DIST_INC 0.5
-# define ROTATION_INC_PLUS 0.02908883
-# define ROTATION_INC_MINUS -0.02908883
+# define R_INC_PLUS 0.02908883
+# define R_INC_MINUS -0.02908883
 
 enum e_cardinal
 {
@@ -353,8 +353,6 @@ struct s_funarrays
 	void	(*draw_ft[128])(t_pixel_info *t_pixel_info, int i);
 	void	(*flat_top_or_bottom[128])(t_pixel_info *info, t_point *p0,
 			t_point *p1, t_point *p2);
-	void	(*start_draw_ft[128])(t_scene *scene,
-			t_pixel_info *pixel_info, int i);
 	void	(*inter[128])(t_scene *scene, t_line *cp, t_v2 *dot,
 			t_v3_uv *inside_vertices);
 };
@@ -407,7 +405,6 @@ void	set_map_size(char *map_raw, int *line_len, int *line_nb);
 char	*load_map(char *file, int fd, int len, char *buffer);
 void	d(t_scene *scene, char *map_raw);
 
-
 t_scene	*initialize_scene(t_f *fun, char *map_path);
 void	affect_wall(t_scene *scene);
 void	affect_floor(t_scene *scene);
@@ -439,7 +436,8 @@ char	perspective_project_up(t_scene *scene);
 char	perspective_project_right(t_scene *scene);
 char	perspective_project_left(t_scene *scene);
 void	launch(t_scene *scene, t_pixel_info *pixel_info, int i);
-void	dont_launch(t_scene *scene, t_pixel_info *pixel_info, int i);
+void	vertex_to_color_buffer(t_scene *scene, t_v3 *vertex);
+void	init_screen_space_normals(t_ptri *face);
 
 //linear transform
 void	rotation_x(t_scene *scene, float angle);
@@ -465,6 +463,14 @@ void	do_not_draw_pixel(t_pixel_info *pixel_info);
 void	dot(t_pixel_info *pixel_info);
 t_v3	calcultate_interpolated_normal(t_pixel_info *pixel_info);
 t_v3	init_face(t_v2 *a, float az);
+t_v3	barycentric_weight(t_pixel_info *pixel_info);
+void	interpolated_uv_init(t_pixel_info *pixel_info);
+void	draw_line(int x_start, int x_end, int y, t_pixel_info *pixel_info);
+void	draw_line2(int x_start, int x_end, int y, t_pixel_info *pixel_info);
+void	fill_flat_top(t_pixel_info *pixel_info, t_point *p2,
+			t_point *p1, int thread_index);
+void	fill_flat_bottom(t_pixel_info *pixel_info, t_point *p0,
+			t_point *p1, int thread_index);
 
 //triangle filling
 void	draw_ft012(t_pixel_info *pixel_info, int i);
@@ -512,6 +518,7 @@ float	is_visible(t_scene *scene, int i);
 char	load_texture(char *file, t_scene *scene, int cardinal);
 
 //Clipping
+void	face_uv(t_v3_uv *a, t_tex2 *face);
 void	uv_tv3(t_v3 *b, t_v3_uv *a);
 void	tv3_uv(t_v3_uv *b, t_v3 *a);
 t_v3_uv	*tri_to_poly(t_scene *scene, t_tri *face);
@@ -531,6 +538,15 @@ void	display(t_w *canvas, t_scene *scene);
 //threads
 void	init_threads(t_scene *scene);
 void	*start(void *arg);
+void	wait_call(t_pixel_info *pixel_info);
+void	notify_rdy(t_pixel_info *pixel_info);
+void	notify_finish(t_pixel_info *pixel_info);
+void	find_thread_index(pthread_t *thread, int *thread_index);
+void	wait_rdy(t_pixel_info *pixel_info);
+void	wait_finish(t_pixel_info *pixel_info);
+void	call_thread(t_pixel_info *pixel_info);
+void	draw_filled_triangle(t_point *p0, t_point *p1, t_point *p2,
+			t_pixel_info *pixel_info);
 
 //destroy
 void	destroy(SDL_Window *window, SDL_Renderer *renderer, t_scene *scene,

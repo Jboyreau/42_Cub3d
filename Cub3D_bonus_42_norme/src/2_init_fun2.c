@@ -6,7 +6,7 @@
 /*   By: jboyreau <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 17:19:48 by jboyreau          #+#    #+#             */
-/*   Updated: 2023/12/06 17:23:52 by jboyreau         ###   ########.fr       */
+/*   Updated: 2023/12/07 17:07:50 by jboyreau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,14 +34,6 @@ void	initialize_draw_ft(void (*draw_ft[])
 	draw_ft[4] = &draw_ft120;
 	draw_ft[8] = &draw_ft201;
 	draw_ft[16] = &draw_ft210;
-}
-
-//launch draw_ft or not
-void	initialize_start_draw_ft(void (*start_draw_ft[])(t_scene *scene,
-t_pixel_info *pixel_info, int i))
-{
-	start_draw_ft[0] = &launch;
-	start_draw_ft[1] = &dont_launch;
 }
 
 //Back face culling or not

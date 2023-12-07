@@ -6,7 +6,7 @@
 /*   By: jboyreau <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/06 17:13:01 by jboyreau          #+#    #+#             */
-/*   Updated: 2023/12/06 20:54:32 by jboyreau         ###   ########.fr       */
+/*   Updated: 2023/12/07 17:07:18 by jboyreau         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,5 @@ void	initialize_fun(t_f *fun)
 	initialize_culling((*fun).culling);
 	initialize_draw_ft((*fun).draw_ft);
 	initialize_flat_top_or_bottom((*fun).flat_top_or_bottom);
-	initialize_start_draw_ft((*fun).start_draw_ft);
 	initialize_inter((*fun).inter);
 }
