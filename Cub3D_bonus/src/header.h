@@ -28,7 +28,7 @@
 # define TEXTURE_R "./obj/roof/roof.png"
 
 # define MUTEX_NUM 17
-# define THREAD_NUM 18
+# define THREAD_NUM 10
 # define X_VALUE 0
 # define Y_VALUE 3
 # define Z_MAX 150

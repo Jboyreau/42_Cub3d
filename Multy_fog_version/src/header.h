@@ -26,9 +26,9 @@
 //# define Z_VALUE 2//cow
 //#define TEXTURE "./obj/texture.png"
 
-//# define OBJ "./obj/cube/cube.obj"
-//# define Z_VALUE 10//cube
-//#define TEXTURE "./obj/texture.png"
+# define OBJ "./obj/cube/cube.obj"
+# define Z_VALUE 10//cube
+#define TEXTURE "./obj/texture.png"
 
 //# define OBJ "./obj/f22/f22.obj"
 //# define Z_VALUE 5//f22
@@ -42,9 +42,9 @@
 //# define Z_VALUE 5//drone
 //#define TEXTURE "./obj/drone/drone.png"
 
-# define OBJ "./obj/crab/crab.obj"
-# define Z_VALUE 5//crab
-#define TEXTURE "./obj/crab/crab.png"
+//# define OBJ "./obj/crab/crab.obj"
+//# define Z_VALUE 5//crab
+//#define TEXTURE "./obj/crab/crab.png"
 
 //# define OBJ "./obj/sphere/sphere.obj"
 //# define Z_VALUE 5//sphere
