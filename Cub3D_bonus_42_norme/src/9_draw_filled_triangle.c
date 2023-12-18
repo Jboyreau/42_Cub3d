@@ -25,7 +25,7 @@ t_pixel_info *pixel_info)
 	(*pixel_info).p1 = (*p1);
 	(*pixel_info).p2 = (*p2);
 	interpolated_uv_init(pixel_info);
-	(*pixel_info).condition = ((*p1).y == (*p0).y && ((*p1).y != (*p0).y))
+	(*pixel_info).condition = ((*p1).y == (*p0).y && ((*p1).y != (*p2).y))
 		+ (((*p1).y == (*p2).y && ((*p1).y != (*p0).y)) << 1);
 	call_thread(pixel_info);
 }

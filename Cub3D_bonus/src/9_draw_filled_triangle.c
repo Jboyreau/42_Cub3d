@@ -241,7 +241,7 @@ static void	draw_filled_triangle(t_point *p0, t_point *p1, t_point *p2, t_pixel_
 	(*pixel_info).p1 = (*p1);
 	(*pixel_info).p2 = (*p2);
 	interpolated_uv_init(pixel_info);
-	(*pixel_info).condition = ((*p1).y == (*p0).y && ((*p1).y != (*p0).y)) 
+	(*pixel_info).condition = ((*p1).y == (*p0).y && ((*p1).y != (*p2).y)) 
 	+ (((*p1).y == (*p2).y && ((*p1).y != (*p0).y)) << 1);
 	call_thread(pixel_info);
 }
